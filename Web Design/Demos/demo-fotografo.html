@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LENS — Fotógrafo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Inter:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:   #050505;
+  --bg2:  #0a0a0a;
+  --white:#f0ede8;
+  --dim:  rgba(240,237,232,0.45);
+  --faint:rgba(240,237,232,0.08);
+  --border:rgba(240,237,232,0.1);
+  --accent:#4db8ff;
+  --accentd:rgba(77,184,255,0.15);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:none;
+  line-height:1.6;
+}
+
+/* CURSOR — morphing rectangle only, no ring */
+#cd{width:2px;height:20px;background:var(--white);border-radius:1px;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .25s,height .25s,border-radius .25s}
+body.link-hover #cd{width:52px;height:52px;border-radius:3px;background:var(--accent)}
+
+/* SPOTLIGHT — follows mouse */
+#spotlight{position:fixed;inset:0;pointer-events:none;z-index:0;transition:opacity 1s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:normal;transition:background .4s}
+nav.on{background:rgba(5,5,5,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:.32em;color:var(--white);text-decoration:none;text-transform:uppercase}
+.logo em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2.2rem;list-style:none;align-items:center}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{border:1px solid var(--border);color:var(--white);padding:.38rem 1.2rem;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;transition:background .2s,border-color .2s}
+.nav-cta:hover{background:var(--white);color:var(--bg)}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 5% 5%;position:relative;z-index:1;overflow:hidden;border-bottom:1px solid var(--border)}
+.hero-bg-num{position:absolute;right:-2%;top:50%;transform:translateY(-50%);font-family:'Space Grotesk',sans-serif;font-size:32vw;font-weight:700;color:rgba(240,237,232,0.02);line-height:1;pointer-events:none;letter-spacing:-.04em;user-select:none}
+.hero-label{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:2rem;display:flex;align-items:center;gap:.8rem}
+.hero-label::before{content:'';width:28px;height:1px;background:var(--accent);display:inline-block}
+.hero-h1{font-size:clamp(4.5rem,12vw,13rem);font-weight:700;line-height:.88;letter-spacing:-.03em;margin-bottom:3rem;position:relative}
+/* each word on its own line, alternating normal / outline */
+.hero-h1 .w1{display:block;color:var(--white)}
+.hero-h1 .w2{display:block;-webkit-text-stroke:1px rgba(240,237,232,0.3);color:transparent}
+.hero-h1 .w3{display:block;color:var(--accent)}
+.hero-foot{display:grid;grid-template-columns:1fr auto;align-items:end;border-top:1px solid var(--border);padding-top:2rem;gap:3rem}
+.hero-foot-p{font-size:.84rem;color:var(--dim);max-width:400px;line-height:1.85}
+.hero-foot-r{display:flex;gap:1rem;align-items:center;flex-shrink:0}
+/* magnetic button */
+.mag-btn{position:relative;padding:.85rem 2.2rem;font-family:'Space Grotesk',sans-serif;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;color:var(--bg);background:var(--white);font-weight:500;display:inline-block;transition:background .2s}
+.mag-btn:hover{background:var(--accent)}
+.mag-btn-out{padding:.85rem 1.8rem;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;color:var(--dim);border:1px solid var(--border);transition:border-color .2s,color .2s;display:inline-block}
+.mag-btn-out:hover{border-color:var(--white);color:var(--white)}
+
+/* TICKER */
+.tick-wrap{overflow:hidden;border-bottom:1px solid var(--border);padding:.7rem 0;background:var(--bg2);position:relative;z-index:1}
+.tick-tr{display:flex;width:max-content;animation:tk 25s linear infinite}
+.tick-tr span{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);padding:0 2rem;white-space:nowrap}
+.tick-tr .dot{color:var(--accent);padding:0 .5rem}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* TRABALHOS GRID */
+#trabalhos{padding:7rem 5%;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.trab-head{display:grid;grid-template-columns:1fr auto;align-items:end;margin-bottom:3.5rem;gap:2rem}
+.sec-lbl{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+.sec-lbl::before{content:'';width:18px;height:1px;background:var(--accent);display:inline-block}
+.trab-title{font-size:clamp(2rem,4.5vw,4rem);font-weight:700;letter-spacing:-.02em;color:var(--white);line-height:.9}
+.trab-title em{font-style:italic;color:var(--accent)}
+.see-more{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:.1rem;transition:color .2s,border-color .2s}
+.see-more:hover{color:var(--white);border-color:var(--white)}
+
+/* Asymmetric Masonry-like grid */
+.works-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:auto;gap:2px;background:var(--border)}
+.works-grid > *{background:var(--bg)}
+.w1{grid-column:1/6;grid-row:1/3}
+.w2{grid-column:6/9;grid-row:1/2}
+.w3{grid-column:9/13;grid-row:1/2}
+.w4{grid-column:6/10;grid-row:2/3}
+.w5{grid-column:10/13;grid-row:2/3}
+
+.work-item{
+  position:relative;overflow:hidden;cursor:pointer;
+  aspect-ratio:4/5;
+}
+.w1{aspect-ratio:auto;min-height:540px}
+.w2,.w3{aspect-ratio:auto;min-height:240px}
+.w4,.w5{aspect-ratio:auto;min-height:260px}
+
+/* clip-path reveal */
+.work-vis{
+  position:absolute;inset:0;
+  clip-path:inset(100% 0 0 0);
+  transition:clip-path 0s;
+}
+.work-item.revealed .work-vis{
+  clip-path:inset(0 0 0 0);
+  transition:clip-path .9s cubic-bezier(.77,0,.18,1);
+}
+.work-bg{
+  position:absolute;inset:0;
+  transition:transform .7s ease;
+}
+.work-item:hover .work-bg{transform:scale(1.05)}
+
+/* hover overlay with slide-up text */
+.work-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:1.6rem;
+  background:linear-gradient(to top, rgba(5,5,5,0.9) 0%, transparent 100%);
+  transform:translateY(8px);
+  opacity:0;
+  transition:opacity .35s,transform .35s;
+}
+.work-item:hover .work-info{opacity:1;transform:none}
+.w-cat{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+.w-name{font-size:.95rem;font-weight:500;color:var(--white);margin-bottom:.2rem}
+.w-year{font-size:.65rem;color:var(--dim)}
+/* always-visible minimal label on non-hovered state */
+.work-label{
+  position:absolute;top:1rem;left:1rem;
+  font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(240,237,232,0.5);
+  border:1px solid rgba(240,237,232,0.12);
+  padding:.18rem .5rem;
+  background:rgba(5,5,5,0.4);
+  backdrop-filter:blur(4px);
+}
+
+/* SOBRE */
+#sobre{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.sobre-l{padding:6rem 6% 6rem 5%;border-right:1px solid var(--border)}
+.sobre-h2{font-size:clamp(2.2rem,4.5vw,4rem);font-weight:700;letter-spacing:-.02em;line-height:.9;color:var(--white);margin-bottom:2.2rem}
+.sobre-h2 em{font-style:italic;color:var(--accent)}
+.sobre-p{font-size:.82rem;color:var(--dim);line-height:1.9;max-width:400px;margin-bottom:1.4rem}
+.tag-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.8rem}
+.tag{border:1px solid var(--border);padding:.28rem .8rem;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);transition:border-color .2s,color .2s}
+.tag:hover{border-color:var(--accent);color:var(--accent)}
+
+.sobre-r{padding:6rem 5%;display:flex;flex-direction:column;justify-content:space-between}
+/* services as numbered list */
+.svc-list{list-style:none;display:flex;flex-direction:column}
+.svc-item{display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:1.2rem;padding:1.4rem 0;border-bottom:1px solid var(--border)}
+.svc-item:last-child{border-bottom:none}
+.svc-n{font-size:2.2rem;font-weight:700;color:rgba(240,237,232,0.07);line-height:1;font-variant-numeric:tabular-nums}
+.svc-name{font-size:.9rem;font-weight:500;color:var(--white)}
+.svc-sub{font-size:.7rem;color:var(--dim);margin-top:.2rem}
+.svc-arrow{font-size:.9rem;color:var(--border);transition:color .3s,transform .3s}
+.svc-item:hover .svc-arrow{color:var(--accent);transform:translate(3px,-3px)}
+.svc-item:hover .svc-n{color:rgba(77,184,255,0.12)}
+
+/* QUOTE */
+#quote{padding:6rem 5%;border-bottom:1px solid var(--border);position:relative;z-index:1;text-align:center;overflow:hidden}
+.q-bg{position:absolute;font-size:24vw;font-weight:700;color:rgba(240,237,232,0.02);line-height:1;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;letter-spacing:-.04em}
+.q-text{font-size:clamp(1.8rem,3.5vw,3.2rem);font-weight:300;letter-spacing:-.01em;color:var(--white);max-width:820px;margin:0 auto 1.8rem;line-height:1.3;position:relative;z-index:1}
+.q-text em{font-style:italic;color:var(--accent)}
+.q-src{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);position:relative;z-index:1}
+
+/* CONTACTO */
+#contacto{padding:7rem 5%;position:relative;z-index:1}
+.cont-grid{display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:start}
+.cont-h2{font-size:clamp(3rem,6vw,6.5rem);font-weight:700;letter-spacing:-.03em;line-height:.88;color:var(--white);margin-bottom:1.8rem}
+.cont-h2 em{font-style:normal;color:var(--accent);display:block}
+.cont-p{font-size:.82rem;color:var(--dim);max-width:380px;line-height:1.85;margin-bottom:2.4rem}
+.crows{list-style:none;display:flex;flex-direction:column;gap:1rem}
+.crow{display:flex;gap:1rem;align-items:center}
+.cl{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);min-width:80px}
+.cv{font-size:.82rem;color:var(--dim)}
+.cv a{color:var(--dim);text-decoration:none;transition:color .2s}
+.cv a:hover{color:var(--white)}
+/* socials */
+.socials{display:flex;gap:.8rem;margin-top:2rem}
+.soc{border:1px solid var(--border);padding:.45rem .85rem;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:border-color .2s,color .2s}
+.soc:hover{border-color:var(--white);color:var(--white)}
+
+/* FORM */
+.cf{background:rgba(240,237,232,0.03);border:1px solid var(--border);padding:2.4rem}
+.cf-title{font-size:1.2rem;font-weight:700;letter-spacing:-.01em;color:var(--white);margin-bottom:.3rem}
+.cf-sub{font-size:.7rem;color:var(--dim);margin-bottom:2rem}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:.9rem}
+.fr.one{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:.35rem}
+.fg label{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.fg input,.fg select,.fg textarea{
+  background:rgba(240,237,232,0.04);
+  border:1px solid var(--border);
+  color:var(--white);
+  padding:.65rem .85rem;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:.8rem;
+  outline:none;
+  transition:border-color .2s;
+  -webkit-appearance:none;
+  resize:none;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg input::placeholder,.fg textarea::placeholder{color:var(--dim)}
+.fg select option{background:#0a0a0a}
+.cf-submit{
+  width:100%;margin-top:1.2rem;
+  background:var(--white);color:var(--bg);
+  border:none;cursor:pointer;
+  padding:.85rem;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:600;
+  transition:background .2s;
+}
+.cf-submit:hover{background:var(--accent)}
+
+/* FOOTER */
+footer{padding:2.8rem 5%;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr auto;align-items:center;gap:2rem;position:relative;z-index:1}
+.fl{font-size:1.1rem;font-weight:700;letter-spacing:.3em;color:var(--white);text-decoration:none;text-transform:uppercase}
+.fl em{color:var(--accent);font-style:normal}
+.fm{font-size:.6rem;color:var(--dim);margin-top:.25rem;letter-spacing:.06em}
+.flinks{display:flex;gap:1.8rem;list-style:none}
+.flinks a{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--white)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.32s}.reveal.d4{transition-delay:.44s}
+
+/* ─── PROCESSO ───────────────────────────────────────────────── */
+#processo{
+  padding:6rem 5%;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.proc-top{
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:end;gap:3rem;margin-bottom:4rem;flex-wrap:wrap;
+}
+.proc-steps-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:2px;background:var(--border);
+}
+.pstep{
+  background:var(--bg);padding:2rem 1.5rem;
+  position:relative;overflow:hidden;
+}
+.pstep::before{
+  content:attr(data-n);
+  position:absolute;
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:5rem;
+  color:rgba(77,184,255,0.04);
+  right:-.1em;bottom:-.2em;line-height:1;
+  pointer-events:none;
+}
+.pstep-n{
+  font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1rem;opacity:.7;
+  display:block;
+}
+.pstep-name{
+  font-size:1rem;font-weight:700;
+  color:var(--white);margin-bottom:.7rem;
+  letter-spacing:-.01em;
+}
+.pstep-desc{
+  font-size:.74rem;color:var(--dim);line-height:1.7;
+}
+
+/* ─── CLIENTES ───────────────────────────────────────────────── */
+#clientes{
+  padding:4rem 5%;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:4rem;flex-wrap:wrap;
+}
+.clientes-label{
+  font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--dim);white-space:nowrap;flex-shrink:0;
+}
+.clientes-list{
+  display:flex;gap:3rem;align-items:center;flex-wrap:wrap;
+  flex:1;
+}
+.cliente-name{
+  font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);opacity:.4;transition:opacity .2s;
+  font-weight:700;white-space:nowrap;
+}
+.cliente-name:hover{opacity:.9}
+
+@media(max-width:900px){
+  .works-grid{grid-template-columns:1fr 1fr}
+  .w1,.w2,.w3,.w4,.w5{grid-column:auto;grid-row:auto;min-height:220px;aspect-ratio:4/3}
+  #sobre{grid-template-columns:1fr}.sobre-l{border-right:none;border-bottom:1px solid var(--border)}
+  .cont-grid{grid-template-columns:1fr;gap:3.5rem}
+  footer{grid-template-columns:1fr}
+  .nav-links li:not(:last-child){display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="cd"></div>
+<div id="spotlight"></div>
+
+<nav id="nav">
+  <a href="#" class="logo"><em>L</em>ENS</a>
+  <ul class="nav-links">
+    <li><a href="#trabalhos">Trabalhos</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="#contacto" class="nav-cta">Pedir Orçamento</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-bg-num">F</div>
+  <div class="hero-label reveal">Fotógrafo · Vale de Cambra</div>
+  <h1 class="hero-h1">
+    <span class="w1" id="scramble1">IMAGENS</span>
+    <span class="w2">QUE</span>
+    <span class="w3">FICAM.</span>
+  </h1>
+  <div class="hero-foot">
+    <p class="hero-foot-p reveal d1">Fotografia de casamentos, eventos corporativos, retrato e produto. Cada frame conta uma história — a tua.</p>
+    <div class="hero-foot-r reveal d2">
+      <a href="#trabalhos" class="mag-btn">Ver Portfólio</a>
+      <a href="#contacto" class="mag-btn-out">Orçamento</a>
+    </div>
+  </div>
+</section>
+
+<div class="tick-wrap">
+  <div class="tick-tr">
+    <span>Casamentos</span><span class="dot">·</span>
+    <span>Eventos</span><span class="dot">·</span>
+    <span>Retrato</span><span class="dot">·</span>
+    <span>Produto</span><span class="dot">·</span>
+    <span>Corporativo</span><span class="dot">·</span>
+    <span>Newborn</span><span class="dot">·</span>
+    <span>Editorial</span><span class="dot">·</span>
+    <span>Imobiliário</span><span class="dot">·</span>
+    <span>Casamentos</span><span class="dot">·</span>
+    <span>Eventos</span><span class="dot">·</span>
+    <span>Retrato</span><span class="dot">·</span>
+    <span>Produto</span><span class="dot">·</span>
+    <span>Corporativo</span><span class="dot">·</span>
+    <span>Newborn</span><span class="dot">·</span>
+    <span>Editorial</span><span class="dot">·</span>
+    <span>Imobiliário</span><span class="dot">·</span>
+  </div>
+</div>
+
+<section id="trabalhos">
+  <div class="trab-head">
+    <div>
+      <div class="sec-lbl reveal">Portfólio Selecionado</div>
+      <h2 class="trab-title reveal d1">Trabalhos<br><em>recentes</em></h2>
+    </div>
+    <a href="#contacto" class="see-more reveal">Todos os trabalhos ↗</a>
+  </div>
+  <div class="works-grid">
+
+    <div class="work-item w1 reveal-work">
+      <div class="work-vis">
+        <div class="work-bg" style="background:linear-gradient(160deg,#1a1008 0%,#0d0805 50%,#080503 100%);position:absolute;inset:0;">
+          <div style="position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14rem;color:rgba(240,237,232,0.03);line-height:1;bottom:-10px;right:-10px;letter-spacing:-.06em">W</div>
+        </div>
+      </div>
+      <div class="work-label">01</div>
+      <div class="work-info">
+        <div class="w-cat">Casamento</div>
+        <div class="w-name">Ana & Pedro · Quinta da Serra</div>
+        <div class="w-year">2024</div>
+      </div>
+    </div>
+
+    <div class="work-item w2 reveal-work">
+      <div class="work-vis">
+        <div class="work-bg" style="background:linear-gradient(145deg,#0c1018 0%,#060c14 60%,#040810 100%);position:absolute;inset:0;">
+          <div style="position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:7rem;color:rgba(77,184,255,0.05);line-height:1;bottom:-5px;right:-5px;letter-spacing:-.04em">CO</div>
+        </div>
+      </div>
+      <div class="work-label">02</div>
+      <div class="work-info">
+        <div class="w-cat">Corporativo</div>
+        <div class="w-name">TechNova · Branding & Equipa</div>
+        <div class="w-year">2024</div>
+      </div>
+    </div>
+
+    <div class="work-item w3 reveal-work">
+      <div class="work-vis">
+        <div class="work-bg" style="background:linear-gradient(145deg,#18100a 0%,#100c06 60%,#0c0804 100%);position:absolute;inset:0;">
+          <div style="position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:7rem;color:rgba(240,237,232,0.03);line-height:1;bottom:-5px;right:-5px;letter-spacing:-.04em">RET</div>
+        </div>
+      </div>
+      <div class="work-label">03</div>
+      <div class="work-info">
+        <div class="w-cat">Retrato</div>
+        <div class="w-name">Sessão Editorial · Vale de Cambra</div>
+        <div class="w-year">2025</div>
+      </div>
+    </div>
+
+    <div class="work-item w4 reveal-work">
+      <div class="work-vis">
+        <div class="work-bg" style="background:linear-gradient(145deg,#101820 0%,#081014 60%,#060c10 100%);position:absolute;inset:0;">
+          <div style="position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:7rem;color:rgba(77,184,255,0.04);line-height:1;bottom:-5px;right:-5px;letter-spacing:-.04em">EVT</div>
+        </div>
+      </div>
+      <div class="work-label">04</div>
+      <div class="work-info">
+        <div class="w-cat">Evento</div>
+        <div class="w-name">Gala Anual · Câmara Municipal</div>
+        <div class="w-year">2024</div>
+      </div>
+    </div>
+
+    <div class="work-item w5 reveal-work">
+      <div class="work-vis">
+        <div class="work-bg" style="background:linear-gradient(145deg,#160c0e 0%,#100608 60%,#0c0506 100%);position:absolute;inset:0;">
+          <div style="position:absolute;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:7rem;color:rgba(240,237,232,0.03);line-height:1;bottom:-5px;right:-5px;letter-spacing:-.04em">PRD</div>
+        </div>
+      </div>
+      <div class="work-label">05</div>
+      <div class="work-info">
+        <div class="w-cat">Produto</div>
+        <div class="w-name">BRUMA Boutique · Look Book</div>
+        <div class="w-year">2025</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="sobre">
+  <div class="sobre-l">
+    <div class="sec-lbl reveal">Quem Sou</div>
+    <h2 class="sobre-h2 reveal d1">Capturo<br><em>momentos reais</em><br>com intenção.</h2>
+    <p class="sobre-p reveal d2">Sou fotógrafo com base em Vale de Cambra. Comecei há mais de 8 anos com uma câmara emprestada e desde então não parei de aprender, de viajar e de registar o mundo à minha volta.</p>
+    <p class="sobre-p reveal d3">Acredito que a melhor fotografia é aquela que não se nota — a que captura o momento antes de o momento saber que está a ser fotografado.</p>
+    <div class="tag-row reveal d4">
+      <span class="tag">Casamentos</span><span class="tag">Eventos</span>
+      <span class="tag">Retrato</span><span class="tag">Produto</span>
+      <span class="tag">Drone</span><span class="tag">Vídeo</span>
+    </div>
+  </div>
+  <div class="sobre-r">
+    <div class="sec-lbl reveal">Serviços</div>
+    <ul class="svc-list">
+      <li class="svc-item reveal d1">
+        <span class="svc-n">01</span>
+        <div><div class="svc-name">Casamentos & Cerimónias</div><div class="svc-sub">Reportagem completa · A partir de €950</div></div>
+        <span class="svc-arrow">↗</span>
+      </li>
+      <li class="svc-item reveal d2">
+        <span class="svc-n">02</span>
+        <div><div class="svc-name">Eventos Corporativos</div><div class="svc-sub">Gala, conferência, team building · A partir de €350</div></div>
+        <span class="svc-arrow">↗</span>
+      </li>
+      <li class="svc-item reveal d3">
+        <span class="svc-n">03</span>
+        <div><div class="svc-name">Retrato & Editorial</div><div class="svc-sub">Sessão individual ou grupo · A partir de €200</div></div>
+        <span class="svc-arrow">↗</span>
+      </li>
+      <li class="svc-item reveal d4">
+        <span class="svc-n">04</span>
+        <div><div class="svc-name">Produto & Imobiliário</div><div class="svc-sub">E-commerce, catálogo, espaços · A partir de €150</div></div>
+        <span class="svc-arrow">↗</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section id="processo">
+  <div class="proc-top">
+    <div>
+      <div class="sec-lbl reveal">Como Trabalho</div>
+      <h2 class="cont-h2 reveal d1">DO PRIMEIRO<br><em>CONTACTO</em><br>AO FICHEIRO.</h2>
+    </div>
+    <p class="reveal" style="font-size:.82rem;color:var(--dim);line-height:1.85;max-width:360px;align-self:end">Cada projecto tem um processo claro. Sabes sempre em que fase estamos — sem surpresas, sem esperas injustificadas.</p>
+  </div>
+  <div class="proc-steps-grid">
+    <div class="pstep reveal" data-n="01">
+      <span class="pstep-n">01</span>
+      <div class="pstep-name">Briefing</div>
+      <p class="pstep-desc">Conversa inicial para perceber o projecto, o estilo desejado, e enviar proposta personalizada em 24h.</p>
+    </div>
+    <div class="pstep reveal d1" data-n="02">
+      <span class="pstep-n">02</span>
+      <div class="pstep-name">Preparação</div>
+      <p class="pstep-desc">Reconhecimento do local, plano de luz, e timeline detalhada para o dia. Nada é deixado ao acaso.</p>
+    </div>
+    <div class="pstep reveal d2" data-n="03">
+      <span class="pstep-n">03</span>
+      <div class="pstep-name">Sessão</div>
+      <p class="pstep-desc">Presença discreta mas atenta. Capturo o momento sem interromper — as melhores fotografias não se pedem.</p>
+    </div>
+    <div class="pstep reveal d3" data-n="04">
+      <span class="pstep-n">04</span>
+      <div class="pstep-name">Entrega</div>
+      <p class="pstep-desc">Edição profissional e entrega em galeria online privada em 7 a 14 dias. Ficheiros em alta resolução.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTES -->
+<section id="clientes">
+  <div class="clientes-label">Trabalhei com</div>
+  <div class="clientes-list">
+    <span class="cliente-name">Câmara de Vale de Cambra</span>
+    <span class="cliente-name">Hotel Montebelo</span>
+    <span class="cliente-name">TechNova</span>
+    <span class="cliente-name">Quinta do Crasto</span>
+    <span class="cliente-name">Grupo Visabeira</span>
+    <span class="cliente-name">Universidade de Aveiro</span>
+  </div>
+</section>
+
+<section id="quote">
+  <div class="q-bg">LENS</div>
+  <p class="q-text reveal">"A fotografia é a única linguagem que pode ser entendida em todo o mundo — <em>sem tradução.</em>"</p>
+  <div class="q-src reveal d1">Bruno Barbey — World Press Photo</div>
+</section>
+
+<section id="contacto">
+  <div class="cont-grid">
+    <div>
+      <div class="sec-lbl reveal">Vamos Trabalhar Juntos</div>
+      <h2 class="cont-h2 reveal d1">PEDIR<br><em>ORÇAMENTO</em></h2>
+      <p class="cont-p reveal d2">Cada projeto é único. Conta-me o que precisas e envio proposta em 24h.</p>
+      <ul class="crows reveal d3">
+        <li><span class="cl">WhatsApp</span><span class="cv"><a href="https://wa.me/351926188888">+351 926 188 888</a></span></li>
+        <li><span class="cl">Email</span><span class="cv"><a href="mailto:lens@fotografia.pt">lens@fotografia.pt</a></span></li>
+        <li><span class="cl">Zona</span><span class="cv">Vale de Cambra & todo o País</span></li>
+      </ul>
+      <div class="socials reveal d4">
+        <a href="#" class="soc">Instagram</a>
+        <a href="#" class="soc">LinkedIn</a>
+        <a href="#" class="soc">Behance</a>
+      </div>
+    </div>
+    <div class="cf reveal d2">
+      <div class="cf-title">Pedir Orçamento</div>
+      <div class="cf-sub">Resposta garantida em menos de 24h</div>
+      <form onsubmit="return false">
+        <div class="fr">
+          <div class="fg"><label>Nome</label><input type="text" placeholder="O teu nome"/></div>
+          <div class="fg"><label>Telefone</label><input type="tel" placeholder="+351 9XX XXX XXX"/></div>
+        </div>
+        <div class="fr one">
+          <div class="fg"><label>Tipo de Sessão</label>
+            <select><option value="">Selecionar</option><option>Casamento / Cerimónia</option><option>Evento Corporativo</option><option>Retrato / Editorial</option><option>Produto / E-commerce</option><option>Fotografia Imobiliária</option><option>Outro</option></select>
+          </div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label>Data do Evento</label><input type="date"/></div>
+          <div class="fg"><label>Local</label><input type="text" placeholder="Cidade / Região"/></div>
+        </div>
+        <div class="fr one">
+          <div class="fg"><label>Mensagem</label><textarea rows="3" placeholder="Conta-me mais sobre o projeto..."></textarea></div>
+        </div>
+        <button type="submit" class="cf-submit">Enviar Pedido</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <a href="#" class="fl"><em>L</em>ENS</a>
+    <div class="fm">Fotógrafo · Vale de Cambra · +351 926 188 888</div>
+  </div>
+  <ul class="flinks">
+    <li><a href="#trabalhos">Portfólio</a></li>
+    <li><a href="#sobre">Serviços</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</footer>
+
+<script>
+// ─── CURSOR
+const cd=document.getElementById('cd');
+document.addEventListener('mousemove',e=>{cd.style.left=e.clientX+'px';cd.style.top=e.clientY+'px'});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('link-hover'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('link-hover'));
+});
+
+// ─── SPOTLIGHT
+const sp=document.getElementById('spotlight');
+document.addEventListener('mousemove',e=>{
+  sp.style.background=`radial-gradient(circle at ${e.clientX}px ${e.clientY}px, rgba(77,184,255,0.05) 0%, transparent 320px)`;
+});
+
+// ─── NAV
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('on',scrollY>60));
+
+// ─── REVEAL (generic)
+const ro=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');ro.unobserve(x.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// ─── WORK ITEMS — clip-path reveal on scroll
+const wo=new IntersectionObserver(e=>e.forEach(x=>{
+  if(x.isIntersecting){
+    setTimeout(()=>x.target.classList.add('revealed'),50);
+    wo.unobserve(x.target);
+  }
+}),{threshold:.15});
+document.querySelectorAll('.reveal-work').forEach((el,i)=>{
+  el.querySelector('.work-vis').style.transitionDelay=(i*0.12)+'s';
+  wo.observe(el);
+});
+
+// ─── TEXT SCRAMBLE on hero words
+const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function scramble(el,final,duration){
+  let frame=0;const frames=Math.ceil(duration/1000*60);
+  const int=setInterval(()=>{
+    const p=frame/frames;
+    el.textContent=final.split('').map((c,i)=>i<Math.floor(p*final.length)?c:CHARS[Math.floor(Math.random()*26)]).join('');
+    if(frame++>=frames){el.textContent=final;clearInterval(int)}
+  },1000/60);
+}
+const heroWords=[
+  {el:document.querySelector('.w1'),text:'IMAGENS',delay:200},
+  {el:document.querySelector('.w2'),text:'QUE',delay:500},
+  {el:document.querySelector('.w3'),text:'FICAM.',delay:750},
+];
+setTimeout(()=>{
+  heroWords.forEach(({el,text,delay})=>setTimeout(()=>scramble(el,text,700),delay));
+},300);
+</script>
+</body>
+</html>

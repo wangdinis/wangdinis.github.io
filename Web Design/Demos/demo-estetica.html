@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AURORA — Clínica de Estética</title>
+<meta name="description" content="AURORA. Rituais de beleza consciente em Vale de Cambra. Onde a ciência encontra o cuidado."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ─── RESET ─────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --white:  #f7f5f0;
+  --sage:   #4a7c59;
+  --sage-l: #6a9e7a;
+  --clay:   #8b6f5e;
+  --dark:   #1e1e1a;
+  --muted:  rgba(30,30,26,0.45);
+  --border: rgba(74,124,89,0.15);
+  --border-m: rgba(30,30,26,0.1);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--white);
+  color:var(--dark);
+  overflow-x:hidden;
+}
+
+/* ─── NAV ────────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:64px;padding:0 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(247,245,240,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border-m);
+}
+.nav-logo{
+  font-family:'DM Serif Display',serif;
+  font-size:20px;letter-spacing:0.06em;
+  color:var(--dark);
+}
+.nav-links{
+  display:flex;gap:36px;list-style:none;
+}
+.nav-links a{
+  font-size:12px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;font-weight:400;
+  transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--sage)}
+.nav-cta{
+  font-size:12px;letter-spacing:0.12em;text-transform:uppercase;
+  background:var(--sage);color:#fff;
+  padding:10px 24px;text-decoration:none;font-weight:500;
+  transition:background 0.25s;
+}
+.nav-cta:hover{background:var(--sage-l)}
+
+/* ─── HERO ───────────────────────────────────────────────────── */
+#hero{
+  min-height:100vh;
+  padding:120px 5% 80px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+  background:var(--white);
+  position:relative;overflow:hidden;
+}
+.hero-bg-line{
+  position:absolute;top:0;right:0;width:45%;height:100%;
+  background:rgba(74,124,89,0.04);
+  clip-path:polygon(8% 0,100% 0,100% 100%,0 100%);
+  pointer-events:none;
+}
+.hero-left{position:relative;z-index:2}
+.hero-eyebrow{
+  font-size:11px;letter-spacing:0.35em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:28px;
+  display:flex;align-items:center;gap:14px;
+}
+.hero-eyebrow::before{content:'';display:block;width:28px;height:1px;background:var(--sage)}
+.hero-title{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(52px,6.5vw,96px);
+  font-weight:400;
+  line-height:1.0;
+  letter-spacing:-0.01em;
+  color:var(--dark);
+  margin-bottom:32px;
+}
+.hero-title em{font-style:italic;color:var(--sage)}
+.hero-body{
+  font-size:15px;color:var(--muted);line-height:1.85;
+  max-width:400px;margin-bottom:48px;
+}
+.hero-actions{display:flex;gap:16px;align-items:center}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:12px;letter-spacing:0.18em;text-transform:uppercase;
+  background:var(--sage);color:#fff;
+  padding:16px 36px;text-decoration:none;font-weight:500;
+  transition:background 0.25s;
+}
+.btn-primary:hover{background:var(--sage-l)}
+.btn-text{
+  font-size:12px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--dark);text-decoration:none;
+  border-bottom:1px solid rgba(30,30,26,0.25);
+  padding-bottom:2px;
+  transition:border-color 0.2s,color 0.2s;
+}
+.btn-text:hover{color:var(--sage);border-color:var(--sage)}
+.hero-right{
+  position:relative;z-index:2;
+}
+.hero-img-wrap{
+  position:relative;
+}
+.hero-img{
+  width:100%;height:560px;object-fit:cover;display:block;
+  filter:saturate(0.9);
+}
+.hero-img-badge{
+  position:absolute;bottom:32px;left:-28px;
+  background:var(--white);
+  padding:20px 24px;
+  border-left:3px solid var(--sage);
+  min-width:180px;
+  box-shadow:0 8px 40px rgba(30,30,26,0.08);
+}
+.hero-badge-num{
+  font-family:'DM Serif Display',serif;
+  font-size:40px;color:var(--sage);line-height:1;
+}
+.hero-badge-label{
+  font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--muted);margin-top:4px;
+}
+
+/* ─── SERVICES ACCORDION ─────────────────────────────────────── */
+#servicos{
+  background:var(--white);
+  padding:120px 5%;
+  border-top:1px solid var(--border-m);
+}
+.sec-eyebrow{
+  font-size:11px;letter-spacing:0.35em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;
+}
+.sec-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--sage)}
+.sec-title{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(36px,4vw,58px);
+  font-weight:400;color:var(--dark);
+  line-height:1.05;margin-bottom:72px;
+}
+.sec-title em{font-style:italic;color:var(--sage)}
+
+.accordion-row{
+  border-top:1px solid var(--border-m);
+  overflow:hidden;
+}
+.accordion-row:last-child{border-bottom:1px solid var(--border-m)}
+.accordion-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 0;
+  cursor:pointer;
+  user-select:none;
+  transition:background 0.2s;
+}
+.accordion-head:hover .acc-name{color:var(--sage)}
+.acc-left{display:flex;align-items:center;gap:36px}
+.acc-num{
+  font-family:'DM Serif Display',serif;
+  font-size:13px;color:var(--muted);
+  width:28px;flex-shrink:0;
+}
+.acc-name{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(20px,2.5vw,30px);
+  font-weight:400;color:var(--dark);
+  transition:color 0.25s;
+}
+.acc-right{display:flex;align-items:center;gap:40px}
+.acc-duration{
+  font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--muted);
+}
+.acc-price{
+  font-family:'DM Serif Display',serif;
+  font-size:22px;color:var(--clay);
+  min-width:70px;text-align:right;
+}
+.acc-icon{
+  width:32px;height:32px;border:1px solid var(--border-m);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background 0.25s,border-color 0.25s;
+}
+.acc-icon svg{width:14px;height:14px;stroke:var(--dark);transition:transform 0.35s ease,stroke 0.25s}
+.accordion-row.open .acc-icon{background:var(--sage);border-color:var(--sage)}
+.accordion-row.open .acc-icon svg{stroke:#fff;transform:rotate(45deg)}
+
+.accordion-body{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.5s cubic-bezier(.4,0,.2,1);
+}
+.accordion-row.open .accordion-body{max-height:300px}
+.acc-content{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;
+  padding:0 0 40px 64px;
+}
+.acc-content-block p:first-child{
+  font-size:11px;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:10px;
+}
+.acc-content-block p:last-child{
+  font-size:13px;color:var(--muted);line-height:1.8;
+}
+
+/* ─── EQUIPA TABLE ───────────────────────────────────────────── */
+#equipa{
+  background:#f0ede6;
+  padding:120px 5%;
+}
+.equipa-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border-m);
+  margin-top:60px;
+}
+.equipa-cell{
+  background:#f0ede6;
+  padding:48px 40px;
+  position:relative;overflow:hidden;
+}
+.equipa-cell::after{
+  content:'';position:absolute;bottom:0;left:40px;right:40px;
+  height:1px;background:var(--sage);transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s ease;
+}
+.equipa-cell:hover::after{transform:scaleX(1)}
+.equipa-img{
+  width:72px;height:72px;border-radius:50%;object-fit:cover;
+  filter:grayscale(30%);margin-bottom:24px;
+  transition:filter 0.3s;
+}
+.equipa-cell:hover .equipa-img{filter:grayscale(0%)}
+.equipa-name{
+  font-family:'DM Serif Display',serif;
+  font-size:22px;font-weight:400;color:var(--dark);margin-bottom:4px;
+}
+.equipa-role{
+  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--sage);margin-bottom:16px;
+}
+.equipa-bio{
+  font-size:13px;color:var(--muted);line-height:1.8;
+}
+
+/* ─── PROCESSO TIMELINE ──────────────────────────────────────── */
+#processo{
+  background:var(--white);
+  padding:120px 5%;
+}
+.processo-steps{
+  margin-top:72px;
+  position:relative;
+}
+.processo-steps::before{
+  content:'';position:absolute;left:21px;top:0;bottom:0;width:1px;
+  background:var(--border);
+}
+.pstep{
+  display:grid;grid-template-columns:44px 1fr;gap:36px;
+  padding-bottom:60px;
+  position:relative;
+}
+.pstep:last-child{padding-bottom:0}
+.pstep-dot{
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--border);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;z-index:2;
+  transition:background 0.3s,border-color 0.3s;
+}
+.pstep:hover .pstep-dot{background:var(--sage);border-color:var(--sage)}
+.pstep-dot-num{
+  font-family:'DM Serif Display',serif;
+  font-size:14px;color:var(--sage);transition:color 0.3s;
+}
+.pstep:hover .pstep-dot-num{color:#fff}
+.pstep-body{padding-top:10px}
+.pstep-title{
+  font-family:'DM Serif Display',serif;
+  font-size:22px;font-weight:400;color:var(--dark);margin-bottom:10px;
+}
+.pstep-desc{font-size:13px;color:var(--muted);line-height:1.8;max-width:560px}
+
+/* ─── CTA BAND ───────────────────────────────────────────────── */
+#cta{
+  background:var(--sage);
+  padding:100px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:60px;
+}
+.cta-left{}
+.cta-eyebrow{
+  font-size:11px;letter-spacing:0.3em;text-transform:uppercase;
+  color:rgba(255,255,255,0.55);margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+}
+.cta-eyebrow::before{content:'';display:block;width:20px;height:1px;background:rgba(255,255,255,0.4)}
+.cta-left h2{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(36px,4.5vw,64px);
+  font-weight:400;color:#fff;
+  line-height:1.05;margin-bottom:16px;
+}
+.cta-left h2 em{font-style:italic;color:rgba(255,255,255,0.7)}
+.cta-left p{font-size:14px;color:rgba(255,255,255,0.65);max-width:340px;line-height:1.7}
+.cta-right{display:flex;flex-direction:column;gap:14px;flex-shrink:0}
+.cta-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:17px 42px;text-decoration:none;font-weight:500;
+  transition:all 0.25s;white-space:nowrap;
+}
+.cta-btn-white{background:#fff;color:var(--sage)}
+.cta-btn-white:hover{background:rgba(255,255,255,0.9)}
+.cta-btn-outline{
+  background:transparent;color:#fff;
+  border:1px solid rgba(255,255,255,0.35);
+}
+.cta-btn-outline:hover{background:rgba(255,255,255,0.08)}
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
+footer{
+  background:var(--dark);
+  padding:52px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.foot-logo{
+  font-family:'DM Serif Display',serif;
+  font-size:18px;color:var(--white);letter-spacing:0.06em;
+}
+.foot-info{font-size:12px;color:rgba(247,245,240,0.35);text-align:center;line-height:1.8}
+.foot-social{display:flex;gap:24px}
+.foot-social a{
+  font-size:10px;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(247,245,240,0.35);text-decoration:none;
+  transition:color 0.2s;
+}
+.foot-social a:hover{color:var(--sage-l)}
+
+/* ─── REVEAL ─────────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-24px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal-left.in{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(24px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal-right.in{opacity:1;transform:none}
+
+/* ─── ANTES / DEPOIS ─────────────────────────────────────────── */
+#antesdepois{
+  background:var(--white);
+  padding:7rem 5%;
+  border-top:1px solid rgba(74,124,89,0.1);
+}
+.ad-header{display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:3rem;margin-bottom:4rem}
+.ad-kicker{font-size:11px;letter-spacing:0.32em;text-transform:uppercase;color:var(--sage);margin-bottom:12px}
+.ad-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3.5rem);line-height:1.1;color:var(--dark)}
+.ad-title em{font-style:italic;color:var(--sage)}
+.ad-desc{font-size:14px;color:var(--muted);line-height:1.8;max-width:380px;align-self:end}
+
+/* Grid de 3 casos */
+.ad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(74,124,89,0.08)}
+.ad-item{background:var(--white)}
+/* O slider em si */
+.slider-wrap{
+  position:relative;height:320px;overflow:hidden;cursor:ew-resize;
+  user-select:none;-webkit-user-select:none;
+}
+/* ANTES — fundo sage claro com padrão */
+.slider-before{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#e8f0ea 0%,#d4e4d8 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+}
+/* DEPOIS — fundo branco quente com efeito de glow */
+.slider-after{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#faf8f5 0%,#f0ece5 100%);
+  width:50%;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  min-width:0;
+  transition:width 0s;
+}
+.slider-after-inner{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#faf8f5 0%,#f0ece5 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  width:var(--full-w,400px);
+}
+/* Labels ANTES / DEPOIS */
+.slider-label{
+  font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+  padding:5px 14px;
+  font-weight:500;
+}
+.slider-label.before{background:rgba(74,124,89,0.15);color:var(--sage)}
+.slider-label.after{background:rgba(139,111,94,0.12);color:var(--clay)}
+/* Ícone simulado */
+.slider-icon{
+  width:80px;height:80px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+}
+.slider-icon.before{background:rgba(74,124,89,0.12)}
+.slider-icon.after{background:rgba(139,111,94,0.1)}
+/* Linha divisória */
+.slider-line{
+  position:absolute;top:0;bottom:0;left:50%;
+  width:2px;background:var(--sage);
+  transform:translateX(-50%);z-index:3;
+  pointer-events:none;
+}
+/* Handle central */
+.slider-handle{
+  position:absolute;top:50%;left:50%;
+  width:40px;height:40px;border-radius:50%;
+  background:#fff;border:2px solid var(--sage);
+  transform:translate(-50%,-50%);z-index:4;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:var(--sage);pointer-events:none;
+  box-shadow:0 2px 12px rgba(74,124,89,0.2);
+}
+/* Input range invisível sobre tudo */
+.slider-input{
+  position:absolute;inset:0;
+  width:100%;opacity:0;cursor:ew-resize;z-index:5;
+  -webkit-appearance:none;appearance:none;
+  margin:0;height:100%;
+}
+/* Texto dentro do slide */
+.slider-txt{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--dark);font-style:italic;text-align:center}
+.slider-sub{font-size:11px;letter-spacing:0.1em;color:var(--muted);text-align:center}
+
+/* Legenda abaixo de cada item */
+.ad-caption{padding:1.4rem 1.6rem 1.8rem;border-top:1px solid rgba(74,124,89,0.08)}
+.ad-caption-title{font-family:'DM Serif Display',serif;font-size:1.05rem;color:var(--dark);margin-bottom:4px}
+.ad-caption-sub{font-size:12px;color:var(--muted);line-height:1.6}
+.ad-sessions{display:inline-block;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--sage);background:rgba(74,124,89,0.08);padding:4px 10px;margin-top:8px}
+
+/* Nota de rodapé */
+.ad-footnote{margin-top:2.5rem;text-align:center;font-size:12px;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Aurora</div>
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#equipa">Equipa</a></li>
+    <li><a href="#processo">Processo</a></li>
+    <li><a href="#cta">Agendar</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Marcar Consulta</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-line"></div>
+  <div class="hero-left">
+    <p class="hero-eyebrow">Clínica de Estética · Vale de Cambra</p>
+    <h1 class="hero-title">
+      Beleza que<br>nasce do<br><em>cuidado</em>
+    </h1>
+    <p class="hero-body">
+      Na Aurora, cada tratamento é desenhado à medida do seu rosto,
+      do seu ritmo e dos seus objetivos. Ciência e botânica ao serviço de quem você quer ser.
+    </p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">Marcar Consulta</a>
+      <a href="#servicos" class="btn-text">Ver Serviços</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-wrap">
+      <img class="hero-img" src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=900&q=80" alt="Tratamento estético"/>
+      <div class="hero-img-badge">
+        <p class="hero-badge-num">1200<span style="font-size:20px">+</span></p>
+        <p class="hero-badge-label">Clientes satisfeitos</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS ACCORDION -->
+<section id="servicos">
+  <p class="sec-eyebrow reveal">Os Nossos Serviços</p>
+  <h2 class="sec-title reveal">Rituais para <em>cada</em><br>momento</h2>
+
+  <div class="accordion-row" data-acc>
+    <div class="accordion-head">
+      <div class="acc-left">
+        <span class="acc-num">01</span>
+        <span class="acc-name">Tratamentos Faciais</span>
+      </div>
+      <div class="acc-right">
+        <span class="acc-duration">45 – 90 min</span>
+        <span class="acc-price">A partir 55 €</span>
+        <div class="acc-icon"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></div>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="acc-content">
+        <div class="acc-content-block">
+          <p>Indicado para</p>
+          <p>Peles sensíveis, mistas, secas ou com manchas. Adaptamos o protocolo à sua tipologia.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>O que inclui</p>
+          <p>Limpeza profunda, esfoliação enzimática, máscara botânica e massagem de drenagem linfática.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>Resultado esperado</p>
+          <p>Pele luminosa, textura uniforme e sensação de bem-estar imediato já na primeira sessão.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-row" data-acc>
+    <div class="accordion-head">
+      <div class="acc-left">
+        <span class="acc-num">02</span>
+        <span class="acc-name">Bioestimulação Capilar</span>
+      </div>
+      <div class="acc-right">
+        <span class="acc-duration">60 min</span>
+        <span class="acc-price">A partir 80 €</span>
+        <div class="acc-icon"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></div>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="acc-content">
+        <div class="acc-content-block">
+          <p>Indicado para</p>
+          <p>Queda de cabelo, falta de densidade, couro cabeludo seco ou com caspa persistente.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>O que inclui</p>
+          <p>Diagnóstico capilar digital, mesoterapia capilar e tratamento com luz LED de baixa intensidade.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>Resultado esperado</p>
+          <p>Redução da queda e aumento da densidade visível ao longo de 4 a 6 sessões mensais.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-row" data-acc>
+    <div class="accordion-head">
+      <div class="acc-left">
+        <span class="acc-num">03</span>
+        <span class="acc-name">Modelação Corporal</span>
+      </div>
+      <div class="acc-right">
+        <span class="acc-duration">60 – 90 min</span>
+        <span class="acc-price">A partir 70 €</span>
+        <div class="acc-icon"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></div>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="acc-content">
+        <div class="acc-content-block">
+          <p>Indicado para</p>
+          <p>Celulite, retenção de líquidos, flacidez localizada e definição de contornos corporais.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>O que inclui</p>
+          <p>Pressoterapia, radiofrequência corporal e drenagem manual. Protocolo de 8 sessões recomendado.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>Resultado esperado</p>
+          <p>Redução de medidas, melhoria da tonicidade e sensação de leveza já nas primeiras sessões.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-row" data-acc>
+    <div class="accordion-head">
+      <div class="acc-left">
+        <span class="acc-num">04</span>
+        <span class="acc-name">Depilação a Laser</span>
+      </div>
+      <div class="acc-right">
+        <span class="acc-duration">20 – 60 min</span>
+        <span class="acc-price">A partir 35 €</span>
+        <div class="acc-icon"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></div>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="acc-content">
+        <div class="acc-content-block">
+          <p>Indicado para</p>
+          <p>Todos os fototipos e zonas corporais. Tecnologia de diodo 808 nm, segura e eficaz.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>O que inclui</p>
+          <p>Avaliação dermatológica, sessão de laser com arrefecimento integrado e hidratação pós-tratamento.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>Resultado esperado</p>
+          <p>Eliminação permanente em 6 a 8 sessões, com manutenção anual recomendada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-row" data-acc>
+    <div class="accordion-head">
+      <div class="acc-left">
+        <span class="acc-num">05</span>
+        <span class="acc-name">Peeling Químico</span>
+      </div>
+      <div class="acc-right">
+        <span class="acc-duration">30 – 45 min</span>
+        <span class="acc-price">A partir 65 €</span>
+        <div class="acc-icon"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg></div>
+      </div>
+    </div>
+    <div class="accordion-body">
+      <div class="acc-content">
+        <div class="acc-content-block">
+          <p>Indicado para</p>
+          <p>Manchas, cicatrizes de acne, linhas finas e textura irregular. Peelings superficiais a médios.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>O que inclui</p>
+          <p>Consulta prévia, aplicação de ácido glicólico, mandélico ou retinóico conforme diagnóstico.</p>
+        </div>
+        <div class="acc-content-block">
+          <p>Resultado esperado</p>
+          <p>Renovação celular, clarificação e unificação do tom. Resultado progressivo e cumulativo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPA -->
+<section id="equipa">
+  <p class="sec-eyebrow reveal">A Nossa Equipa</p>
+  <h2 class="sec-title reveal">Especialistas ao<br><em>seu serviço</em></h2>
+  <div class="equipa-grid">
+    <div class="equipa-cell reveal">
+      <img class="equipa-img" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80" alt="Sofia Marques"/>
+      <h3 class="equipa-name">Sofia Marques</h3>
+      <p class="equipa-role">Diretora Clínica</p>
+      <p class="equipa-bio">Especialista em dermoestética com 12 anos de experiência. Formada em Lisboa e Barcelona em tratamentos faciais avançados.</p>
+    </div>
+    <div class="equipa-cell reveal">
+      <img class="equipa-img" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80" alt="Inês Carvalho"/>
+      <h3 class="equipa-name">Inês Carvalho</h3>
+      <p class="equipa-role">Terapeuta Capilar</p>
+      <p class="equipa-bio">Especializada em tricologia e tratamentos capilares. Certificada em bioestimulação capilar e mesoterapia.</p>
+    </div>
+    <div class="equipa-cell reveal">
+      <img class="equipa-img" src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&q=80" alt="Ana Ferreira"/>
+      <h3 class="equipa-name">Ana Ferreira</h3>
+      <p class="equipa-role">Esteticista Corporal</p>
+      <p class="equipa-bio">Especialista em modelação corporal e drenagem linfática manual. 8 anos de prática clínica em Portugal e Espanha.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section id="processo">
+  <p class="sec-eyebrow reveal">Como Funciona</p>
+  <h2 class="sec-title reveal">O seu percurso<br><em>na Aurora</em></h2>
+  <div class="processo-steps">
+    <div class="pstep reveal">
+      <div class="pstep-dot"><span class="pstep-dot-num">1</span></div>
+      <div class="pstep-body">
+        <h3 class="pstep-title">Consulta de Diagnóstico</h3>
+        <p class="pstep-desc">Começamos por ouvir. Uma consulta gratuita de 30 minutos onde avaliamos a sua pele, objetivos e historial. Sem compromisso.</p>
+      </div>
+    </div>
+    <div class="pstep reveal">
+      <div class="pstep-dot"><span class="pstep-dot-num">2</span></div>
+      <div class="pstep-body">
+        <h3 class="pstep-title">Plano Personalizado</h3>
+        <p class="pstep-desc">Criamos um protocolo à medida: os tratamentos certos, na sequência certa, com os produtos adequados ao seu biotipo.</p>
+      </div>
+    </div>
+    <div class="pstep reveal">
+      <div class="pstep-dot"><span class="pstep-dot-num">3</span></div>
+      <div class="pstep-body">
+        <h3 class="pstep-title">Sessões & Acompanhamento</h3>
+        <p class="pstep-desc">Acompanhamos cada sessão com registos fotográficos e ajustamos o protocolo sempre que necessário. A sua evolução é o nosso critério.</p>
+      </div>
+    </div>
+    <div class="pstep reveal">
+      <div class="pstep-dot"><span class="pstep-dot-num">4</span></div>
+      <div class="pstep-body">
+        <h3 class="pstep-title">Manutenção & Resultados</h3>
+        <p class="pstep-desc">Após o protocolo inicial, desenhamos um plano de manutenção para preservar e ampliar os resultados a longo prazo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANTES / DEPOIS -->
+<section id="antesdepois">
+  <div class="ad-header">
+    <div>
+      <div class="ad-kicker reveal">Resultados reais</div>
+      <h2 class="ad-title reveal">Antes<br>& <em>Depois.</em></h2>
+    </div>
+    <p class="ad-desc reveal">Cada caso é único. Estes resultados foram obtidos com protocolos personalizados, ao longo de várias sessões, sob acompanhamento clínico. Arraste para comparar.</p>
+  </div>
+  <div class="ad-grid">
+
+    <!-- Caso 1 -->
+    <div class="ad-item reveal">
+      <div class="slider-wrap" id="sl1">
+        <div class="slider-before">
+          <div class="slider-icon before">🌿</div>
+          <span class="slider-label before">Antes</span>
+          <div class="slider-txt">Manchas & Poros</div>
+          <div class="slider-sub">Pele irregular, tom desigual</div>
+        </div>
+        <div class="slider-after" id="sl1-after">
+          <div class="slider-after-inner" id="sl1-inner">
+            <div class="slider-icon after">✨</div>
+            <span class="slider-label after">Depois</span>
+            <div class="slider-txt">Pele Uniformizada</div>
+            <div class="slider-sub">Tom uniforme, textura suave</div>
+          </div>
+        </div>
+        <div class="slider-line" id="sl1-line"></div>
+        <div class="slider-handle" id="sl1-handle">⇔</div>
+        <input type="range" class="slider-input" min="0" max="100" value="50" data-slider="sl1">
+      </div>
+      <div class="ad-caption">
+        <div class="ad-caption-title">Peeling Químico + LED</div>
+        <div class="ad-caption-sub">Protocolo de rejuvenescimento facial com ácidos de grau médico e fototerapia.</div>
+        <span class="ad-sessions">4 sessões · 8 semanas</span>
+      </div>
+    </div>
+
+    <!-- Caso 2 -->
+    <div class="ad-item reveal">
+      <div class="slider-wrap" id="sl2">
+        <div class="slider-before">
+          <div class="slider-icon before">🌿</div>
+          <span class="slider-label before">Antes</span>
+          <div class="slider-txt">Flacidez Facial</div>
+          <div class="slider-sub">Contornos pouco definidos</div>
+        </div>
+        <div class="slider-after" id="sl2-after">
+          <div class="slider-after-inner" id="sl2-inner">
+            <div class="slider-icon after">✨</div>
+            <span class="slider-label after">Depois</span>
+            <div class="slider-txt">Óvalo Redefinido</div>
+            <div class="slider-sub">Lifting natural, sem cirurgia</div>
+          </div>
+        </div>
+        <div class="slider-line" id="sl2-line"></div>
+        <div class="slider-handle" id="sl2-handle">⇔</div>
+        <input type="range" class="slider-input" min="0" max="100" value="50" data-slider="sl2">
+      </div>
+      <div class="ad-caption">
+        <div class="ad-caption-title">Radiofrequência Facial</div>
+        <div class="ad-caption-sub">Estimulação do colagénio com tecnologia de radiofrequência multipolar.</div>
+        <span class="ad-sessions">6 sessões · 12 semanas</span>
+      </div>
+    </div>
+
+    <!-- Caso 3 -->
+    <div class="ad-item reveal">
+      <div class="slider-wrap" id="sl3">
+        <div class="slider-before">
+          <div class="slider-icon before">🌿</div>
+          <span class="slider-label before">Antes</span>
+          <div class="slider-txt">Celulite & Volume</div>
+          <div class="slider-sub">Retenção, textura irregular</div>
+        </div>
+        <div class="slider-after" id="sl3-after">
+          <div class="slider-after-inner" id="sl3-inner">
+            <div class="slider-icon after">✨</div>
+            <span class="slider-label after">Depois</span>
+            <div class="slider-txt">Silhueta Definida</div>
+            <div class="slider-sub">Medidas reduzidas, pele lisa</div>
+          </div>
+        </div>
+        <div class="slider-line" id="sl3-line"></div>
+        <div class="slider-handle" id="sl3-handle">⇔</div>
+        <input type="range" class="slider-input" min="0" max="100" value="50" data-slider="sl3">
+      </div>
+      <div class="ad-caption">
+        <div class="ad-caption-title">Modelação Corporal</div>
+        <div class="ad-caption-sub">Pressoterapia, radiofrequência e drenagem manual em protocolo combinado.</div>
+        <span class="ad-sessions">8 sessões · 16 semanas</span>
+      </div>
+    </div>
+
+  </div>
+  <p class="ad-footnote reveal">Os resultados podem variar. Imagens ilustrativas de casos reais com consentimento das clientes.</p>
+</section>
+
+<!-- CTA BAND -->
+<section id="cta">
+  <div class="cta-left">
+    <p class="cta-eyebrow">Pronta para começar?</p>
+    <h2 class="reveal">Marque a sua<br><em>consulta gratuita</em></h2>
+    <p class="reveal">A primeira consulta é grátis e sem compromisso. Venha conhecer-nos pessoalmente em Vale de Cambra.</p>
+  </div>
+  <div class="cta-right reveal">
+    <a href="tel:+351256000000" class="cta-btn cta-btn-white">+351 256 000 000</a>
+    <a href="mailto:info@aurora.pt" class="cta-btn cta-btn-outline">info@aurora.pt</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">Aurora</div>
+  <div class="foot-info">
+    Rua das Flores, 8 · Vale de Cambra<br>
+    © 2025 Aurora Clínica de Estética
+  </div>
+  <div class="foot-social">
+    <a href="#">Instagram</a>
+    <a href="#">Facebook</a>
+    <a href="#">Google</a>
+  </div>
+</footer>
+
+<script>
+/* ─── INTERSECTION OBSERVER ─────────────────────────────────── */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+
+/* ─── ACCORDION ─────────────────────────────────────────────── */
+document.querySelectorAll('[data-acc]').forEach(row => {
+  row.querySelector('.accordion-head').addEventListener('click', () => {
+    const isOpen = row.classList.contains('open');
+    document.querySelectorAll('[data-acc]').forEach(r => r.classList.remove('open'));
+    if(!isOpen) row.classList.add('open');
+  });
+});
+
+/* ─── ANTES/DEPOIS SLIDERS ──────────────────────────────────── */
+document.querySelectorAll('.slider-input').forEach(input => {
+  const id = input.dataset.slider;
+  const afterEl = document.getElementById(id + '-after');
+  const innerEl = document.getElementById(id + '-inner');
+  const lineEl  = document.getElementById(id + '-line');
+  const handleEl= document.getElementById(id + '-handle');
+  const wrap    = document.getElementById(id);
+
+  function update(val) {
+    const pct = val + '%';
+    const fullW = wrap.offsetWidth + 'px';
+    afterEl.style.width = pct;
+    innerEl.style.width = fullW;
+    lineEl.style.left   = pct;
+    handleEl.style.left = pct;
+  }
+
+  // Store full width on resize
+  const ro2 = new ResizeObserver(() => {
+    innerEl.style.setProperty('--full-w', wrap.offsetWidth + 'px');
+    update(input.value);
+  });
+  ro2.observe(wrap);
+
+  input.addEventListener('input', () => update(input.value));
+  update(50);
+});
+</script>
+</body>
+</html>

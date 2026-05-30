@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>APEX — Ginásio Premium · Vale de Cambra</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --lime:#c8f135;
+  --dark:#09090a;
+  --dark2:#111113;
+  --dark3:#19191c;
+  --white:#eeede8;
+  --muted:rgba(238,237,232,0.42);
+  --bl:rgba(200,241,53,0.1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:300;padding:0 5%;height:60px;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:difference}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:.2em;color:var(--white);text-decoration:none;text-transform:uppercase}
+.logo em{color:var(--lime);font-style:normal}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--white);text-decoration:none;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;opacity:.55;transition:opacity .2s}
+.nav-links a:hover{opacity:1}
+.nav-cta{background:var(--white)!important;color:var(--dark)!important;padding:.32rem 1rem;font-weight:600;opacity:1!important}
+
+/* ── HERO */
+#hero{min-height:100vh;display:grid;grid-template-columns:58% 42%;background:var(--dark);position:relative;overflow:hidden}
+#hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 50%, rgba(200,241,53,0.04) 0%, transparent 70%);pointer-events:none}
+
+.hero-l{padding:13% 5% 6% 5%;display:flex;flex-direction:column;justify-content:flex-end;position:relative;z-index:2}
+.hero-tag{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--lime);margin-bottom:2.4rem;display:flex;align-items:center;gap:12px}
+.hero-tag::before{content:'';display:inline-block;width:24px;height:1px;background:var(--lime)}
+
+.hero-h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(5.5rem,11vw,13rem);line-height:.82;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:3rem}
+.hero-h1 .line-solid{color:var(--white);display:block}
+.hero-h1 .line-lime{color:var(--lime);display:block}
+.hero-h1 .line-outline{color:transparent;-webkit-text-stroke:1.5px rgba(200,241,53,.25);display:block}
+.hero-h1 .line-italic{font-style:italic;color:var(--white);display:block}
+
+.hero-desc{font-size:.82rem;color:var(--muted);line-height:1.85;max-width:360px;margin-bottom:3rem}
+.hero-actions{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.btn-fill{background:var(--lime);color:var(--dark);padding:.8rem 2.2rem;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;text-decoration:none;transition:opacity .2s,transform .15s;display:inline-block}
+.btn-fill:hover{opacity:.85;transform:translateY(-2px)}
+.btn-ghost{border:1px solid var(--bl);color:var(--muted);padding:.8rem 1.8rem;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-ghost:hover{border-color:rgba(200,241,53,.5);color:var(--lime)}
+
+/* Hero right — counter */
+.hero-r{border-left:1px solid var(--bl);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6rem 4%;position:relative;overflow:hidden}
+.hero-r-bg{position:absolute;font-family:'Barlow Condensed',sans-serif;font-size:28rem;font-weight:900;color:rgba(200,241,53,0.03);line-height:1;letter-spacing:-.04em;user-select:none;pointer-events:none;bottom:-6rem;right:-4rem}
+.hero-r-inner{position:relative;z-index:1;text-align:center}
+.hero-big-num{font-family:'Barlow Condensed',sans-serif;font-size:clamp(6rem,15vw,18rem);font-weight:900;color:var(--lime);line-height:.85;letter-spacing:-.02em;display:block}
+.hero-big-label{font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-top:1rem;display:block}
+.hero-r-stats{display:grid;grid-template-columns:repeat(3,1fr);width:100%;border-top:1px solid var(--bl);margin-top:3rem}
+.hs{padding:1.4rem .8rem;text-align:center;border-right:1px solid var(--bl)}
+.hs:last-child{border-right:none}
+.hs-n{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:800;color:var(--white);display:block;line-height:1}
+.hs-l{font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.scroll-down{position:absolute;bottom:2.4rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.scroll-down::after{content:'';width:1px;height:36px;background:linear-gradient(var(--lime),transparent);animation:pulse-line 1.6s ease-in-out infinite}
+@keyframes pulse-line{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ── DIAGONAL DIVIDER */
+.diag-lime{background:var(--lime);height:80px;clip-path:polygon(0 0,100% 40%,100% 100%,0 100%);margin-top:-2px}
+.diag-dark{background:var(--dark);height:80px;clip-path:polygon(0 0,100% 0,100% 100%,0 60%);margin-top:-2px}
+
+/* ── COUNTER SECTION */
+#nums{background:var(--lime);padding:5rem 5% 7rem;position:relative}
+.nums-title{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(10,10,8,.45);margin-bottom:3rem}
+.nums-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(10,10,8,.1)}
+.num-block{background:var(--lime);padding:2.8rem 2rem;position:relative;overflow:hidden}
+.num-block::before{content:attr(data-n);position:absolute;font-family:'Barlow Condensed',sans-serif;font-size:8rem;font-weight:900;color:rgba(10,10,8,.05);right:-.2em;bottom:-.2em;line-height:1;pointer-events:none}
+.num-val{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3.5rem,6vw,6rem);font-weight:900;color:var(--dark);line-height:1;display:block}
+.num-suffix{font-size:2rem}
+.num-label{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,10,8,.5);margin-top:.5rem;display:block}
+
+/* ── PROGRAMAS */
+#programas{background:var(--dark2);padding:6rem 5%}
+.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3.5rem;gap:2rem;flex-wrap:wrap}
+.sec-kicker{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--lime);margin-bottom:.8rem}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3.5rem,7vw,7.5rem);font-weight:900;text-transform:uppercase;color:var(--white);line-height:.85}
+.sec-title .lime{color:var(--lime)}
+.sec-sub{font-size:.8rem;color:var(--muted);line-height:1.75;max-width:300px;align-self:flex-end}
+
+.prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(200,241,53,.05)}
+.prog-card{background:var(--dark2);padding:2.5rem 2rem;position:relative;overflow:hidden;cursor:default;transition:background .3s}
+.prog-card:hover{background:var(--dark3)}
+.prog-card::before{content:attr(data-num);position:absolute;font-family:'Barlow Condensed',sans-serif;font-size:9rem;font-weight:900;color:rgba(200,241,53,.04);right:-.1em;bottom:-.15em;line-height:1;transition:color .3s}
+.prog-card:hover::before{color:rgba(200,241,53,.08)}
+.prog-num{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;color:var(--lime);margin-bottom:1.2rem;opacity:.7}
+.prog-name{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;text-transform:uppercase;color:var(--white);line-height:1;margin-bottom:.8rem}
+.prog-text{font-size:.75rem;color:var(--muted);line-height:1.75;margin-bottom:1.4rem}
+.prog-tags{display:flex;gap:.5rem;flex-wrap:wrap}
+.prog-tag{font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--bl);color:var(--muted);padding:.18rem .6rem}
+.prog-arrow{position:absolute;top:1.8rem;right:1.8rem;font-size:1rem;color:var(--bl);transition:color .3s,transform .3s}
+.prog-card:hover .prog-arrow{color:var(--lime);transform:translate(3px,-3px)}
+
+/* ── TRAINERS */
+#trainers{background:var(--dark);padding:0 5% 6rem;overflow:hidden}
+.trainers-header{padding-top:6rem;margin-bottom:4rem}
+.trainers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--bl)}
+.trainer-card{background:var(--dark);padding:2.4rem 2rem;position:relative;overflow:hidden}
+.trainer-initial{font-family:'Barlow Condensed',sans-serif;font-size:8rem;font-weight:900;color:rgba(200,241,53,.06);line-height:1;position:absolute;top:-.5rem;right:-.2rem;pointer-events:none;transition:color .3s}
+.trainer-card:hover .trainer-initial{color:rgba(200,241,53,.1)}
+.trainer-spec{font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);margin-bottom:.8rem;opacity:.8}
+.trainer-name{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;text-transform:uppercase;color:var(--white);line-height:1;margin-bottom:.8rem}
+.trainer-bio{font-size:.74rem;color:var(--muted);line-height:1.75;margin-bottom:1.4rem}
+.trainer-creds{display:flex;flex-direction:column;gap:.3rem}
+.trainer-cred{font-size:.6rem;letter-spacing:.1em;color:var(--muted);opacity:.6;display:flex;align-items:center;gap:.5rem}
+.trainer-cred::before{content:'—';color:var(--lime);opacity:.5}
+
+/* ── FILOSOFIA STATEMENT */
+#filosofia{background:var(--lime);padding:5rem 5% 6rem;position:relative;overflow:hidden}
+#filosofia .watermark{position:absolute;font-family:'Barlow Condensed',sans-serif;font-size:clamp(12rem,22vw,28rem);font-weight:900;font-style:italic;color:rgba(10,10,8,.07);line-height:.85;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;user-select:none}
+.filo-inner{position:relative;z-index:1}
+.filo-kicker{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(10,10,8,.45);margin-bottom:2rem}
+.filo-statement{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3rem,7vw,8rem);font-weight:900;text-transform:uppercase;color:var(--dark);line-height:.9;max-width:80%;margin-bottom:3rem}
+.filo-statement em{font-style:italic;opacity:.35}
+.filo-body{font-size:.82rem;color:rgba(10,10,8,.6);max-width:480px;line-height:1.8}
+
+/* ── PLANOS */
+#planos{background:var(--dark2);padding:6rem 5%}
+.planos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:rgba(200,241,53,.05);margin-top:3.5rem}
+.plano{background:var(--dark2);padding:2.8rem 2rem}
+.plano.featured{background:var(--lime)}
+.plano-tier{font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.plano.featured .plano-tier{color:rgba(10,10,8,.5)}
+.plano-name{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;text-transform:uppercase;color:var(--white);line-height:1;margin-bottom:1.2rem}
+.plano.featured .plano-name{color:var(--dark)}
+.plano-price-wrap{margin-bottom:1.4rem}
+.plano-price{font-family:'Barlow Condensed',sans-serif;font-size:4rem;font-weight:900;color:var(--white);line-height:1}
+.plano.featured .plano-price{color:var(--dark)}
+.plano-period{font-size:.62rem;letter-spacing:.1em;color:var(--muted);margin-left:.3rem}
+.plano.featured .plano-period{color:rgba(10,10,8,.5)}
+.plano-div{border:none;border-top:1px solid rgba(200,241,53,.08);margin:1.2rem 0}
+.plano.featured .plano-div{border-color:rgba(10,10,8,.12)}
+.plano-list{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}
+.plano-list li{font-size:.75rem;color:var(--muted);display:flex;gap:.7rem;line-height:1.4}
+.plano-list li::before{content:'↳';color:rgba(200,241,53,.4);flex-shrink:0}
+.plano.featured .plano-list li{color:rgba(10,10,8,.7)}
+.plano.featured .plano-list li::before{color:rgba(10,10,8,.3)}
+.plano-btn{width:100%;padding:.85rem;font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;border:none;cursor:pointer;background:rgba(200,241,53,.07);color:var(--lime);font-family:'Inter',sans-serif;transition:background .2s}
+.plano-btn:hover{background:rgba(200,241,53,.14)}
+.plano.featured .plano-btn{background:var(--dark);color:var(--lime)}
+.plano.featured .plano-btn:hover{background:#1a1a1c}
+.plano-badge{display:inline-block;background:var(--dark);color:var(--lime);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;padding:.2rem .6rem;margin-bottom:1rem}
+
+/* ── HORÁRIOS */
+#horarios{background:var(--dark);padding:6rem 5%;display:grid;grid-template-columns:1fr 1.4fr;gap:6rem;align-items:start}
+.hor-kicker{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--lime);margin-bottom:1rem}
+.hor-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3rem,6vw,6.5rem);font-weight:900;text-transform:uppercase;color:var(--white);line-height:.85;margin-bottom:1.5rem}
+.hor-title .lime{color:var(--lime)}
+.hor-note{font-size:.75rem;color:var(--muted);line-height:1.75;margin-bottom:2rem}
+.hor-table{width:100%;border-collapse:collapse}
+.hor-table tr{border-bottom:1px solid rgba(200,241,53,.06)}
+.hor-table tr:last-child{border-bottom:none}
+.hor-table td{padding:1rem 0;font-size:.8rem}
+.hor-table .day{color:var(--muted);width:55%}
+.hor-table .hrs{color:var(--white);text-align:right;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.05em}
+.hor-table tr.special .day{color:var(--lime)}
+.hor-table tr.special .hrs{color:var(--lime)}
+.hor-table .closed{color:rgba(238,237,232,.2);font-style:italic;font-family:'Inter',sans-serif;font-size:.75rem}
+
+/* ── CTA */
+#cta{background:var(--lime);padding:5.5rem 5%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.cta-l .cta-kicker{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(10,10,8,.45);margin-bottom:1.2rem}
+.cta-heading{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3.5rem,8vw,8rem);font-weight:900;text-transform:uppercase;color:var(--dark);line-height:.85}
+.cta-r{display:flex;flex-direction:column;gap:1.2rem;align-items:flex-start}
+.cta-text{font-size:.82rem;color:rgba(10,10,8,.6);line-height:1.75;margin-bottom:.5rem}
+.cta-actions{display:flex;flex-direction:column;gap:.8rem;width:100%}
+.btn-dark{background:var(--dark);color:var(--lime);padding:.9rem 2rem;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;text-decoration:none;display:inline-block;transition:opacity .2s}
+.btn-dark:hover{opacity:.8}
+.cta-contact{display:flex;gap:1.5rem;flex-wrap:wrap}
+.cta-contact a{font-size:.75rem;color:rgba(10,10,8,.55);text-decoration:none;transition:color .2s}
+.cta-contact a:hover{color:var(--dark)}
+
+/* ── FOOTER */
+footer{background:var(--dark);border-top:1px solid var(--bl);padding:2.5rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-brand{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:900;letter-spacing:.2em;color:var(--white);text-decoration:none;text-transform:uppercase}
+.f-brand em{color:var(--lime);font-style:normal}
+.f-meta{font-size:.56rem;letter-spacing:.08em;color:var(--muted);margin-top:.2rem}
+.f-nav{display:flex;gap:1.8rem;list-style:none}
+.f-nav a{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.f-nav a:hover{color:var(--lime)}
+
+/* ── REVEALS */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.12s}
+.reveal.d2{transition-delay:.24s}
+.reveal.d3{transition-delay:.36s}
+
+/* ── RESPONSIVE */
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr}.hero-r{display:none}
+  .nums-grid{grid-template-columns:1fr 1fr}
+  .prog-grid{grid-template-columns:1fr}
+  .trainers-grid{grid-template-columns:1fr}
+  #horarios{grid-template-columns:1fr;gap:3rem}
+  #cta{grid-template-columns:1fr}
+  .planos-grid{grid-template-columns:1fr}
+  .nav-links li:not(:last-child){display:none}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo"><em>A</em>PEX</a>
+  <ul class="nav-links">
+    <li><a href="#programas">Programas</a></li>
+    <li><a href="#trainers">Equipa</a></li>
+    <li><a href="#planos">Planos</a></li>
+    <li><a href="#cta" class="nav-cta">Inscrever</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-l">
+    <div class="hero-tag reveal">Ginásio Premium · Vale de Cambra · Est. 2014</div>
+    <h1 class="hero-h1 reveal d1">
+      <span class="line-solid">FOR</span>
+      <span class="line-lime">STRONGER</span>
+      <span class="line-outline">BODIES.</span>
+      <span class="line-italic">Always.</span>
+    </h1>
+    <p class="hero-desc reveal d2">Equipamento Technogym, instrutores certificados e um ambiente que te faz voltar todos os dias. Para quem treina a sério.</p>
+    <div class="hero-actions reveal d3">
+      <a href="#planos" class="btn-fill">Começar Agora</a>
+      <a href="#programas" class="btn-ghost">Ver Programas</a>
+    </div>
+  </div>
+  <div class="hero-r">
+    <div class="hero-r-bg">423</div>
+    <div class="hero-r-inner">
+      <span class="hero-big-num" id="hero-num">0</span>
+      <span class="hero-big-label">Membros Activos</span>
+    </div>
+    <div class="hero-r-stats">
+      <div class="hs"><span class="hs-n">6–23h</span><span class="hs-l">Horário</span></div>
+      <div class="hs"><span class="hs-n">24</span><span class="hs-l">Aulas/Sem</span></div>
+      <div class="hs"><span class="hs-n">8</span><span class="hs-l">Instrutores</span></div>
+    </div>
+    <div class="scroll-down">scroll</div>
+  </div>
+</section>
+
+<!-- DIAGONAL + COUNTER SECTION -->
+<div class="diag-lime"></div>
+<section id="nums">
+  <div class="nums-title reveal">Em números</div>
+  <div class="nums-grid">
+    <div class="num-block reveal" data-n="10" data-target="10" data-suffix="+">
+      <span class="num-val"><span class="counter">0</span><span class="num-suffix">+</span></span>
+      <span class="num-label">Anos em Vale de Cambra</span>
+    </div>
+    <div class="num-block reveal d1" data-n="98" data-target="98" data-suffix="%">
+      <span class="num-val"><span class="counter">0</span><span class="num-suffix">%</span></span>
+      <span class="num-label">Taxa de Renovação</span>
+    </div>
+    <div class="num-block reveal d2" data-n="24" data-target="24" data-suffix="">
+      <span class="num-val"><span class="counter">0</span></span>
+      <span class="num-label">Aulas por Semana</span>
+    </div>
+    <div class="num-block reveal d3" data-n="423" data-target="423" data-suffix="+">
+      <span class="num-val"><span class="counter">0</span><span class="num-suffix">+</span></span>
+      <span class="num-label">Membros Activos</span>
+    </div>
+  </div>
+</section>
+<div class="diag-dark"></div>
+
+<!-- PROGRAMAS -->
+<section id="programas">
+  <div class="sec-header">
+    <div>
+      <div class="sec-kicker reveal">Modalidades</div>
+      <h2 class="sec-title reveal d1">OS TEUS<br><span class="lime">TREINOS.</span></h2>
+    </div>
+    <p class="sec-sub reveal d2">Seis modalidades distintas para todos os objetivos. Do iniciante ao atleta de alta competição.</p>
+  </div>
+  <div class="prog-grid">
+    <div class="prog-card reveal" data-num="01">
+      <div class="prog-num">01 — Força</div>
+      <h3 class="prog-name">Musculação Livre</h3>
+      <p class="prog-text">Pesos livres e máquinas Technogym. Treina ao teu ritmo com suporte de instrutor certificado quando precisas.</p>
+      <div class="prog-tags"><span class="prog-tag">Livre Acesso</span><span class="prog-tag">Todos os Níveis</span></div>
+      <span class="prog-arrow">↗</span>
+    </div>
+    <div class="prog-card reveal d1" data-num="02">
+      <div class="prog-num">02 — Cardio</div>
+      <h3 class="prog-name">Cardio Zone</h3>
+      <p class="prog-text">Passadeiras, bicicletas, elípticas e rowers com ecrãs integrados. Zona dedicada com ventilação própria.</p>
+      <div class="prog-tags"><span class="prog-tag">Livre Acesso</span><span class="prog-tag">Todos os Níveis</span></div>
+      <span class="prog-arrow">↗</span>
+    </div>
+    <div class="prog-card reveal d2" data-num="03">
+      <div class="prog-num">03 — Grupo</div>
+      <h3 class="prog-name">Aulas Colectivas</h3>
+      <p class="prog-text">Body Combat, Yoga, Pilates, Spinning e mais. 24 aulas por semana em horários que se adaptam a qualquer rotina.</p>
+      <div class="prog-tags"><span class="prog-tag">24 Aulas/Sem</span><span class="prog-tag">Incluídas</span></div>
+      <span class="prog-arrow">↗</span>
+    </div>
+    <div class="prog-card reveal" data-num="04">
+      <div class="prog-num">04 — Funcional</div>
+      <h3 class="prog-name">Functional Zone</h3>
+      <p class="prog-text">Kettlebells, TRX, battle ropes, caixas de salto. Melhora agilidade, força e resistência real com treino guiado.</p>
+      <div class="prog-tags"><span class="prog-tag">Guiado</span><span class="prog-tag">Intermédio+</span></div>
+      <span class="prog-arrow">↗</span>
+    </div>
+    <div class="prog-card reveal d1" data-num="05">
+      <div class="prog-num">05 — Personal</div>
+      <h3 class="prog-name">Personal Training</h3>
+      <p class="prog-text">Plano 100% personalizado. Instrutor dedicado, avaliações mensais e progressão controlada para resultados mais rápidos.</p>
+      <div class="prog-tags"><span class="prog-tag">Individual</span><span class="prog-tag">Marcação Prévia</span></div>
+      <span class="prog-arrow">↗</span>
+    </div>
+    <div class="prog-card reveal d2" data-num="06">
+      <div class="prog-num">06 — Recovery</div>
+      <h3 class="prog-name">Zona Recovery</h3>
+      <p class="prog-text">Alongamentos, foam rolling e recuperação activa. Porque descansar bem é metade do treino — e poucos levam isso a sério.</p>
+      <div class="prog-tags"><span class="prog-tag">Livre Acesso</span><span class="prog-tag">Essencial</span></div>
+      <span class="prog-arrow">↗</span>
+    </div>
+  </div>
+</section>
+
+<!-- TRAINERS -->
+<section id="trainers">
+  <div class="trainers-header">
+    <div class="sec-kicker reveal">A Equipa</div>
+    <h2 class="sec-title reveal d1">QUEM TE<br><span class="lime">TREINA.</span></h2>
+  </div>
+  <div class="trainers-grid">
+    <div class="trainer-card reveal">
+      <div class="trainer-initial">M</div>
+      <div class="trainer-spec">Musculação · Nutrição</div>
+      <div class="trainer-name">Miguel Ferreira</div>
+      <p class="trainer-bio">12 anos de experiência em treino de força. Especialista em transformação corporal e periodização avançada para atletas naturais.</p>
+      <div class="trainer-creds">
+        <span class="trainer-cred">CSTJ — Treino de Força</span>
+        <span class="trainer-cred">Certificação Precision Nutrition</span>
+        <span class="trainer-cred">+200 clientes transformados</span>
+      </div>
+    </div>
+    <div class="trainer-card reveal d1">
+      <div class="trainer-initial">A</div>
+      <div class="trainer-spec">Funcional · Aulas Colectivas</div>
+      <div class="trainer-name">Ana Rodrigues</div>
+      <p class="trainer-bio">Especialista em treino funcional e mobilidade. Coordena todas as aulas colectivas e desenvolve os programas trimestrais do APEX.</p>
+      <div class="trainer-creds">
+        <span class="trainer-cred">Licenciatura em Desporto — FADEUP</span>
+        <span class="trainer-cred">Les Mills BODYPUMP Certificada</span>
+        <span class="trainer-cred">8 anos no APEX</span>
+      </div>
+    </div>
+    <div class="trainer-card reveal d2">
+      <div class="trainer-initial">R</div>
+      <div class="trainer-spec">Cardio · Perda de Peso</div>
+      <div class="trainer-name">Rui Monteiro</div>
+      <p class="trainer-bio">Focado em programas de perda de peso sustentável e melhoria de performance cardiovascular. Conhecido pela abordagem directa e sem rodeios.</p>
+      <div class="trainer-creds">
+        <span class="trainer-cred">Personal Trainer IPDJ Certificado</span>
+        <span class="trainer-cred">Ex-atleta de triatlo</span>
+        <span class="trainer-cred">Especialização em HIIT</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FILOSOFIA -->
+<section id="filosofia">
+  <div class="watermark">STRONGER</div>
+  <div class="filo-inner">
+    <div class="filo-kicker reveal">A nossa filosofia</div>
+    <h2 class="filo-statement reveal d1">
+      O CORPO NÃO MENTE.<br><em>O DESCULPAS SIM.</em>
+    </h2>
+    <p class="filo-body reveal d2">Criámos o APEX para quem quer resultados reais — não para quem precisa de ser convencido a treinar. Equipamento sério, instrutores que sabem o que fazem, e um ambiente onde o esforço é respeitado.</p>
+  </div>
+</section>
+
+<!-- PLANOS -->
+<section id="planos">
+  <div class="sec-kicker reveal">Inscrição</div>
+  <h2 class="sec-title reveal d1">ESCOLHE<br>O TEU <span class="lime">PLANO.</span></h2>
+  <div class="planos-grid">
+    <div class="plano reveal">
+      <div class="plano-tier">Começo</div>
+      <div class="plano-name">Basic</div>
+      <div class="plano-price-wrap">
+        <span class="plano-price">€29</span><span class="plano-period">/ mês</span>
+      </div>
+      <hr class="plano-div"/>
+      <ul class="plano-list">
+        <li>Sala de musculação</li>
+        <li>Zona de cardio</li>
+        <li>Cacifos incluídos</li>
+        <li>App de treino APEX</li>
+      </ul>
+      <button class="plano-btn">Inscrever Agora</button>
+    </div>
+    <div class="plano featured reveal d1">
+      <div class="plano-badge">Mais Escolhido</div>
+      <div class="plano-tier">Para Evoluir</div>
+      <div class="plano-name">Pro</div>
+      <div class="plano-price-wrap">
+        <span class="plano-price">€45</span><span class="plano-period">/ mês</span>
+      </div>
+      <hr class="plano-div"/>
+      <ul class="plano-list">
+        <li>Tudo do Basic</li>
+        <li>Aulas colectivas ilimitadas</li>
+        <li>Zona funcional</li>
+        <li>Avaliação física inicial</li>
+        <li>1 sessão personal / mês</li>
+      </ul>
+      <button class="plano-btn">Inscrever Agora</button>
+    </div>
+    <div class="plano reveal d2">
+      <div class="plano-tier">Máximo</div>
+      <div class="plano-name">Elite</div>
+      <div class="plano-price-wrap">
+        <span class="plano-price">€75</span><span class="plano-period">/ mês</span>
+      </div>
+      <hr class="plano-div"/>
+      <ul class="plano-list">
+        <li>Tudo do Pro</li>
+        <li>4 sessões personal / mês</li>
+        <li>Plano nutricional</li>
+        <li>Avaliações mensais</li>
+        <li>Acesso 24h</li>
+      </ul>
+      <button class="plano-btn">Inscrever Agora</button>
+    </div>
+  </div>
+</section>
+
+<!-- HORÁRIOS -->
+<section id="horarios">
+  <div>
+    <div class="hor-kicker reveal">Quando Treinar</div>
+    <h2 class="hor-title reveal d1">HORÁ<span class="lime">RIOS.</span></h2>
+    <p class="hor-note reveal d2">Abertos 362 dias por ano. Fechamos apenas no Natal, Ano Novo e Páscoa.</p>
+    <a href="#cta" class="btn-fill reveal d3">Inscrever Agora</a>
+  </div>
+  <div class="reveal d1">
+    <table class="hor-table">
+      <tr><td class="day">Segunda — Sexta</td><td class="hrs">06:00 – 23:00</td></tr>
+      <tr class="special"><td class="day">Sábado</td><td class="hrs">08:00 – 22:00</td></tr>
+      <tr class="special"><td class="day">Domingo</td><td class="hrs">09:00 – 20:00</td></tr>
+      <tr><td class="day">Feriados</td><td class="hrs">09:00 – 18:00</td></tr>
+      <tr><td class="day">Natal / Ano Novo</td><td class="hrs closed">Encerrado</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-l">
+    <div class="cta-kicker reveal">Primeira semana grátis</div>
+    <h2 class="cta-heading reveal d1">COMEÇA<br>HOJE.</h2>
+  </div>
+  <div class="cta-r">
+    <p class="cta-text reveal">Sem burocracia. Sem compromisso inicial. Vens treinar uma semana — e depois decides.</p>
+    <div class="cta-actions reveal d1">
+      <a href="https://wa.me/351926188888" class="btn-dark">Inscrever via WhatsApp →</a>
+    </div>
+    <div class="cta-contact reveal d2">
+      <a href="tel:+351926188888">+351 926 188 888</a>
+      <a href="mailto:apex@ginasio.pt">apex@ginasio.pt</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <a href="#" class="f-brand"><em>A</em>PEX</a>
+    <div class="f-meta">Ginásio · Vale de Cambra · Aberto desde 2014</div>
+  </div>
+  <ul class="f-nav">
+    <li><a href="#programas">Programas</a></li>
+    <li><a href="#planos">Planos</a></li>
+    <li><a href="#horarios">Horários</a></li>
+  </ul>
+</footer>
+
+<script>
+// Reveal on scroll
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); }});
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+// Hero counter
+(function(){
+  const el = document.getElementById('hero-num');
+  const target = 423, dur = 2200;
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target);
+    if (p < 1) requestAnimationFrame(step);
+  };
+  setTimeout(() => requestAnimationFrame(step), 600);
+})();
+
+// Scroll-triggered stat counters — SIGNATURE INTERACTION
+const counters = document.querySelectorAll('.num-block');
+const cro = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const block = e.target;
+      const target = parseInt(block.dataset.target);
+      const el = block.querySelector('.counter');
+      const dur = 1800;
+      let start = null;
+      const step = ts => {
+        if (!start) start = ts;
+        const p = Math.min((ts - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 4);
+        el.textContent = Math.round(ease * target);
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      cro.unobserve(block);
+    }
+  });
+}, { threshold: 0.3 });
+counters.forEach(c => cro.observe(c));
+</script>
+</body>
+</html>

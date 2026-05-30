@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BRUMA — Boutique Editorial</title>
+<meta name="description" content="BRUMA. Peças selecionadas, estilo atemporal. Boutique em Vale de Cambra com entrega em todo o Portugal."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ─── RESET ─────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --paper: #fafaf8;
+  --ink:   #0f0f0f;
+  --rust:  #c4622d;
+  --rust2: #d9713a;
+  --warm:  #f2ede6;
+  --muted: rgba(15,15,15,0.42);
+  --border:rgba(15,15,15,0.09);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  overflow-x:hidden;
+}
+
+/* ─── NAV ────────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:56px;
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  padding:0 5%;
+  background:var(--paper);
+  border-bottom:1px solid var(--border);
+}
+.nav-left{display:flex;gap:28px;list-style:none}
+.nav-left a{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-left a:hover{color:var(--ink)}
+.nav-logo{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:1.1rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--ink);text-decoration:none;text-align:center;
+}
+.nav-right{display:flex;justify-content:flex-end;align-items:center;gap:20px}
+.nav-right a{
+  font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color 0.2s;
+}
+.nav-right a:hover{color:var(--ink)}
+.nav-bag{
+  font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);
+  padding:8px 18px;text-decoration:none;
+  transition:background 0.2s;
+}
+.nav-bag:hover{background:#222}
+
+/* ─── HERO — Editorial split ────────────────────────────────── */
+#hero{
+  min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  margin-top:56px;
+}
+.hero-left{
+  background:var(--ink);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:10% 8% 10%;
+  position:relative;overflow:hidden;
+}
+/* Diagonal rust line */
+.hero-left::before{
+  content:'';position:absolute;
+  top:-20%;right:-10%;
+  width:2px;height:140%;
+  background:var(--rust);
+  transform:rotate(12deg);
+  opacity:0.4;
+}
+.hero-eyebrow{
+  font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+  color:rgba(250,250,248,0.35);margin-bottom:28px;
+}
+.hero-title{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:clamp(52px,7vw,108px);
+  line-height:0.92;letter-spacing:-0.01em;
+  color:var(--paper);margin-bottom:40px;
+}
+.hero-title em{
+  display:block;
+  font-family:'EB Garamond',serif;
+  font-style:italic;font-size:0.85em;
+  color:var(--rust);
+}
+.hero-desc{
+  font-size:14px;color:rgba(250,250,248,0.5);
+  line-height:1.85;max-width:340px;margin-bottom:40px;
+}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:14px;
+  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  background:var(--rust);color:var(--paper);
+  padding:15px 32px;text-decoration:none;font-weight:500;
+  transition:background 0.25s;align-self:flex-start;
+}
+.hero-cta:hover{background:var(--rust2)}
+.hero-right{
+  background:var(--warm);
+  position:relative;overflow:hidden;
+}
+.hero-right img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(0.85);
+  mix-blend-mode:multiply;
+}
+.hero-right-badge{
+  position:absolute;bottom:40px;right:40px;
+  background:var(--paper);
+  padding:20px 24px;
+  border-right:3px solid var(--rust);
+}
+.badge-num{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:36px;color:var(--ink);line-height:1;
+}
+.badge-lbl{
+  font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--muted);margin-top:4px;
+}
+
+/* ─── COLEÇÃO — Flip cards ───────────────────────────────────── */
+#colecao{
+  background:var(--paper);
+  padding:120px 5%;
+}
+.col-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:72px;
+}
+.col-title{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:clamp(36px,4.5vw,64px);
+  line-height:0.95;color:var(--ink);
+}
+.col-title em{
+  display:block;
+  font-family:'EB Garamond',serif;
+  font-style:italic;color:var(--rust);
+}
+.col-sub{
+  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* 3-col masonry-ish grid — alternating heights */
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:3px;
+}
+
+/* Flip card container */
+.flip-wrap{
+  perspective:1200px;
+  cursor:pointer;
+}
+.flip-wrap.tall{grid-row:span 2}
+.flip-inner{
+  position:relative;width:100%;height:420px;
+  transform-style:preserve-3d;
+  transition:transform 0.65s cubic-bezier(.4,0,.2,1);
+}
+.flip-wrap.tall .flip-inner{height:843px}
+.flip-wrap:hover .flip-inner{transform:rotateY(180deg)}
+
+/* Front face */
+.flip-front,.flip-back{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.flip-front img{
+  width:100%;height:100%;object-fit:cover;
+  display:block;filter:saturate(0.9);
+}
+/* Quick category label on front */
+.flip-front-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:14px 18px;
+  background:linear-gradient(to top,rgba(15,15,15,0.7),transparent);
+  font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(250,250,248,0.7);
+}
+
+/* Back face */
+.flip-back{
+  background:var(--ink);
+  transform:rotateY(180deg);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:36px 32px;
+}
+.flip-back-cat{
+  font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:12px;
+}
+.flip-back-name{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:clamp(20px,2.5vw,28px);
+  color:var(--paper);margin-bottom:8px;
+}
+.flip-back-material{
+  font-family:'EB Garamond',serif;
+  font-style:italic;font-size:16px;
+  color:rgba(250,250,248,0.45);margin-bottom:28px;
+}
+.flip-back-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(250,250,248,0.1);
+  padding-top:20px;
+}
+.flip-price{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:24px;color:var(--paper);
+}
+.flip-btn{
+  font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+  background:var(--rust);color:var(--paper);
+  padding:10px 20px;text-decoration:none;
+  transition:background 0.2s;
+}
+.flip-btn:hover{background:var(--rust2)}
+
+/* ─── SOBRE (Editorial banner) ────────────────────────────────── */
+#sobre{
+  background:var(--ink);
+  padding:100px 5%;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.sobre-left{}
+.sobre-eyebrow{
+  font-size:10px;letter-spacing:0.35em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.sobre-eyebrow::before{content:'';display:block;width:20px;height:1px;background:var(--rust)}
+.sobre-title{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:clamp(36px,4vw,56px);
+  color:var(--paper);line-height:1.0;margin-bottom:28px;
+}
+.sobre-body{font-size:14px;color:rgba(250,250,248,0.5);line-height:1.9;margin-bottom:36px;}
+.sobre-values{display:flex;flex-direction:column;gap:0}
+.sv-item{
+  display:flex;gap:24px;align-items:flex-start;
+  padding:18px 0;border-bottom:1px solid rgba(250,250,248,0.07);
+}
+.sv-item:first-child{border-top:1px solid rgba(250,250,248,0.07)}
+.sv-num{
+  font-family:'EB Garamond',serif;font-style:italic;
+  font-size:13px;color:rgba(250,250,248,0.2);flex-shrink:0;margin-top:2px;
+}
+.sv-text strong{font-size:14px;color:var(--paper);display:block;margin-bottom:3px}
+.sv-text span{font-size:12px;color:rgba(250,250,248,0.4);line-height:1.7}
+.sobre-right img{
+  width:100%;height:520px;object-fit:cover;
+  filter:grayscale(20%)saturate(0.9);
+}
+
+/* ─── RUST CTA BAND ──────────────────────────────────────────── */
+#cta{
+  background:var(--rust);
+  padding:80px 5%;
+  display:flex;align-items:center;justify-content:space-between;gap:40px;
+}
+.cta-t{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:clamp(32px,4vw,56px);
+  color:var(--paper);line-height:1;
+}
+.cta-t em{
+  font-family:'EB Garamond',serif;
+  font-style:italic;color:rgba(250,250,248,0.6);
+}
+.cta-r{display:flex;flex-direction:column;gap:12px;flex-shrink:0}
+.cta-b{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+  padding:15px 36px;text-decoration:none;white-space:nowrap;transition:all 0.25s;
+}
+.cta-b-dark{background:var(--ink);color:var(--paper)}
+.cta-b-dark:hover{background:#222}
+.cta-b-out{border:1px solid rgba(250,250,248,0.4);color:var(--paper)}
+.cta-b-out:hover{background:rgba(250,250,248,0.1)}
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
+footer{
+  background:var(--ink);
+  padding:44px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.foot-logo{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:1rem;letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--paper);
+}
+.foot-info{font-size:11px;color:rgba(250,250,248,0.3);text-align:center;line-height:1.8}
+.foot-links{display:flex;gap:20px}
+.foot-links a{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(250,250,248,0.3);text-decoration:none;transition:color 0.2s}
+.foot-links a:hover{color:var(--rust)}
+
+/* ─── REVEAL ─────────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal-l{opacity:0;transform:translateX(-22px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal-l.in{opacity:1;transform:none}
+.reveal-r{opacity:0;transform:translateX(22px);transition:opacity 0.75s ease,transform 0.75s ease}
+.reveal-r.in{opacity:1;transform:none}
+
+/* ─── LOOKBOOK ───────────────────────────────────────────────── */
+#lookbook{
+  background:var(--paper);
+  padding:8rem 5%;
+  border-top:1px solid rgba(15,15,15,0.06);
+}
+.look-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:3rem;margin-bottom:5rem;flex-wrap:wrap;
+}
+.look-eyebrow{
+  font-size:10px;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--rust);margin-bottom:12px;
+}
+.look-title{
+  font-family:'Tenor Sans',sans-serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--ink);line-height:1.05;
+}
+.look-season{
+  font-family:'EB Garamond',serif;
+  font-style:italic;font-size:1rem;
+  color:var(--muted);text-align:right;
+  line-height:1.7;max-width:280px;
+}
+
+/* Editorial masonry-style grid */
+.look-grid{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:2px;
+  background:rgba(15,15,15,0.05);
+}
+.look-item{background:var(--paper);overflow:hidden;position:relative}
+.look-item.span2{grid-row:span 2}
+.look-item img{
+  width:100%;height:100%;
+  object-fit:cover;display:block;
+  filter:grayscale(8%);
+  transition:filter 0.5s ease,transform 0.6s ease;
+  min-height:260px;
+}
+.look-item:hover img{filter:grayscale(0%);transform:scale(1.025)}
+.look-item-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:1.5rem 1.2rem 1.2rem;
+  background:linear-gradient(to top,rgba(15,15,15,0.75) 0%,transparent 100%);
+  opacity:0;transition:opacity 0.3s ease;
+}
+.look-item:hover .look-item-info{opacity:1}
+.look-item-cat{
+  font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(255,255,255,0.6);margin-bottom:4px;
+}
+.look-item-name{
+  font-family:'EB Garamond',serif;
+  font-size:1rem;font-style:italic;
+  color:#fff;line-height:1.2;
+}
+/* Pull quote entre os itens */
+.look-quote{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:3rem 2rem;background:var(--ink);
+}
+.look-quote-mark{
+  font-family:'EB Garamond',serif;
+  font-size:4rem;color:var(--rust);line-height:0.7;margin-bottom:1rem;
+}
+.look-quote-text{
+  font-family:'EB Garamond',serif;
+  font-style:italic;font-size:1.2rem;
+  color:rgba(255,255,255,0.75);line-height:1.65;
+}
+.look-quote-source{
+  font-size:10px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--rust);margin-top:1rem;
+}
+/* CTA link */
+.look-cta-row{
+  margin-top:3.5rem;text-align:center;
+}
+.look-cta-link{
+  font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--ink);text-decoration:none;
+  border-bottom:1px solid var(--ink);padding-bottom:2px;
+  transition:color 0.2s,border-color 0.2s;
+}
+.look-cta-link:hover{color:var(--rust);border-color:var(--rust)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <ul class="nav-left">
+    <li><a href="#colecao">Coleção</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+  </ul>
+  <a href="#" class="nav-logo">Bruma</a>
+  <div class="nav-right">
+    <a href="#cta">Envios</a>
+    <a href="#cta" class="nav-bag">Comprar</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Vale de Cambra · SS 2025</p>
+    <h1 class="hero-title">
+      Peças que<br>ficam.<br><em>Bruma.</em>
+    </h1>
+    <p class="hero-desc">
+      Selecionamos o que resiste ao tempo — tecidos naturais, cortes limpos,
+      estilo que não segue tendências. Entrega em todo o Portugal.
+    </p>
+    <a href="#colecao" class="hero-cta">Ver Coleção</a>
+  </div>
+  <div class="hero-right">
+    <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=900&q=80" alt="Coleção Bruma"/>
+    <div class="hero-right-badge">
+      <p class="badge-num">SS25</p>
+      <p class="badge-lbl">Nova coleção disponível</p>
+    </div>
+  </div>
+</section>
+
+<!-- COLEÇÃO -->
+<section id="colecao">
+  <div class="col-header reveal">
+    <h2 class="col-title">A nossa<br><em>coleção.</em></h2>
+    <p class="col-sub">Passe o rato para ver os detalhes</p>
+  </div>
+  <div class="products-grid">
+
+    <!-- Tall card -->
+    <div class="flip-wrap tall reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=700&q=80" alt="Casaco"/>
+          <p class="flip-front-label">Casacos</p>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-cat">Casacos · Outono</p>
+          <p class="flip-back-name">Casaco Estruturado Bege</p>
+          <p class="flip-back-material">100% lã virgem · Made in Portugal</p>
+          <div class="flip-back-footer">
+            <span class="flip-price">189 €</span>
+            <a href="#cta" class="flip-btn">Encomendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two short cards stacked -->
+    <div class="flip-wrap reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=700&q=80" alt="Blusa"/>
+          <p class="flip-front-label">Blusas</p>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-cat">Blusas · Primavera</p>
+          <p class="flip-back-name">Blusa de Seda Natural</p>
+          <p class="flip-back-material">100% seda · Lavagem à mão</p>
+          <div class="flip-back-footer">
+            <span class="flip-price">95 €</span>
+            <a href="#cta" class="flip-btn">Encomendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flip-wrap reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=700&q=80" alt="Calças"/>
+          <p class="flip-front-label">Calças</p>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-cat">Calças · Essencial</p>
+          <p class="flip-back-name">Calças de Linho Wide Leg</p>
+          <p class="flip-back-material">100% linho belga · Corte relaxado</p>
+          <div class="flip-back-footer">
+            <span class="flip-price">112 €</span>
+            <a href="#cta" class="flip-btn">Encomendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=700&q=80" alt="Vestido"/>
+          <p class="flip-front-label">Vestidos</p>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-cat">Vestidos · Coleção SS25</p>
+          <p class="flip-back-name">Vestido Midi Musselina</p>
+          <p class="flip-back-material">Musselina algodão orgânico · Exclusivo</p>
+          <div class="flip-back-footer">
+            <span class="flip-price">145 €</span>
+            <a href="#cta" class="flip-btn">Encomendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tall card -->
+    <div class="flip-wrap tall reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="https://images.unsplash.com/photo-1617922001439-4a2e6562f328?w=700&q=80" alt="Malha"/>
+          <p class="flip-front-label">Malhas</p>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-cat">Malhas · Inverno</p>
+          <p class="flip-back-name">Camisola Merino Oversized</p>
+          <p class="flip-back-material">Merino extrafino · Lavagem delicados</p>
+          <div class="flip-back-footer">
+            <span class="flip-price">135 €</span>
+            <a href="#cta" class="flip-btn">Encomendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-wrap reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=700&q=80" alt="Saia"/>
+          <p class="flip-front-label">Saias</p>
+        </div>
+        <div class="flip-back">
+          <p class="flip-back-cat">Saias · Essencial</p>
+          <p class="flip-back-name">Saia Midi Plissada Creme</p>
+          <p class="flip-back-material">Viscose ECOVERO · Coleção cápsula</p>
+          <div class="flip-back-footer">
+            <span class="flip-price">88 €</span>
+            <a href="#cta" class="flip-btn">Encomendar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="sobre-left">
+    <p class="sobre-eyebrow reveal">O Nosso Manifesto</p>
+    <h2 class="sobre-title reveal">Comprar menos.<br>Escolher melhor.</h2>
+    <p class="sobre-body reveal">
+      A BRUMA nasceu da frustração com a moda descartável.
+      Cada peça que encontras aqui foi escolhida a mão — viajámos a produtores
+      portugueses e europeus para perceber como fazem, com quê, e porquê.
+      O resultado é um guarda-roupa que não envelhece.
+    </p>
+    <div class="sobre-values reveal">
+      <div class="sv-item">
+        <div class="sv-num">01</div>
+        <div class="sv-text"><strong>Fibras naturais, sempre</strong><span>Linho, seda, merino, algodão orgânico. Sem poliéster, sem fast fashion.</span></div>
+      </div>
+      <div class="sv-item">
+        <div class="sv-num">02</div>
+        <div class="sv-text"><strong>Produção europeia</strong><span>Mais de 80% das peças são produzidas em Portugal, Itália ou Espanha.</span></div>
+      </div>
+      <div class="sv-item">
+        <div class="sv-num">03</div>
+        <div class="sv-text"><strong>Trocas sem complicações</strong><span>30 dias para devolver, sem perguntas. Portes de envio incluídos em compras acima de €100.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="sobre-right reveal-r">
+    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=900&q=80" alt="Atelier Bruma"/>
+  </div>
+</section>
+
+<!-- LOOKBOOK -->
+<section id="lookbook">
+  <div class="look-header">
+    <div>
+      <div class="look-eyebrow reveal">Lookbook</div>
+      <h2 class="look-title reveal">Primavera<br>— Verão 25</h2>
+    </div>
+    <p class="look-season reveal-r">
+      "Uma coleção sobre regressar ao essencial.<br>
+      Luz natural, tecidos que respiram, silhuetas que libertam."<br>
+      <em>— Nota da directora criativa</em>
+    </p>
+  </div>
+  <div class="look-grid">
+    <div class="look-item span2 reveal">
+      <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&q=80" alt="SS25 Editorial"/>
+      <div class="look-item-info">
+        <div class="look-item-cat">Editorial · Destaque</div>
+        <div class="look-item-name">A coleção que respira</div>
+      </div>
+    </div>
+    <div class="look-item reveal">
+      <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&q=80" alt="Saias"/>
+      <div class="look-item-info">
+        <div class="look-item-cat">Saias · SS25</div>
+        <div class="look-item-name">Leveza plissada</div>
+      </div>
+    </div>
+    <div class="look-quote reveal">
+      <div class="look-quote-mark">"</div>
+      <p class="look-quote-text">O guarda-roupa perfeito não é o maior — é o que nunca nos faz duvidar do que vestir.</p>
+      <div class="look-quote-source">Bruma · Manifesto 2025</div>
+    </div>
+    <div class="look-item reveal">
+      <img src="https://images.unsplash.com/photo-1617922001439-4a2e6562f328?w=500&q=80" alt="Malhas"/>
+      <div class="look-item-info">
+        <div class="look-item-cat">Malhas · Essencial</div>
+        <div class="look-item-name">Merino sem esforço</div>
+      </div>
+    </div>
+    <div class="look-item reveal">
+      <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=500&q=80" alt="Atelier"/>
+      <div class="look-item-info">
+        <div class="look-item-cat">Atelier · Bastidores</div>
+        <div class="look-item-name">Onde tudo começa</div>
+      </div>
+    </div>
+  </div>
+  <div class="look-cta-row reveal">
+    <a href="#colecao" class="look-cta-link">Ver toda a coleção SS25 →</a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="reveal">
+    <h2 class="cta-t">Encomenda<br>hoje. <em>Recebe amanhã.</em></h2>
+  </div>
+  <div class="cta-r reveal">
+    <a href="mailto:hello@bruma.pt" class="cta-b cta-b-dark">hello@bruma.pt</a>
+    <a href="https://wa.me/351926000000" class="cta-b cta-b-out">WhatsApp →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">Bruma</div>
+  <div class="foot-info">Vale de Cambra, Portugal<br>© 2025 BRUMA Boutique Editorial</div>
+  <div class="foot-links">
+    <a href="#">Instagram</a>
+    <a href="#">Pinterest</a>
+    <a href="#">Newsletter</a>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e => {
+  e.forEach(en => { if(en.isIntersecting){en.target.classList.add('in');obs.unobserve(en.target)} });
+},{threshold:0.08});
+document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
