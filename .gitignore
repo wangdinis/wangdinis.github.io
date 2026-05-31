@@ -1,14 +1,7 @@
-### macOS
-# Finder metadata
+# ── macOS ──────────────────────────────────────────────────────────
 .DS_Store
-
-# Thumbnails
 ._*
-
-# Custom folder icons
 Icon
-
-# Volume root files
 .DocumentRevisions-V100
 .fseventsd
 .Spotlight-V100
@@ -17,68 +10,52 @@ Icon
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
-### Java
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# Package Files
-*.jar
-*.war
-*.ear
-
-# Virtual machine crash logs
-hs_err_pid*
-replay_pid*
-
-### Python
-# Byte-compiled files
+# ── Python ─────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
-*$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
-build/
-dist/
-*.egg-info/
-*.egg
-
-# dotenv environment variable files
 .env
-
-# Virtual environments
 .venv
 env/
 venv/
+*.egg-info/
+build/
+dist/
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.pytest_cache/
+# ── Office temp/lock files ─────────────────────────────────────────
+*.tmp
+.~lock.*
+~$*
 
-# Type checkers
-.mypy_cache/
+# ── Sensitive credentials ──────────────────────────────────────────
+*.pickle
+*.json
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# ── Private data files ─────────────────────────────────────────────
+*.xlsx
+*.docx
+*.pdf
+*.md
 
-# pyenv
-# .python-version
-Agentes
-Interpretação
-Web Design
-REGRAS_CLAUDE.md
-bio.md
-Web_Design/Prospeção
-Web_Design/Clientes
-Web_Design/Estratégia
+# ── Private folders (all content) ─────────────────────────────────
+Agentes/
+Interpretação/
+Web_Design/Prospeção/
+Web_Design/Clientes/
+Web_Design/Estratégia/
+diagnostico/
+
+# ── Private individual files ───────────────────────────────────────
 Web_Design/Portfolio/gerar_proposta.html
 Web_Design/Processo-Cliente.md
+tracking_projetos.xlsx
+REGRAS_CLAUDE.md
+MANUAL_COMPLETO.md
+IDEAS.md
+bio.md
+
+# ── What IS public (GitHub Pages) ─────────────────────────────────
+# index.html                        ← portfolio principal
+# Web_Design/Demos/*.html            ← 7 demos
+# Web_Design/Portfolio/pontuacao-digital.html
+# Web_Design/Portfolio/diagnostico.html
