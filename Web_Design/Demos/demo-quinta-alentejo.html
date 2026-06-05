@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quinta do Vale Escuro — Alentejo</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* ── RESET ─────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; scroll-behavior: auto; }
+
+    body {
+      background: #050508;
+      color: #fff;
+      font-family: 'EB Garamond', Georgia, serif;
+      cursor: none;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── FIXED LAYERS ───────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    #grain-canvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      opacity: 0.055;
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
+
+    /* ── CURSOR ─────────────────────────────────────────────── */
+    #cursor-wrap {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0; height: 0;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    #cursor-leaf {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 38px; height: 38px;
+      will-change: transform;
+    }
+    #cursor-dot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.8);
+      transition: transform 0.15s;
+    }
+
+    /* ── LOADER ─────────────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0;
+      background: #050508;
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    #loader-ghost {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(6rem, 20vw, 16rem);
+      font-style: italic;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      position: absolute;
+      letter-spacing: -0.03em;
+      user-select: none;
+    }
+    #loader-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      position: relative;
+      z-index: 1;
+    }
+    #loader-bar-wrap {
+      position: relative;
+      z-index: 1;
+      width: 140px;
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    #loader-bar {
+      height: 100%;
+      width: 0%;
+      background: rgba(255,255,255,0.4);
+    }
+    #loader-sub {
+      font-style: italic;
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 0.25em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: clamp(1.5rem, 3vw, 2.5rem) clamp(2rem, 6vw, 5rem);
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+    }
+    .logo em {
+      display: block;
+      font-style: italic;
+      font-size: 0.75em;
+      letter-spacing: 0.55em;
+      color: rgba(255,255,255,0.2);
+    }
+    .nav-link {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 0.2em;
+      transition: color 0.4s, border-color 0.4s;
+    }
+    .nav-link:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.25); }
+
+    /* ── VERTICAL PROGRESS ──────────────────────────────────── */
+    #vbar {
+      position: fixed;
+      left: clamp(1.2rem, 2.5vw, 2.2rem);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 28vh;
+      background: rgba(255,255,255,0.06);
+      z-index: 200;
+      opacity: 0;
+    }
+    #vbar-fill {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 0%;
+      background: rgba(255,255,255,0.35);
+    }
+
+    /* ── NAV DOTS ───────────────────────────────────────────── */
+    #nav-dots {
+      position: fixed;
+      right: clamp(1.5rem, 3vw, 2.8rem);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      opacity: 0;
+    }
+    .dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      cursor: pointer;
+      transition: background 0.4s, transform 0.4s;
+      position: relative;
+    }
+    .dot.active { background: rgba(255,255,255,0.75); transform: scale(2); }
+    .dot-label {
+      position: absolute;
+      right: calc(100% + 14px);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0);
+      white-space: nowrap;
+      transition: color 0.3s;
+      font-family: 'EB Garamond', serif;
+    }
+    .dot:hover .dot-label, .dot.active .dot-label { color: rgba(255,255,255,0.3); }
+
+    /* ── SCROLL HINT ────────────────────────────────────────── */
+    #scroll-hint {
+      position: fixed;
+      bottom: clamp(2rem, 4vh, 3.5rem);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.7rem;
+      z-index: 200;
+      opacity: 0;
+    }
+    #scroll-hint span {
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+    #scroll-hint-line {
+      width: 1px;
+      height: 2.5rem;
+      background: rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    #scroll-hint-line::after {
+      content: '';
+      position: absolute;
+      top: -100%; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255,255,255,0.4);
+      animation: flow 2s cubic-bezier(0.4,0,0.2,1) infinite;
+    }
+    @keyframes flow { 0% { top:-100% } 100% { top:100% } }
+
+    /* ── SECTIONS ───────────────────────────────────────────── */
+    #scroll-container { position: relative; z-index: 10; }
+
+    .season {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Ghost year number — decorative */
+    .ghost-year {
+      position: absolute;
+      right: -0.05em;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(12rem, 32vw, 30rem);
+      font-weight: 900;
+      font-style: italic;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.03);
+      pointer-events: none;
+      user-select: none;
+      line-height: 0.85;
+      will-change: transform;
+    }
+
+    /* Horizontal accent — thin rule */
+    .h-rule {
+      position: absolute;
+      bottom: 20vh;
+      left: clamp(2rem, 6vw, 5rem);
+      right: clamp(2rem, 6vw, 5rem);
+      height: 1px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* Main content block */
+    .s-content {
+      padding: 0 clamp(2rem, 8vw, 8rem);
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    .s-index {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .s-index::after {
+      content: '';
+      display: inline-block;
+      width: 2rem;
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* BIG season name — clip-path reveal */
+    .s-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(5rem, 16vw, 18rem);
+      font-weight: 900;
+      line-height: 0.82;
+      letter-spacing: -0.03em;
+      position: relative;
+    }
+    .s-name-ghost {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.07);
+      display: block;
+      position: absolute;
+      top: 0; left: 0;
+      user-select: none;
+    }
+    .s-name-fill {
+      display: block;
+      color: rgba(255,255,255,0.9);
+      clip-path: inset(0 100% 0 0);
+      will-change: clip-path;
+    }
+
+    /* Thin separator */
+    .s-sep {
+      width: 0;
+      height: 1px;
+      background: rgba(255,255,255,0.18);
+      margin: clamp(2rem, 4vh, 3.5rem) 0;
+      will-change: width;
+    }
+
+    /* Description poetry */
+    .s-desc {
+      font-size: clamp(1rem, 2.1vw, 1.65rem);
+      font-style: italic;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.5);
+      max-width: 480px;
+      opacity: 0;
+      white-space: pre-line; /* preserves line breaks in HTML */
+    }
+
+    /* Wine reference line */
+    .s-ref {
+      margin-top: clamp(2rem, 4vh, 3rem);
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.15);
+      opacity: 0;
+    }
+
+    /* CTA (last section only) */
+    .s-cta {
+      display: inline-block;
+      margin-top: clamp(2.5rem, 5vh, 4rem);
+      padding: 0.9em 2.5em;
+      border: 1px solid rgba(255,255,255,0.15);
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(0.65rem, 0.9vw, 0.8rem);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.5s;
+      opacity: 0;
+    }
+    .s-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.04);
+      transform: translateX(-101%);
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .s-cta:hover::before { transform: translateX(0); }
+    .s-cta:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.3); }
+
+    /* Season accent color indicator */
+    .s-accent-bar {
+      position: absolute;
+      right: clamp(2rem, 6vw, 5rem);
+      bottom: 25vh;
+      width: 0;
+      height: 3px;
+      border-radius: 2px;
+      will-change: width;
+    }
+
+    /* ── SEASON-SPECIFIC ACCENT COLORS ─── */
+    #s0 .s-accent-bar { background: rgba(127,176,105,0.5); }
+    #s1 .s-accent-bar { background: rgba(212,168,67,0.5); }
+    #s2 .s-accent-bar { background: rgba(192,57,43,0.5); }
+    #s3 .s-accent-bar { background: rgba(45,95,138,0.5); }
+
+    /* ── PARTICLE CANVAS (cursor trail) ─ */
+    #particle-canvas {
+      position: fixed; inset: 0;
+      z-index: 8;
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ── LOADER ──────────────────────────────────────────────── -->
+<div id="loader">
+  <div id="loader-ghost">VINHO</div>
+  <div id="loader-name">Quinta do Vale Escuro</div>
+  <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+  <div id="loader-sub">Alentejo · Portugal · Est. 1887</div>
+</div>
+
+<!-- ── FIXED CANVASES ──────────────────────────────────────── -->
+<canvas id="bg-canvas"></canvas>
+<canvas id="grain-canvas"></canvas>
+<canvas id="particle-canvas"></canvas>
+
+<!-- ── CUSTOM CURSOR ───────────────────────────────────────── -->
+<div id="cursor-wrap">
+  <div id="cursor-dot"></div>
+  <svg id="cursor-leaf" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(19,19)">
+      <!-- Main leaf shape -->
+      <path d="M0,-14 C5,-12 12,-7 13,0 C14,7 9,13 5,16 C3,17 1.5,18 0,19
+               C-1.5,18 -3,17 -5,16 C-9,13 -14,7 -13,0 C-12,-7 -5,-12 0,-14 Z"
+            fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <!-- Midrib -->
+      <line x1="0" y1="-12" x2="0" y2="17"
+            stroke="rgba(255,255,255,0.25)" stroke-width="0.6"/>
+      <!-- Veins -->
+      <line x1="0" y1="-4" x2="9" y2="3" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+      <line x1="0" y1="-4" x2="-9" y2="3" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+      <line x1="0" y1="4" x2="8" y2="9" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+      <line x1="0" y1="4" x2="-8" y2="9" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+      <!-- Tendril -->
+      <path d="M0,17 C3,19 5,21 3,24 C1,27 -1,26 0,23"
+            fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ── HEADER ──────────────────────────────────────────────── -->
+<div id="header">
+  <div class="logo">
+    Quinta do Vale Escuro
+    <em>Alentejo · Portugal</em>
+  </div>
+  <a href="#" class="nav-link">Descobrir</a>
+</div>
+
+<!-- ── VERTICAL PROGRESS BAR ───────────────────────────────── -->
+<div id="vbar"><div id="vbar-fill"></div></div>
+
+<!-- ── NAV DOTS ────────────────────────────────────────────── -->
+<div id="nav-dots">
+  <div class="dot active" data-i="0"><span class="dot-label">Primavera</span></div>
+  <div class="dot" data-i="1"><span class="dot-label">Verão</span></div>
+  <div class="dot" data-i="2"><span class="dot-label">Vindima</span></div>
+  <div class="dot" data-i="3"><span class="dot-label">Inverno</span></div>
+</div>
+
+<!-- ── SCROLL HINT ─────────────────────────────────────────── -->
+<div id="scroll-hint">
+  <span>percorrer</span>
+  <div id="scroll-hint-line"></div>
+</div>
+
+<!-- ── SEASONS ─────────────────────────────────────────────── -->
+<div id="scroll-container">
+
+  <!-- 01 PRIMAVERA -->
+  <section class="season" id="s0">
+    <div class="ghost-year" aria-hidden="true">2024</div>
+    <div class="h-rule" aria-hidden="true"></div>
+    <div class="s-content" id="c0">
+      <div class="s-index">01 &nbsp;·&nbsp; Primavera</div>
+      <h2 class="s-name" aria-label="Primavera">
+        <span class="s-name-ghost" aria-hidden="true">PRIMA-<br>VERA</span>
+        <span class="s-name-fill">PRIMA-<br>VERA</span>
+      </h2>
+      <div class="s-sep"></div>
+      <p class="s-desc">A terra acorda.
+A vinha estira os primeiros ramos
+como quem se lembra
+de uma promessa antiga.</p>
+      <div class="s-ref">Vinho Branco · Antão Vaz · Safra 2024</div>
+    </div>
+    <div class="s-accent-bar"></div>
+  </section>
+
+  <!-- 02 VERÃO -->
+  <section class="season" id="s1">
+    <div class="ghost-year" aria-hidden="true">2023</div>
+    <div class="h-rule" aria-hidden="true"></div>
+    <div class="s-content" id="c1">
+      <div class="s-index">02 &nbsp;·&nbsp; Verão</div>
+      <h2 class="s-name" aria-label="Verão">
+        <span class="s-name-ghost" aria-hidden="true">VERÃO</span>
+        <span class="s-name-fill">VERÃO</span>
+      </h2>
+      <div class="s-sep"></div>
+      <p class="s-desc">O calor prensa cada bago
+contra o outro.
+A sombra encurta.
+A espera alonga.</p>
+      <div class="s-ref">Rosé · Aragonez · Safra 2023</div>
+    </div>
+    <div class="s-accent-bar"></div>
+  </section>
+
+  <!-- 03 VINDIMA -->
+  <section class="season" id="s2">
+    <div class="ghost-year" aria-hidden="true">2022</div>
+    <div class="h-rule" aria-hidden="true"></div>
+    <div class="s-content" id="c2">
+      <div class="s-index">03 &nbsp;·&nbsp; Vindima</div>
+      <h2 class="s-name" aria-label="Vindima">
+        <span class="s-name-ghost" aria-hidden="true">VINDI-<br>MA</span>
+        <span class="s-name-fill">VINDI-<br>MA</span>
+      </h2>
+      <div class="s-sep"></div>
+      <p class="s-desc">Três semanas em outubro
+que justificam
+o ano inteiro.</p>
+      <div class="s-ref">Vinho Tinto · Alicante Bouschet · Safra 2022</div>
+    </div>
+    <div class="s-accent-bar"></div>
+  </section>
+
+  <!-- 04 INVERNO -->
+  <section class="season" id="s3">
+    <div class="ghost-year" aria-hidden="true">2021</div>
+    <div class="h-rule" aria-hidden="true"></div>
+    <div class="s-content" id="c3">
+      <div class="s-index">04 &nbsp;·&nbsp; Inverno</div>
+      <h2 class="s-name" aria-label="Inverno">
+        <span class="s-name-ghost" aria-hidden="true">INVER-<br>NO</span>
+        <span class="s-name-fill">INVER-<br>NO</span>
+      </h2>
+      <div class="s-sep"></div>
+      <p class="s-desc">O vinho transforma-se
+no escuro da adega.
+O tempo torna-se sabor.</p>
+      <div class="s-ref">Reserva · Grande Escolha · Safra 2021</div>
+      <a href="#" class="s-cta">Descobrir os nossos vinhos</a>
+    </div>
+    <div class="s-accent-bar"></div>
+  </section>
+
+</div><!-- /scroll-container -->
+
+
+<script>
+// ════════════════════════════════════════════════════════════
+// DATA — four seasonal palettes
+// ════════════════════════════════════════════════════════════
+const SEASONS = [
+  { // Primavera
+    bg:    [5, 14, 9],
+    blob1: [38, 84, 55],
+    blob2: [62, 112, 78],
+    accent:[127,176,105],
+  },
+  { // Verão
+    bg:    [14, 10, 5],
+    blob1: [110, 68, 14],
+    blob2: [185, 120, 32],
+    accent:[212,168, 67],
+  },
+  { // Vindima
+    bg:    [12, 4, 4],
+    blob1: [88, 22, 22],
+    blob2: [140, 24, 24],
+    accent:[192, 57, 43],
+  },
+  { // Inverno
+    bg:    [4, 4, 8],
+    blob1: [12, 25, 52],
+    blob2: [26, 52, 90],
+    accent:[ 45, 95,138],
+  },
+];
+
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+const lerp  = (a, b, t) => a + (b - a) * t;
+const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+
+function lerpArr(a, b, t) {
+  return a.map((v, i) => lerp(v, b[i], t));
+}
+
+function blendSeasons(prog) {
+  // prog 0..3 — interpolate between adjacent seasons
+  const from = clamp(Math.floor(prog), 0, SEASONS.length - 1);
+  const to   = clamp(from + 1,         0, SEASONS.length - 1);
+  const t    = prog - from;
+  return {
+    bg:    lerpArr(SEASONS[from].bg,    SEASONS[to].bg,    t),
+    blob1: lerpArr(SEASONS[from].blob1, SEASONS[to].blob1, t),
+    blob2: lerpArr(SEASONS[from].blob2, SEASONS[to].blob2, t),
+  };
+}
+
+function rgb(arr) {
+  return `rgb(${arr.map(v => Math.round(v)).join(',')})`;
+}
+
+function rgba(arr, a) {
+  return `rgba(${arr.map(v => Math.round(v)).join(',')},${a})`;
+}
+
+// ════════════════════════════════════════════════════════════
+// CANVAS SETUP
+// ════════════════════════════════════════════════════════════
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx    = bgCanvas.getContext('2d');
+const grainCanvas = document.getElementById('grain-canvas');
+const grainCtx    = grainCanvas.getContext('2d');
+const particleCanvas = document.getElementById('particle-canvas');
+const pCtx           = particleCanvas.getContext('2d');
+
+let W = window.innerWidth, H = window.innerHeight;
+
+function resize() {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  bgCanvas.width    = W; bgCanvas.height    = H;
+  grainCanvas.width = W; grainCanvas.height = H;
+  particleCanvas.width = W; particleCanvas.height = H;
+  buildGrainFrames();
+}
+
+// Pre-built grain textures (256×256 tiles) — regenerated on resize
+const GRAIN_FRAMES = 4;
+const grainTiles   = [];
+
+function buildGrainFrames() {
+  grainTiles.length = 0;
+  const size = 256;
+  for (let f = 0; f < GRAIN_FRAMES; f++) {
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    const x = c.getContext('2d');
+    const id = x.createImageData(size, size);
+    const d  = id.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const v = (Math.random() * 255) | 0;
+      d[i] = d[i+1] = d[i+2] = v;
+      d[i+3] = 255;
+    }
+    x.putImageData(id, 0, 0);
+    grainTiles.push(c);
+  }
+}
+
+resize();
+window.addEventListener('resize', resize);
+
+// ════════════════════════════════════════════════════════════
+// BACKGROUND RENDERER
+// ════════════════════════════════════════════════════════════
+let currentBg    = [...SEASONS[0].bg];
+let currentBlob1 = [...SEASONS[0].blob1];
+let currentBlob2 = [...SEASONS[0].blob2];
+let time = 0;
+let scrollProg = 0; // 0..3, driven by scroll
+
+function getScrollProg() {
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  if (maxScroll <= 0) return 0;
+  return (window.scrollY / maxScroll) * (SEASONS.length - 1);
+}
+
+function drawBg() {
+  scrollProg = getScrollProg();
+  const target = blendSeasons(scrollProg);
+
+  // Smooth lerp toward target
+  currentBg    = lerpArr(currentBg,    target.bg,    0.04);
+  currentBlob1 = lerpArr(currentBlob1, target.blob1, 0.04);
+  currentBlob2 = lerpArr(currentBlob2, target.blob2, 0.04);
+
+  time += 0.0018;
+
+  // Blob positions — slow Lissajous drift
+  const b1x = 0.28 + Math.sin(time * 0.73) * 0.12;
+  const b1y = 0.35 + Math.cos(time * 0.51) * 0.10;
+  const b2x = 0.68 + Math.cos(time * 0.41) * 0.13;
+  const b2y = 0.58 + Math.sin(time * 0.63) * 0.09;
+
+  // --- Draw ---
+  bgCtx.fillStyle = rgb(currentBg);
+  bgCtx.fillRect(0, 0, W, H);
+
+  // Blob 1
+  const g1 = bgCtx.createRadialGradient(b1x*W, b1y*H, 0, b1x*W, b1y*H, W * 0.5);
+  g1.addColorStop(0,   rgba(currentBlob1, 0.38));
+  g1.addColorStop(0.4, rgba(currentBlob1, 0.10));
+  g1.addColorStop(1,   rgba(currentBlob1, 0));
+  bgCtx.fillStyle = g1;
+  bgCtx.fillRect(0, 0, W, H);
+
+  // Blob 2
+  const g2 = bgCtx.createRadialGradient(b2x*W, b2y*H, 0, b2x*W, b2y*H, W * 0.42);
+  g2.addColorStop(0,   rgba(currentBlob2, 0.28));
+  g2.addColorStop(0.45,rgba(currentBlob2, 0.07));
+  g2.addColorStop(1,   rgba(currentBlob2, 0));
+  bgCtx.fillStyle = g2;
+  bgCtx.fillRect(0, 0, W, H);
+
+  // Radial vignette
+  const vig = bgCtx.createRadialGradient(W/2, H/2, H*0.25, W/2, H/2, H);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(0,0,0,0.7)');
+  bgCtx.fillStyle = vig;
+  bgCtx.fillRect(0, 0, W, H);
+}
+
+// ════════════════════════════════════════════════════════════
+// GRAIN RENDERER
+// ════════════════════════════════════════════════════════════
+let grainFrame = 0;
+function drawGrain() {
+  grainFrame = (grainFrame + 1) % GRAIN_FRAMES;
+  if (frame % 3 !== 0) return; // update grain every 3 render frames
+
+  const tile = grainTiles[grainFrame];
+  if (!tile) return;
+
+  grainCtx.clearRect(0, 0, W, H);
+  const pat = grainCtx.createPattern(tile, 'repeat');
+  grainCtx.fillStyle = pat;
+  grainCtx.fillRect(0, 0, W, H);
+}
+
+// ════════════════════════════════════════════════════════════
+// CURSOR TRAIL PARTICLES
+// ════════════════════════════════════════════════════════════
+class Particle {
+  constructor(x, y, accent) {
+    this.x = x; this.y = y;
+    this.vx = (Math.random() - 0.5) * 1.2;
+    this.vy = (Math.random() - 0.5) * 1.2 - 0.5;
+    this.alpha = 0.5 + Math.random() * 0.3;
+    this.size  = 1 + Math.random() * 2;
+    this.life  = 1;
+    this.decay = 0.04 + Math.random() * 0.03;
+    this.accent = accent;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= this.decay;
+    this.alpha = this.life * 0.4;
+    this.size *= 0.96;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.fillStyle = `rgba(${this.accent.join(',')},1)`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+const particles = [];
+
+function spawnParticle(x, y) {
+  const si = clamp(Math.floor(scrollProg), 0, SEASONS.length - 1);
+  const accent = SEASONS[si].accent;
+  particles.push(new Particle(x, y, accent));
+}
+
+function drawParticles() {
+  pCtx.clearRect(0, 0, W, H);
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    particles[i].draw(pCtx);
+    if (particles[i].life <= 0) particles.splice(i, 1);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// CURSOR
+// ════════════════════════════════════════════════════════════
+const cursorWrap = document.getElementById('cursor-wrap');
+const cursorLeaf = document.getElementById('cursor-leaf');
+const cursorDot  = document.getElementById('cursor-dot');
+
+let mx = W/2, my = H/2;
+let cx = W/2, cy = H/2;
+let prevMx = mx, prevMy = my;
+let leafAngle = 0;
+let spawnTick = 0;
+
+document.addEventListener('mousemove', e => {
+  prevMx = mx; prevMy = my;
+  mx = e.clientX; my = e.clientY;
+  const dx = mx - prevMx, dy = my - prevMy;
+  if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+    leafAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+  }
+});
+
+function updateCursor() {
+  cx = lerp(cx, mx, 0.10);
+  cy = lerp(cy, my, 0.10);
+
+  cursorDot.style.left  = mx + 'px';
+  cursorDot.style.top   = my + 'px';
+  cursorLeaf.style.left = cx + 'px';
+  cursorLeaf.style.top  = cy + 'px';
+  cursorLeaf.style.transform = `translate(-50%,-50%) rotate(${leafAngle}deg)`;
+
+  // Spawn particles every N frames when moving
+  spawnTick++;
+  const speed = Math.hypot(mx - prevMx, my - prevMy);
+  if (spawnTick % 3 === 0 && speed > 2) {
+    spawnParticle(cx, cy);
+  }
+}
+
+// Cursor scale on hover
+document.querySelectorAll('a, .dot, button').forEach(el => {
+  el.addEventListener('mouseenter', () => gsap.to(cursorLeaf, { scale: 1.8, duration: 0.3 }));
+  el.addEventListener('mouseleave', () => gsap.to(cursorLeaf, { scale: 1,   duration: 0.3 }));
+});
+
+// ════════════════════════════════════════════════════════════
+// GSAP SCROLL TRIGGERS
+// ════════════════════════════════════════════════════════════
+gsap.registerPlugin(ScrollTrigger);
+
+let currentDotActive = 0;
+const dots = document.querySelectorAll('.dot');
+
+function activateDot(i) {
+  if (i === currentDotActive) return;
+  currentDotActive = i;
+  dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+
+// Global scroll progress → vbar
+ScrollTrigger.create({
+  trigger: '#scroll-container',
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate: self => {
+    document.getElementById('vbar-fill').style.height = (self.progress * 100) + '%';
+  }
+});
+
+// Per-section animations
+[0, 1, 2, 3].forEach(i => {
+  const content = document.getElementById(`c${i}`);
+  const fill    = content.querySelector('.s-name-fill');
+  const sep     = content.querySelector('.s-sep');
+  const desc    = content.querySelector('.s-desc');
+  const ref     = content.querySelector('.s-ref');
+  const cta     = content.querySelector('.s-cta');
+  const accentBar = document.querySelector(`#s${i} .s-accent-bar`);
+
+  function animateIn(delay = 0) {
+    gsap.to(content, { opacity: 1, duration: 0.05 });
+    gsap.fromTo(content.querySelector('.s-index'),
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out', delay: delay + 0.1 });
+    gsap.to(fill,
+      { clipPath: 'inset(0 0% 0 0)', duration: 1.3, ease: 'power3.inOut', delay: delay + 0.2 });
+    gsap.fromTo(sep,
+      { width: 0 },
+      { width: '3.5rem', duration: 0.8, ease: 'power2.out', delay: delay + 0.75 });
+    gsap.to(desc,
+      { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out', delay: delay + 0.85 });
+    gsap.to(ref,
+      { opacity: 1, duration: 0.7, delay: delay + 1.1 });
+    if (cta) gsap.to(cta, { opacity: 1, y: 0, duration: 0.6, delay: delay + 1.3 });
+    if (accentBar) gsap.to(accentBar, { width: '4rem', duration: 0.9, ease: 'power2.out', delay: delay + 0.9 });
+  }
+
+  function animateOut() {
+    gsap.to(content, { opacity: 0, duration: 0.3, ease: 'power2.in' });
+    gsap.to(fill, { clipPath: 'inset(0 100% 0 0)', duration: 0.5, ease: 'power2.in' });
+    gsap.to(sep,  { width: 0, duration: 0.4 });
+    if (accentBar) gsap.to(accentBar, { width: 0, duration: 0.3 });
+  }
+
+  // Set initial state
+  gsap.set(fill, { clipPath: 'inset(0 100% 0 0)' });
+  gsap.set(desc, { opacity: 0, y: 25 });
+  if (cta) gsap.set(cta, { opacity: 0, y: 10 });
+
+  ScrollTrigger.create({
+    trigger: `#s${i}`,
+    start: 'top 58%',
+    end:   'bottom 42%',
+    onEnter:     () => { activateDot(i); animateIn(); },
+    onEnterBack: () => { activateDot(i); animateIn(0.1); },
+    onLeave:     () => animateOut(),
+    onLeaveBack: () => animateOut(),
+  });
+});
+
+// ════════════════════════════════════════════════════════════
+// NAV DOT CLICK
+// ════════════════════════════════════════════════════════════
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const idx = parseInt(dot.dataset.i);
+    document.getElementById(`s${idx}`).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ════════════════════════════════════════════════════════════
+// GHOST YEAR PARALLAX
+// ════════════════════════════════════════════════════════════
+document.querySelectorAll('.ghost-year').forEach((el, i) => {
+  ScrollTrigger.create({
+    trigger: `#s${i}`,
+    start: 'top bottom',
+    end: 'bottom top',
+    onUpdate: self => {
+      const offset = (self.progress - 0.5) * 60;
+      el.style.transform = `translateY(calc(-50% + ${offset}px))`;
+    }
+  });
+});
+
+// ════════════════════════════════════════════════════════════
+// HIDE SCROLL HINT ON FIRST SCROLL
+// ════════════════════════════════════════════════════════════
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 80) {
+    gsap.to('#scroll-hint', { opacity: 0, duration: 0.5 });
+  }
+}, { passive: true });
+
+// ════════════════════════════════════════════════════════════
+// LOADER
+// ════════════════════════════════════════════════════════════
+function startExperience() {
+  gsap.to('#vbar',     { opacity: 1, duration: 0.8, delay: 0.3 });
+  gsap.to('#nav-dots', { opacity: 1, duration: 0.8, delay: 0.5 });
+  gsap.to('#scroll-hint', { opacity: 1, duration: 0.8, delay: 0.8 });
+
+  // Trigger first section immediately
+  const c0   = document.getElementById('c0');
+  const fill = c0.querySelector('.s-name-fill');
+  const sep  = c0.querySelector('.s-sep');
+  const desc = c0.querySelector('.s-desc');
+  const ref  = c0.querySelector('.s-ref');
+
+  gsap.to(c0, { opacity: 1, duration: 0.05 });
+  gsap.fromTo(c0.querySelector('.s-index'),
+    { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 0.4 });
+  gsap.to(fill,
+    { clipPath: 'inset(0 0% 0 0)', duration: 1.5, ease: 'power3.inOut', delay: 0.5 });
+  gsap.fromTo(sep,
+    { width: 0 }, { width: '3.5rem', duration: 0.9, ease: 'power2.out', delay: 1.1 });
+  gsap.to(desc, { opacity: 1, y: 0, duration: 1, ease: 'power2.out', delay: 1.2 });
+  gsap.to(ref,  { opacity: 1, duration: 0.8, delay: 1.5 });
+
+  const accentBar0 = document.querySelector('#s0 .s-accent-bar');
+  if (accentBar0) gsap.to(accentBar0, { width: '4rem', duration: 1, ease: 'power2.out', delay: 1.3 });
+
+  activateDot(0);
+}
+
+window.addEventListener('load', () => {
+  const bar    = document.getElementById('loader-bar');
+  const loader = document.getElementById('loader');
+
+  // Animate loader bar to 100%
+  gsap.to(bar, {
+    width: '100%',
+    duration: 1.6,
+    ease: 'power1.inOut',
+    onComplete: () => {
+      gsap.to(loader, {
+        opacity: 0,
+        duration: 0.7,
+        delay: 0.2,
+        onComplete: () => {
+          loader.style.display = 'none';
+          startExperience();
+        }
+      });
+    }
+  });
+});
+
+// ════════════════════════════════════════════════════════════
+// MAIN RENDER LOOP
+// ════════════════════════════════════════════════════════════
+let frame = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  frame++;
+  drawBg();
+  drawGrain();
+  drawParticles();
+  updateCursor();
+}
+
+animate();
+</script>
+</body>
+</html>

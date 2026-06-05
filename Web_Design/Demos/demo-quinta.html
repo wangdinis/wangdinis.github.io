@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Herdade do Silêncio — Alentejo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,800;1,400;1,800&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:      #0D0D0B;
+      --text:    #F0EBE1;
+      --accent:  #6B5B4E;
+      --season:  'NOITE';
+    }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'EB Garamond', Georgia, serif;
+      cursor: none;
+      overflow-x: hidden;
+      transition: background 0.05s ease, color 0.05s ease;
+    }
+
+    /* ── CURSOR ─────────────────────────────────────────────────── */
+    #cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 36px; height: 36px;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease;
+      mix-blend-mode: difference;
+    }
+
+    #cursor svg {
+      width: 100%; height: 100%;
+      fill: #F0EBE1;
+      opacity: 0.9;
+    }
+
+    /* ── SEASON INDICATOR ────────────────────────────────────────── */
+    #season-hud {
+      position: fixed;
+      top: 2rem; right: 2rem;
+      z-index: 100;
+      text-align: right;
+      pointer-events: none;
+    }
+
+    #season-name {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.6;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    #season-line {
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      margin-left: auto;
+      opacity: 0.5;
+    }
+
+    /* ── LOGO ────────────────────────────────────────────────────── */
+    #logo {
+      position: fixed;
+      top: 2rem; left: 2rem;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    #logo span {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.5;
+    }
+
+    /* ── SECTIONS ────────────────────────────────────────────────── */
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 15vh 8vw;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── HERO ────────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      justify-content: flex-end;
+      padding-bottom: 12vh;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+    }
+
+    .hero-title {
+      font-size: clamp(3.5rem, 10vw, 9rem);
+      font-weight: 800;
+      font-style: italic;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      overflow: hidden;
+      margin-bottom: 4rem;
+    }
+
+    .hero-title .char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(110%);
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      opacity: 0;
+    }
+
+    .hero-meta .divider {
+      width: 60px; height: 1px;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .hero-meta span {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      opacity: 0;
+    }
+
+    .scroll-hint span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.4;
+    }
+
+    .scroll-hint .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: var(--text);
+      opacity: 0.2;
+      animation: scrollDrop 2s ease infinite;
+    }
+
+    @keyframes scrollDrop {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ── SEASON SECTIONS ─────────────────────────────────────────── */
+    .season-section {
+      position: relative;
+    }
+
+    .season-label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .season-label::after {
+      content: '';
+      flex: 0 0 40px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.4;
+    }
+
+    .season-headline {
+      font-size: clamp(2.8rem, 7.5vw, 7.5rem);
+      font-weight: 800;
+      font-style: italic;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      max-width: 16ch;
+      margin-bottom: 4rem;
+    }
+
+    .season-body {
+      font-size: clamp(1rem, 1.4vw, 1.25rem);
+      font-weight: 400;
+      line-height: 1.75;
+      max-width: 44ch;
+      opacity: 0.7;
+      margin-left: 40%;
+    }
+
+    .season-number {
+      position: absolute;
+      right: 6vw;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: clamp(12rem, 22vw, 22rem);
+      font-weight: 800;
+      font-style: italic;
+      line-height: 1;
+      opacity: 0.04;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -0.05em;
+    }
+
+    /* ── SPRING ─────────────────────────────────────────────────── */
+    #primavera { background: #182F16; color: #E8F0E4; }
+    #primavera .accent-el { color: #7CB67F; }
+
+    /* ── SUMMER ─────────────────────────────────────────────────── */
+    #verao { background: #5E2D15; color: #FAF0E6; }
+    #verao .accent-el { color: #F2B84B; }
+
+    /* ── HARVEST ─────────────────────────────────────────────────── */
+    #vindima { background: #3B0A0A; color: #F5E6D3; }
+    #vindima .accent-el { color: #C4622D; }
+
+    /* ── WINTER ─────────────────────────────────────────────────── */
+    #inverno { background: #0A0D14; color: #D8D0C8; }
+    #inverno .accent-el { color: #7A8E9E; }
+
+    /* ── PRODUCT REVEAL ──────────────────────────────────────────── */
+    #produto {
+      background: #F2EDE5;
+      color: #1A1108;
+      min-height: 100vh;
+      align-items: center;
+      text-align: center;
+      gap: 0;
+    }
+
+    .produto-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 4rem;
+    }
+
+    .bottles {
+      display: flex;
+      gap: 4rem;
+      justify-content: center;
+      align-items: flex-end;
+      margin: 0 auto 5rem;
+    }
+
+    .bottle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      opacity: 0;
+      transform: translateY(60px);
+    }
+
+    .bottle-svg {
+      width: 80px;
+    }
+
+    .bottle-name {
+      font-size: 0.65rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      font-weight: 300;
+    }
+
+    .bottle-year {
+      font-size: 1rem;
+      font-style: italic;
+      opacity: 0.3;
+    }
+
+    .produto-title {
+      font-size: clamp(2rem, 5vw, 4.5rem);
+      font-weight: 800;
+      font-style: italic;
+      line-height: 1;
+      margin-bottom: 2rem;
+    }
+
+    .produto-sub {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 4rem;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.1rem 2.5rem;
+      border: 1px solid rgba(26,17,8,0.25);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #1A1108;
+      text-decoration: none;
+      cursor: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .cta-btn:hover {
+      background: #1A1108;
+      color: #F2EDE5;
+    }
+
+    .cta-btn .arrow {
+      transition: transform 0.3s;
+    }
+
+    .cta-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────────── */
+    footer {
+      background: #0A0A08;
+      color: #4A4440;
+      padding: 4rem 8vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* ── PARTICLES ───────────────────────────────────────────────── */
+    .particle-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    /* ── REVEAL ANIMATIONS ───────────────────────────────────────── */
+    .reveal-up {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+
+    /* ── HORIZONTAL LINE ─────────────────────────────────────────── */
+    .h-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.08;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    /* ── QUOTE ───────────────────────────────────────────────────── */
+    .quote-section {
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      padding: 10vh 8vw;
+      position: relative;
+    }
+
+    .quote-text {
+      font-size: clamp(1.4rem, 3vw, 2.8rem);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.4;
+      max-width: 28ch;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .quote-attr {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0.35;
+      margin-top: 2rem;
+      font-weight: 300;
+      display: block;
+      opacity: 0;
+    }
+
+    #verao .quote-section { background: #6B3821; }
+    #vindima .quote-section { display: none; }
+
+    /* Hide default scrollbar on supported browsers */
+    ::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor">
+  <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 3 C12 3 5 8 4 14 C3 20 7 28 12 31 C14 32 16 33 18 33 C18 33 18 18 18 3 Z" opacity="0.9"/>
+    <path d="M18 3 C24 3 31 8 32 14 C33 20 29 28 24 31 C22 32 20 33 18 33 C18 33 18 18 18 3 Z" opacity="0.5"/>
+    <line x1="18" y1="3" x2="18" y2="35" stroke="#F0EBE1" stroke-width="0.5" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- HUD -->
+<div id="season-hud">
+  <span id="season-name">Noite</span>
+  <span id="season-line"></span>
+</div>
+
+<!-- LOGO -->
+<div id="logo">
+  <span>Herdade do Silêncio</span>
+</div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <div class="hero-eyebrow">Alentejo · Portugal</div>
+  <h1 class="hero-title" id="hero-title">Herdade<br>do Silêncio</h1>
+  <div class="hero-meta">
+    <div class="divider"></div>
+    <span>Fundada em 1847</span>
+    <div class="divider"></div>
+    <span>Vinho de Autor</span>
+  </div>
+  <div class="scroll-hint">
+    <span>deixa o tempo passar</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ PRIMAVERA ═══════════════ -->
+<section id="primavera" class="season-section">
+  <canvas class="particle-canvas" id="canvas-spring"></canvas>
+  <div class="season-label accent-el">Primavera</div>
+  <h2 class="season-headline reveal-up">A terra<br>acorda.</h2>
+  <p class="season-body reveal-up" style="transition-delay:0.15s">
+    Em março, as primeiras folhas surgem nas videiras. O solo guarda o segredo do que está por vir. Cada rebento é uma promessa — de cor, de perfume, de tempo.
+  </p>
+  <div class="season-number">I</div>
+  <div class="h-line" style="bottom:0"></div>
+</section>
+
+<!-- ═══════════════ VERÃO ═══════════════ -->
+<section id="verao" class="season-section">
+  <div class="season-label accent-el">Verão</div>
+  <h2 class="season-headline reveal-up">O calor<br>trabalha.</h2>
+  <p class="season-body reveal-up" style="transition-delay:0.15s">
+    O sol do Alentejo não perdoa. Trinta e oito graus à sombra dos montados. As uvas amadurecem lentamente, intensamente — concentrando tudo o que a terra tem para dar.
+  </p>
+  <div class="season-number">II</div>
+  <div class="h-line" style="bottom:0"></div>
+</section>
+
+<!-- ═══════════════ VINDIMA ═══════════════ -->
+<section id="vindima" class="season-section">
+  <canvas class="particle-canvas" id="canvas-harvest"></canvas>
+  <div class="season-label accent-el">Vindima</div>
+  <h2 class="season-headline reveal-up">A colheita<br>chegou.</h2>
+  <p class="season-body reveal-up" style="transition-delay:0.15s">
+    Setembro. O momento em que um ano inteiro se decide em dias. As mãos que apanharam uvas durante gerações voltam à vinha. Não há máquina que saiba o que elas sabem.
+  </p>
+  <div class="season-number">III</div>
+  <div class="h-line" style="bottom:0"></div>
+</section>
+
+<!-- ═══════════════ INVERNO ═══════════════ -->
+<section id="inverno" class="season-section">
+  <div class="season-label accent-el">Inverno</div>
+  <h2 class="season-headline reveal-up">O vinho<br>espera.</h2>
+  <p class="season-body reveal-up" style="transition-delay:0.15s">
+    Na adega, o tempo faz o seu trabalho. Paciência é o ingrediente que nenhum enólogo pode fabricar. O barril não tem pressa. Nem o vinho. Nem nós.
+  </p>
+  <div class="season-number">IV</div>
+  <div class="h-line" style="bottom:0"></div>
+</section>
+
+<!-- ═══════════════ PRODUTO ═══════════════ -->
+<section id="produto">
+  <p class="produto-eyebrow reveal-up">O resultado de quatro estações</p>
+
+  <div class="bottles">
+    <div class="bottle" id="b1">
+      <svg class="bottle-svg" viewBox="0 0 80 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="32" y="0" width="16" height="30" rx="3" fill="#1A1108" opacity="0.7"/>
+        <path d="M26 30 C20 50 16 70 16 100 L16 200 C16 210 22 215 40 215 C58 215 64 210 64 200 L64 100 C64 70 60 50 54 30 Z" fill="#1A1108" opacity="0.85"/>
+        <rect x="22" y="90" width="36" height="60" rx="2" fill="#F2EDE5" opacity="0.08"/>
+        <text x="40" y="125" text-anchor="middle" fill="#F2EDE5" font-family="'EB Garamond', serif" font-size="7" font-style="italic" opacity="0.4">Reserva</text>
+        <text x="40" y="136" text-anchor="middle" fill="#F2EDE5" font-family="'Inter', sans-serif" font-size="4" letter-spacing="2" opacity="0.25">ALENTEJO</text>
+      </svg>
+      <span class="bottle-name">Grande Reserva</span>
+      <span class="bottle-year">2019</span>
+    </div>
+
+    <div class="bottle" id="b2" style="transform: translateY(60px) scale(1.08);">
+      <svg class="bottle-svg" viewBox="0 0 80 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="32" y="0" width="16" height="28" rx="3" fill="#2A1A0E" opacity="0.8"/>
+        <path d="M24 28 C18 48 14 68 14 98 L14 202 C14 212 21 216 40 216 C59 216 66 212 66 202 L66 98 C66 68 62 48 56 28 Z" fill="#2A1A0E" opacity="0.9"/>
+        <rect x="20" y="88" width="40" height="65" rx="2" fill="#F2EDE5" opacity="0.07"/>
+        <text x="40" y="123" text-anchor="middle" fill="#F2EDE5" font-family="'EB Garamond', serif" font-size="8" font-style="italic" opacity="0.5">Silêncio</text>
+        <text x="40" y="136" text-anchor="middle" fill="#F2EDE5" font-family="'Inter', sans-serif" font-size="4" letter-spacing="2" opacity="0.2">HERDADE</text>
+      </svg>
+      <span class="bottle-name">Herdade · Silêncio</span>
+      <span class="bottle-year">2021</span>
+    </div>
+
+    <div class="bottle" id="b3">
+      <svg class="bottle-svg" viewBox="0 0 80 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="33" y="0" width="14" height="26" rx="2" fill="#3B2010" opacity="0.7"/>
+        <path d="M28 26 C23 46 20 66 20 96 L20 198 C20 208 27 213 40 213 C53 213 60 208 60 198 L60 96 C60 66 57 46 52 26 Z" fill="#3B2010" opacity="0.8"/>
+        <rect x="24" y="86" width="32" height="55" rx="2" fill="#F2EDE5" opacity="0.09"/>
+        <text x="40" y="118" text-anchor="middle" fill="#F2EDE5" font-family="'EB Garamond', serif" font-size="6.5" font-style="italic" opacity="0.45">Clássico</text>
+        <text x="40" y="130" text-anchor="middle" fill="#F2EDE5" font-family="'Inter', sans-serif" font-size="4" letter-spacing="2" opacity="0.22">TINTO</text>
+      </svg>
+      <span class="bottle-name">Clássico Tinto</span>
+      <span class="bottle-year">2022</span>
+    </div>
+  </div>
+
+  <h3 class="produto-title reveal-up">Visite-nos.</h3>
+  <p class="produto-sub reveal-up">Alentejo · Visitas com marcação</p>
+  <a class="cta-btn reveal-up" href="#">
+    Reservar uma visita
+    <span class="arrow">→</span>
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>Herdade do Silêncio · Alentejo</span>
+  <span>© 2026</span>
+  <span>Vinhos de Autor</span>
+</footer>
+
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ── CUSTOM CURSOR ─────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+let mouseX = 0, mouseY = 0;
+let cursorX = 0, cursorY = 0;
+let lastX = 0, angle = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  const dx = mouseX - lastX;
+  angle = gsap.utils.clamp(-35, 35, dx * 2.5);
+  lastX = mouseX;
+});
+
+function moveCursor() {
+  cursorX += (mouseX - cursorX) * 0.12;
+  cursorY += (mouseY - cursorY) * 0.12;
+  cursor.style.left = cursorX + 'px';
+  cursor.style.top  = cursorY + 'px';
+  cursor.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+  angle *= 0.9;
+  requestAnimationFrame(moveCursor);
+}
+moveCursor();
+
+// ── HERO ANIMATION ────────────────────────────────────────────
+const titleEl = document.getElementById('hero-title');
+const titleHTML = titleEl.innerHTML;
+const lines = titleHTML.split('<br>');
+titleEl.innerHTML = lines.map(line =>
+  line.split('').map(c =>
+    c === ' ' ? '<span class="char" style="display:inline-block">&nbsp;</span>'
+             : `<span class="char">${c}</span>`
+  ).join('')
+).join('<br>');
+
+const chars = titleEl.querySelectorAll('.char');
+const tl = gsap.timeline({ delay: 0.3 });
+
+tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' })
+  .to(chars, {
+    opacity: 1,
+    y: 0,
+    stagger: 0.03,
+    duration: 0.6,
+    ease: 'power3.out'
+  }, '-=0.3')
+  .to('.hero-meta', { opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.2')
+  .to('.scroll-hint', { opacity: 1, duration: 0.8 }, '-=0.4');
+
+// ── SEASON HUD ────────────────────────────────────────────────
+const seasons = [
+  { section: '#primavera', name: 'Primavera' },
+  { section: '#verao',     name: 'Verão' },
+  { section: '#vindima',   name: 'Vindima' },
+  { section: '#inverno',   name: 'Inverno' },
+  { section: '#produto',   name: 'Colheita' },
+];
+
+const seasonNameEl = document.getElementById('season-name');
+
+seasons.forEach(({ section, name }) => {
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top 60%',
+    end: 'bottom 60%',
+    onEnter: () => {
+      gsap.to(seasonNameEl, { opacity: 0, y: -6, duration: 0.2, onComplete: () => {
+        seasonNameEl.textContent = name;
+        gsap.to(seasonNameEl, { opacity: 0.6, y: 0, duration: 0.4 });
+      }});
+    },
+    onEnterBack: () => {
+      gsap.to(seasonNameEl, { opacity: 0, y: 6, duration: 0.2, onComplete: () => {
+        seasonNameEl.textContent = name;
+        gsap.to(seasonNameEl, { opacity: 0.6, y: 0, duration: 0.4 });
+      }});
+    },
+  });
+});
+
+// ── REVEAL ANIMATIONS ─────────────────────────────────────────
+document.querySelectorAll('.reveal-up').forEach(el => {
+  gsap.to(el, {
+    opacity: 1,
+    y: 0,
+    duration: 0.9,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: el,
+      start: 'top 82%',
+    }
+  });
+});
+
+// ── HORIZONTAL LINES ──────────────────────────────────────────
+document.querySelectorAll('.h-line').forEach(line => {
+  gsap.to(line, {
+    scaleX: 1,
+    duration: 1.2,
+    ease: 'power2.inOut',
+    scrollTrigger: { trigger: line, start: 'top 90%' }
+  });
+});
+
+// ── SEASON NUMBER PARALLAX ────────────────────────────────────
+document.querySelectorAll('.season-number').forEach(num => {
+  gsap.to(num, {
+    y: -80,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: num.closest('section'),
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: true,
+    }
+  });
+});
+
+// ── BODY OFFSET ───────────────────────────────────────────────
+document.querySelectorAll('.season-body').forEach(body => {
+  gsap.from(body, {
+    x: 40,
+    scrollTrigger: {
+      trigger: body,
+      start: 'top 85%',
+    },
+    duration: 0.8,
+    ease: 'power2.out',
+  });
+});
+
+// ── BOTTLES REVEAL ────────────────────────────────────────────
+['b1','b2','b3'].forEach((id, i) => {
+  gsap.to('#' + id, {
+    opacity: 1,
+    y: id === 'b2' ? -40 : 0,
+    duration: 0.9,
+    delay: i * 0.15,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: '#produto',
+      start: 'top 70%',
+    }
+  });
+});
+
+// ── SPRING PARTICLES ──────────────────────────────────────────
+function initParticles(canvasId, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const section = canvas.closest('section');
+  let particles = [];
+  let raf;
+  let active = false;
+
+  function resize() {
+    canvas.width  = section.offsetWidth;
+    canvas.height = section.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function spawn() {
+    return {
+      x: Math.random() * canvas.width,
+      y: canvas.height + 10,
+      vy: -(0.3 + Math.random() * 0.5),
+      vx: (Math.random() - 0.5) * 0.4,
+      size: 1.5 + Math.random() * 2,
+      life: 1,
+    };
+  }
+
+  for (let i = 0; i < 30; i++) {
+    const p = spawn();
+    p.y = Math.random() * canvas.height;
+    particles.push(p);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p, i) => {
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.vx += (Math.random() - 0.5) * 0.05;
+
+      if (p.y < -10) { particles[i] = spawn(); return; }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.3;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+    raf = requestAnimationFrame(draw);
+  }
+
+  ScrollTrigger.create({
+    trigger: canvas.closest('section'),
+    start: 'top 80%',
+    end: 'bottom top',
+    onEnter: () => { if (!active) { active = true; draw(); } },
+    onLeave: () => { active = false; cancelAnimationFrame(raf); },
+    onEnterBack: () => { if (!active) { active = true; draw(); } },
+    onLeaveBack: () => { active = false; cancelAnimationFrame(raf); },
+  });
+}
+
+initParticles('canvas-spring',  '#7CB67F');
+initParticles('canvas-harvest', '#C4622D');
+
+// ── LARGE HEADLINE SCRUB FADE ─────────────────────────────────
+document.querySelectorAll('.season-headline').forEach(h => {
+  gsap.fromTo(h, { opacity: 0, y: 50 }, {
+    opacity: 1, y: 0,
+    duration: 1,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: h, start: 'top 80%' }
+  });
+});
+
+// ── CURSOR GROW ON LINKS ──────────────────────────────────────
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () =>
+    gsap.to(cursor, { scale: 1.8, duration: 0.3 }));
+  el.addEventListener('mouseleave', () =>
+    gsap.to(cursor, { scale: 1, duration: 0.3 }));
+});
+</script>
+
+</body>
+</html>

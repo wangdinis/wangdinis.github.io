@@ -7,8 +7,14 @@
   <meta name="description" content="Crio websites profissionais para pequenos negócios em Portugal a partir de €299. Entrega em 5 a 7 dias. Freelancer em Vale de Cambra.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
   <style>
+    /* ══════════════════════════════════════════════════════════
+       RESET & ROOT
+    ══════════════════════════════════════════════════════════ */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
@@ -18,7 +24,7 @@
       --orange: #f97316;
       --orange2:#fb923c;
       --white:  #f5f5f5;
-      --grey:   #777;
+      --grey:   #6b6b6b;
       --border: rgba(255,255,255,0.07);
       --green:  #22c55e;
     }
@@ -32,49 +38,72 @@
       cursor: none;
     }
 
-    /* ─── CURSOR ─── */
-    .cursor {
-      width: 10px; height: 10px;
+    /* ══════════════════════════════════════════════════════════
+       CURSOR
+    ══════════════════════════════════════════════════════════ */
+    #c-dot {
+      width: 6px; height: 6px;
       background: var(--orange);
       border-radius: 50%;
       position: fixed; top: 0; left: 0;
       pointer-events: none; z-index: 9999;
-      transition: background 0.3s, transform 0.15s;
+      transform: translate(-50%,-50%);
+      will-change: transform;
     }
-    .cursor-ring {
-      width: 36px; height: 36px;
-      border: 1px solid rgba(249,115,22,0.35);
+    #c-ring {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(249,115,22,0.4);
       border-radius: 50%;
       position: fixed; top: 0; left: 0;
       pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      will-change: transform;
+      transition: width 0.3s, height 0.3s, border-color 0.3s;
     }
+    #c-ring.expand { width: 52px; height: 52px; border-color: rgba(249,115,22,0.25); }
+    #c-label {
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9997;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(249,115,22,0.7);
+      transform: translate(-50%, -200%);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #c-label.visible { opacity: 1; }
 
-    /* ─── NAV ─── */
+    /* ══════════════════════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════════════════════ */
     nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 26px 60px;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 28px 60px;
       display: flex; align-items: center; justify-content: space-between;
       transition: padding 0.4s, background 0.4s, backdrop-filter 0.4s;
     }
     nav.scrolled {
       padding: 14px 60px;
-      background: rgba(8,8,8,0.88);
-      backdrop-filter: blur(24px);
+      background: rgba(8,8,8,0.9);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
     .nav-logo {
       font-family: 'Oswald', sans-serif;
-      font-size: 1.3rem; font-weight: 700;
-      letter-spacing: 0.08em; color: var(--white);
+      font-size: 1.2rem; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--white);
       text-decoration: none;
     }
     .nav-logo span { color: var(--orange); }
-    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a {
-      font-size: 0.73rem; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--grey); text-decoration: none;
       transition: color 0.3s;
+      data-cursor="nav";
     }
     .nav-links a:hover { color: var(--white); }
     .nav-cta {
@@ -84,11 +113,14 @@
       font-size: 0.78rem; font-weight: 700;
       letter-spacing: 0.12em; text-transform: uppercase;
       text-decoration: none;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, transform 0.3s;
+      display: inline-block;
     }
-    .nav-cta:hover { background: var(--orange2); transform: translateY(-1px); }
+    .nav-cta:hover { background: var(--orange2); }
 
-    /* ─── HERO ─── */
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════════════ */
     #hero {
       min-height: 100vh;
       display: flex; flex-direction: column;
@@ -96,71 +128,93 @@
       padding: 0 60px 80px;
       position: relative; overflow: hidden;
     }
-    .hero-bg {
+
+    /* Dot grid canvas */
+    #hero-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    /* Subtle gradient behind dots */
+    .hero-gradient {
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 70% 60% at 60% 30%, rgba(249,115,22,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 50% at 10% 80%, rgba(249,115,22,0.04) 0%, transparent 50%),
-        var(--black);
+        radial-gradient(ellipse 65% 55% at 58% 28%, rgba(249,115,22,0.055) 0%, transparent 60%),
+        radial-gradient(ellipse 35% 45% at 8% 78%, rgba(249,115,22,0.03) 0%, transparent 50%);
+      pointer-events: none;
     }
+
     .hero-available {
-      font-size: 0.68rem; letter-spacing: 0.25em;
+      font-size: 0.65rem; letter-spacing: 0.28em;
       text-transform: uppercase;
       display: flex; align-items: center; gap: 14px;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
       position: relative; z-index: 2;
-      opacity: 0; animation: fadeUp 0.7s ease 0.3s forwards;
+      opacity: 0;
     }
     .avail-dot {
-      width: 8px; height: 8px; border-radius: 50%;
+      width: 7px; height: 7px; border-radius: 50%;
       background: var(--green);
       box-shadow: 0 0 0 0 rgba(34,197,94,0.5);
-      animation: ping 2s infinite;
+      animation: ping 2.5s infinite;
     }
     @keyframes ping {
       0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-      70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+      70% { box-shadow: 0 0 0 9px rgba(34,197,94,0); }
       100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
     }
     .avail-text { color: var(--grey); }
     .avail-text strong { color: var(--green); }
+
     .hero-headline {
       position: relative; z-index: 2;
     }
     .hero-headline h1 {
       font-family: 'Oswald', sans-serif;
       font-weight: 700;
-      font-size: clamp(4.5rem, 12vw, 13rem);
-      line-height: 0.88;
+      font-size: clamp(4.5rem, 12.5vw, 14rem);
+      line-height: 0.87;
       text-transform: uppercase;
       letter-spacing: -0.02em;
     }
-    .hl1 {
-      display: block; color: var(--white);
-      opacity: 0; animation: slideIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
-    }
-    .hl2 {
+
+    /* Each line has ghost + fill for scramble + wipe */
+    .hl-wrap {
       display: block;
-      color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.25);
-      opacity: 0; animation: slideIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.65s forwards;
+      position: relative;
+      overflow: hidden;
     }
-    .hl3 {
-      display: block; color: var(--orange);
-      opacity: 0; animation: slideIn 0.9s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+    .hl-ghost {
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(255,255,255,0.08);
+      display: block;
+      position: absolute;
+      top: 0; left: 0;
+      user-select: none;
+      pointer-events: none;
     }
+    .hl-fill {
+      display: block;
+      clip-path: inset(0 100% 0 0);
+      will-change: clip-path;
+    }
+    .hl1 .hl-fill { color: var(--white); }
+    .hl2 .hl-fill { color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,0.25); }
+    .hl3 .hl-fill { color: var(--orange); }
+
     .hero-bottom {
       display: flex; align-items: flex-end; justify-content: space-between;
       margin-top: 48px;
       position: relative; z-index: 2;
-      opacity: 0; animation: fadeUp 0.8s ease 1.1s forwards;
+      opacity: 0;
     }
     .hero-desc {
       max-width: 400px;
-      font-size: 0.92rem; line-height: 1.75;
-      color: var(--grey);
+      font-size: 0.9rem; line-height: 1.82; color: var(--grey);
     }
     .hero-desc strong { color: var(--white); font-weight: 500; }
-    .hero-actions { display: flex; align-items: center; gap: 24px; }
+    .hero-actions { display: flex; align-items: center; gap: 28px; }
     .btn-primary {
       background: var(--orange); color: var(--black);
       padding: 17px 44px;
@@ -169,32 +223,39 @@
       letter-spacing: 0.14em; text-transform: uppercase;
       text-decoration: none;
       display: inline-flex; align-items: center; gap: 10px;
-      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+      will-change: transform;
     }
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 18px 50px rgba(249,115,22,0.3);
+    .btn-primary::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.12);
+      transform: translateX(-101%);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
     }
+    .btn-primary:hover::before { transform: translateX(0); }
     .btn-primary svg { transition: transform 0.3s; }
     .btn-primary:hover svg { transform: translateX(4px); }
+
     .hero-scroll-hint {
       display: flex; align-items: center; gap: 10px;
-      font-size: 0.68rem; letter-spacing: 0.18em;
+      font-size: 0.65rem; letter-spacing: 0.2em;
       text-transform: uppercase; color: var(--grey);
       cursor: pointer;
     }
     .scroll-bar {
-      width: 1px; height: 44px;
-      background: linear-gradient(to bottom, rgba(249,115,22,0.6), transparent);
-      animation: pulse2 2s ease infinite;
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(249,115,22,0.7), transparent);
+      animation: pulse2 2.2s ease infinite;
     }
-    @keyframes pulse2 { 0%,100%{opacity:0.4} 50%{opacity:1} }
+    @keyframes pulse2 { 0%,100%{opacity:0.35} 50%{opacity:1} }
 
+    /* Floating stats */
     .hero-float-stats {
-      position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 60px; top: 50%;
+      transform: translateY(-50%);
       display: flex; flex-direction: column; gap: 28px;
       z-index: 2; opacity: 0;
-      animation: fadeIn 0.8s ease 1.3s forwards;
     }
     .fstat { text-align: right; }
     .fstat-num {
@@ -202,44 +263,57 @@
       font-size: 2rem; font-weight: 700;
       color: var(--white); line-height: 1;
     }
-    .fstat-num em { color: var(--orange); font-style: normal; font-size: 1.1rem; }
+    .fstat-num em { color: var(--orange); font-style: normal; }
     .fstat-lbl {
-      font-size: 0.62rem; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--grey);
-      margin-top: 4px;
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--grey); margin-top: 4px;
     }
 
-    /* ─── MARQUEE ─── */
+    /* ══════════════════════════════════════════════════════════
+       MARQUEE
+    ══════════════════════════════════════════════════════════ */
     .marquee-band {
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
       background: var(--dark);
-      padding: 18px 0; overflow: hidden;
+      padding: 16px 0; overflow: hidden;
     }
     .marquee-inner {
       display: flex; white-space: nowrap;
-      animation: marquee 20s linear infinite;
+      animation: marquee 22s linear infinite;
     }
+    .marquee-band:hover .marquee-inner { animation-play-state: paused; }
     .mq-item {
       font-family: 'Oswald', sans-serif;
-      font-size: 0.8rem; font-weight: 500;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--grey); padding: 0 36px; flex-shrink: 0;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--grey); padding: 0 32px; flex-shrink: 0;
+      transition: color 0.3s;
     }
+    .marquee-band:hover .mq-item { color: rgba(255,255,255,0.5); }
     .mq-dot { color: var(--orange); }
     @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-    /* ─── SECTIONS ─── */
-    section { padding: 120px 60px; }
+    /* ══════════════════════════════════════════════════════════
+       SECTIONS — common
+    ══════════════════════════════════════════════════════════ */
+    section { padding: 110px 60px; }
     .sec-label {
-      font-size: 0.66rem; letter-spacing: 0.3em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.3em;
       text-transform: uppercase; color: var(--orange);
       display: flex; align-items: center; gap: 14px;
-      margin-bottom: 40px;
+      margin-bottom: 36px;
+      opacity: 0;
     }
-    .sec-label::before { content:''; width:28px; height:1px; background:var(--orange); }
+    .sec-label::before { content:''; width:24px; height:1px; background:var(--orange); }
 
-    /* ─── ABOUT / APRESENTAÇÃO ─── */
+    /* Scroll reveal states — GSAP manages opacity/transform */
+    .reveal { opacity: 0; transform: translateY(28px); }
+
+    /* ══════════════════════════════════════════════════════════
+       SOBRE
+    ══════════════════════════════════════════════════════════ */
     #sobre {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 80px; align-items: start;
@@ -251,129 +325,128 @@
       font-weight: 700; line-height: 1.02;
       text-transform: uppercase; letter-spacing: -0.01em;
     }
-    .about-big em { font-style: normal; color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,0.3); }
+    .about-big em { font-style: normal; color: transparent; -webkit-text-stroke: 1.5px rgba(255,255,255,0.28); }
     .about-big .o { color: var(--orange); }
     .sobre-right p {
-      font-size: 0.95rem; line-height: 1.82; color: var(--grey);
-      margin-bottom: 22px;
+      font-size: 0.93rem; line-height: 1.85; color: var(--grey);
+      margin-bottom: 20px;
     }
     .sobre-right p strong { color: var(--white); font-weight: 500; }
-    .about-divider { width: 36px; height: 2px; background: var(--orange); margin: 36px 0; }
-    .values-list { display: flex; flex-direction: column; gap: 0; }
+    .about-divider { width: 32px; height: 2px; background: var(--orange); margin: 32px 0; }
+    .values-list { display: flex; flex-direction: column; }
     .val-item {
       display: flex; gap: 24px; align-items: flex-start;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border);
+      padding: 20px 0; border-bottom: 1px solid var(--border);
     }
     .val-item:last-child { border-bottom: none; }
     .val-num {
-      font-family: 'Oswald', sans-serif;
-      font-size: 0.75rem; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 500;
       letter-spacing: 0.1em; color: var(--orange);
       margin-top: 3px; flex-shrink: 0;
     }
     .val-title {
       font-family: 'Oswald', sans-serif;
-      font-size: 1rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.05em;
+      font-size: 0.95rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
       margin-bottom: 6px;
     }
-    .val-desc { font-size: 0.82rem; color: var(--grey); line-height: 1.6; }
+    .val-desc { font-size: 0.82rem; color: var(--grey); line-height: 1.65; }
 
-    /* profile mini card */
     .profile-mini {
-      background: var(--mid); padding: 32px;
-      border: 1px solid var(--border);
-      margin-top: 40px;
+      background: var(--mid); padding: 30px;
+      border: 1px solid var(--border); margin-top: 36px;
     }
-    .pm-top {
-      display: flex; align-items: center; gap: 18px;
-      margin-bottom: 24px;
-    }
+    .pm-top { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
     .pm-avatar {
-      width: 52px; height: 52px; border-radius: 50%;
+      width: 48px; height: 48px; border-radius: 50%;
       background: var(--orange);
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Oswald', sans-serif; font-size: 1.1rem;
+      font-family: 'Oswald', sans-serif; font-size: 1rem;
       font-weight: 700; color: var(--black); flex-shrink: 0;
     }
     .pm-name {
-      font-family: 'Oswald', sans-serif; font-size: 1rem;
-      font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+      font-family: 'Oswald', sans-serif; font-size: 0.95rem;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
     }
-    .pm-role { font-size: 0.75rem; color: var(--grey); margin-top: 2px; }
-    .pm-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+    .pm-role { font-size: 0.72rem; color: var(--grey); margin-top: 2px; }
+    .pm-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 22px; }
     .pm-tag {
-      font-size: 0.7rem; font-weight: 500;
+      font-size: 0.65rem; font-weight: 500;
       letter-spacing: 0.08em; text-transform: uppercase;
-      border: 1px solid var(--border);
-      padding: 5px 12px; color: var(--grey);
+      border: 1px solid var(--border); padding: 4px 10px; color: var(--grey);
     }
-    .pm-stats { display: flex; flex-direction: column; gap: 0; }
+    .pm-stats { display: flex; flex-direction: column; }
     .pm-row {
       display: flex; justify-content: space-between;
-      padding: 10px 0; border-bottom: 1px solid var(--border);
-      font-size: 0.8rem;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      font-size: 0.78rem;
     }
     .pm-row:last-child { border-bottom: none; }
     .pm-row span { color: var(--grey); }
-    .pm-row strong { color: var(--white); }
+    .pm-row strong { color: var(--white); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; }
     .pm-wa {
-      display: block; margin-top: 24px;
+      display: block; margin-top: 22px;
       background: var(--orange); color: var(--black);
-      text-align: center; padding: 14px;
-      font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+      text-align: center; padding: 13px;
+      font-family: 'Oswald', sans-serif; font-size: 0.82rem;
       font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-      text-decoration: none; transition: background 0.3s, transform 0.2s;
+      text-decoration: none; transition: background 0.3s, transform 0.3s;
     }
     .pm-wa:hover { background: var(--orange2); transform: translateY(-2px); }
 
-    /* ─── PROCESSO ─── */
+    /* ══════════════════════════════════════════════════════════
+       PROCESSO
+    ══════════════════════════════════════════════════════════ */
     #processo { background: var(--black); }
     .processo-title {
       font-family: 'Oswald', sans-serif;
       font-size: clamp(2.5rem, 5vw, 5rem);
       font-weight: 700; text-transform: uppercase;
       line-height: 1; letter-spacing: -0.02em;
-      margin-bottom: 64px;
+      margin-bottom: 60px; opacity: 0;
     }
     .steps-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
       gap: 1px; background: var(--border);
     }
     .step-block {
-      background: var(--dark); padding: 44px 36px;
+      background: var(--dark); padding: 44px 32px;
       position: relative; overflow: hidden;
-      transition: background 0.4s;
+      transition: background 0.5s;
+      opacity: 0;
     }
-    .step-block:hover { background: #161616; }
+    .step-block:hover { background: #141414; }
     .step-block::after {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: var(--orange); transform: scaleX(0); transform-origin: left;
-      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
     }
     .step-block:hover::after { transform: scaleX(1); }
     .step-big-num {
       font-family: 'Oswald', sans-serif;
-      font-size: 5rem; font-weight: 700; line-height: 1;
-      color: rgba(255,255,255,0.04); margin-bottom: 20px;
-      transition: color 0.4s;
+      font-size: 4.5rem; font-weight: 700; line-height: 1;
+      color: rgba(255,255,255,0.035); margin-bottom: 18px;
+      transition: color 0.5s;
+      font-variant-numeric: tabular-nums;
     }
-    .step-block:hover .step-big-num { color: rgba(249,115,22,0.1); }
+    .step-block:hover .step-big-num { color: rgba(249,115,22,0.09); }
     .step-name {
       font-family: 'Oswald', sans-serif;
-      font-size: 1.1rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.05em;
-      margin-bottom: 14px;
+      font-size: 1rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 12px;
     }
-    .step-desc { font-size: 0.83rem; color: var(--grey); line-height: 1.7; }
+    .step-desc { font-size: 0.81rem; color: var(--grey); line-height: 1.72; }
 
-    /* ─── PORTFÓLIO / DEMOS ─── */
+    /* ══════════════════════════════════════════════════════════
+       PORTFÓLIO / BEFORE-AFTER CARDS
+    ══════════════════════════════════════════════════════════ */
     #portfolio { background: var(--dark); }
     .portfolio-header {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 40px;
+      margin-bottom: 36px; opacity: 0;
     }
     .portfolio-title {
       font-family: 'Oswald', sans-serif;
@@ -382,20 +455,21 @@
       line-height: 1; letter-spacing: -0.02em;
     }
     .portfolio-count {
-      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
       color: var(--grey);
     }
 
     /* Filter tabs */
     .demo-filters {
       display: flex; gap: 0; flex-wrap: wrap;
-      margin-bottom: 32px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px; border-bottom: 1px solid var(--border);
+      opacity: 0;
     }
     .demo-filter-btn {
-      font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+      font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase;
       color: var(--grey); background: none; border: none;
-      padding: 12px 20px; cursor: pointer;
+      padding: 11px 18px; cursor: pointer;
       position: relative; transition: color 0.25s;
       font-family: 'Inter', sans-serif; font-weight: 500;
     }
@@ -412,158 +486,227 @@
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 1px; background: var(--border);
     }
+
+    /* ── BEFORE / AFTER CARD ── */
     .demo-card {
-      background: var(--mid);
       aspect-ratio: 4/3;
-      position: relative; overflow: hidden; cursor: pointer;
-      transition: opacity 0.3s, transform 0.3s;
+      position: relative; overflow: hidden; cursor: none;
     }
     .demo-card.featured {
-      grid-column: span 3;
-      aspect-ratio: unset;
-      height: 300px;
+      grid-column: span 3; aspect-ratio: unset; height: 280px;
     }
     .demo-card.hidden { display: none; }
+
+    /* BEFORE layer — always behind */
+    .ba-before {
+      position: absolute; inset: 0;
+      background: #0c0c0c;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1;
+    }
+    .ba-before-inner {
+      text-align: center; padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .ba-before-label {
+      display: block;
+      font-size: 0.55rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(255,255,255,0.18); margin-bottom: 14px;
+      border: 1px solid rgba(255,255,255,0.07); padding: 5px 12px; display: inline-block;
+    }
+    .ba-before-name {
+      display: block; font-size: 0.9rem; font-weight: 500;
+      color: rgba(255,255,255,0.4); margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+    .ba-before-info {
+      display: block; font-size: 0.72rem;
+      color: rgba(255,255,255,0.18); line-height: 1.8;
+    }
+    .ba-before-link {
+      display: inline-block; margin-top: 14px;
+      font-size: 0.62rem; color: rgba(249,115,22,0.3);
+      text-decoration: underline; letter-spacing: 0.05em;
+    }
+
+    /* AFTER layer — fully visible by default, before revealed on hover/drag */
+    .ba-after {
+      position: absolute; inset: 0;
+      clip-path: inset(0 0% 0 0); /* starts fully visible */
+      will-change: clip-path;
+      z-index: 2;
+    }
+    .demo-card.tracking .ba-after { transition: none; }
+
     .demo-visual {
       width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center;
-      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
     }
-    .demo-card:hover .demo-visual { transform: scale(1.04); }
 
-    /* Brand-name ghost text inside card */
+    /* Divider */
+    .ba-divider {
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 2px;
+      background: var(--orange);
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(-50%);
+      will-change: left, opacity;
+    }
+    .ba-divider-handle {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 28px; height: 28px;
+      background: var(--orange);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ba-divider-handle::before,
+    .ba-divider-handle::after {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 4px;
+      border-top: 1.5px solid var(--black);
+      border-right: 1.5px solid var(--black);
+    }
+    .ba-divider-handle::before { transform: rotate(-135deg) translateX(1px); }
+    .ba-divider-handle::after  { transform: rotate(45deg) translateX(1px); }
+
+    /* Labels ANTES / DEPOIS */
+    .ba-label-before, .ba-label-after {
+      position: absolute; top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase;
+      pointer-events: none; z-index: 4;
+      padding: 4px 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .ba-label-before { left: 10px; color: rgba(255,255,255,0.3); }
+    .ba-label-after  { right: 10px; color: var(--orange); text-align: right; }
+    .demo-card:hover .ba-label-before,
+    .demo-card:hover .ba-label-after { opacity: 1; }
+
+    /* Ghost brand text */
     .demo-ghost {
-      position: absolute; bottom: -6px; right: 12px;
+      position: absolute; bottom: -8px; right: 8px;
       font-family: 'Oswald', sans-serif;
-      font-size: 5.5rem; font-weight: 700;
+      font-size: 5rem; font-weight: 700;
       line-height: 1; text-transform: uppercase; letter-spacing: -0.02em;
       pointer-events: none; user-select: none;
-      transition: opacity 0.4s;
     }
 
+    /* Overlay gradient + info */
     .demo-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.12) 55%, transparent 100%);
+      position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
       display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 28px;
+      padding: 24px;
+      pointer-events: none;
     }
     .demo-card.light-card .demo-overlay {
-      background: linear-gradient(to top, rgba(20,18,14,0.9) 0%, rgba(20,18,14,0.08) 55%, transparent 100%);
+      background: linear-gradient(to top, rgba(20,18,14,0.9) 0%, rgba(20,18,14,0.06) 55%, transparent 100%);
     }
     .demo-niche {
-      font-size: 0.6rem; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--orange); margin-bottom: 7px;
+      font-size: 0.58rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 5px;
     }
     .demo-card.light-card .demo-niche { color: #5c9e6e; }
     .demo-brand {
       font-family: 'Oswald', sans-serif;
-      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.2em;
-      text-transform: uppercase; color: rgba(255,255,255,0.35);
-      margin-bottom: 4px;
+      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.22em;
+      text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 3px;
     }
-    .demo-card.light-card .demo-brand { color: rgba(20,18,14,0.35); }
     .demo-name {
       font-family: 'Oswald', sans-serif;
-      font-size: 1.25rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.04em;
-      color: #fff; margin-bottom: 10px;
+      font-size: 1.2rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;
     }
     .demo-card.light-card .demo-name { color: #1a1814; }
-    .demo-tags {
-      display: flex; gap: 8px; flex-wrap: wrap;
-    }
+    .demo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .demo-tag {
-      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
-      border: 1px solid rgba(255,255,255,0.18); padding: 4px 10px;
-      color: rgba(255,255,255,0.45);
+      font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.15); padding: 3px 8px;
+      color: rgba(255,255,255,0.4);
     }
     .demo-card.light-card .demo-tag {
-      border-color: rgba(20,18,14,0.18); color: rgba(20,18,14,0.45);
+      border-color: rgba(20,18,14,0.15); color: rgba(20,18,14,0.4);
     }
-    /* Open demo button */
     .demo-link {
-      position: absolute; top: 18px; right: 18px;
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+      position: absolute; top: 16px; right: 16px;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
       font-family: 'Oswald', sans-serif; font-weight: 600;
-      color: #fff; text-decoration: none;
+      color: #fff; text-decoration: none; z-index: 10;
       background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.15);
-      padding: 8px 14px;
+      padding: 7px 12px;
       opacity: 0; transform: translateY(-6px);
-      transition: opacity 0.3s, transform 0.3s, border-color 0.3s, background 0.3s;
+      transition: opacity 0.3s, transform 0.3s, background 0.3s;
       backdrop-filter: blur(6px);
+      pointer-events: all;
     }
     .demo-link:hover { background: var(--orange); border-color: var(--orange); color: var(--black); }
     .demo-card:hover .demo-link { opacity: 1; transform: translateY(0); }
-    .demo-card.light-card .demo-link { color: #1a1814; background: rgba(255,255,255,0.65); border-color: rgba(20,18,14,0.15); }
+    .demo-card.light-card .demo-link { color: #1a1814; background: rgba(255,255,255,0.7); border-color: rgba(20,18,14,0.15); }
     .demo-card.light-card:hover .demo-link { background: #4a7c59; border-color: #4a7c59; color: #fff; }
 
-    /* ─── PREÇOS ─── */
+    /* ══════════════════════════════════════════════════════════
+       PREÇOS
+    ══════════════════════════════════════════════════════════ */
     #precos { background: var(--black); }
-    .precos-header { text-align: center; margin-bottom: 72px; }
+    .precos-header { text-align: center; margin-bottom: 68px; opacity: 0; }
     .precos-title {
       font-family: 'Oswald', sans-serif;
       font-size: clamp(2.5rem, 5vw, 5.5rem);
       font-weight: 700; text-transform: uppercase;
-      line-height: 1; letter-spacing: -0.02em; margin-top: 16px;
+      line-height: 1; letter-spacing: -0.02em; margin-top: 14px;
     }
     .precos-title span { color: var(--orange); }
-    .precos-note {
-      font-size: 0.82rem; color: var(--grey);
-      margin-top: 16px;
-    }
+    .precos-note { font-size: 0.82rem; color: var(--grey); margin-top: 14px; }
     .plans-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 1px; background: var(--border);
       max-width: 1040px; margin: 0 auto;
     }
-    .plan { background: var(--dark); padding: 52px 40px; position: relative; }
+    .plan { background: var(--dark); padding: 50px 38px; position: relative; opacity: 0; }
     .plan.featured { background: var(--orange); }
     .plan-tier {
-      font-size: 0.66rem; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--grey); margin-bottom: 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--grey); margin-bottom: 24px;
     }
-    .plan.featured .plan-tier { color: rgba(0,0,0,0.5); }
+    .plan.featured .plan-tier { color: rgba(0,0,0,0.45); }
     .plan-price {
       font-family: 'Oswald', sans-serif;
-      font-size: 3.2rem; font-weight: 700;
-      color: var(--white); line-height: 1;
+      font-size: 3rem; font-weight: 700; color: var(--white); line-height: 1;
     }
     .plan.featured .plan-price { color: var(--black); }
-    .plan-price small {
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem; font-weight: 400; color: var(--grey);
-    }
-    .plan.featured .plan-price small { color: rgba(0,0,0,0.45); }
-    .plan-delivery {
-      font-size: 0.72rem; color: var(--green); font-weight: 600;
-      letter-spacing: 0.08em; margin: 12px 0;
-    }
-    .plan.featured .plan-delivery { color: rgba(0,0,0,0.65); }
+    .plan-price small { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 400; color: var(--grey); }
+    .plan.featured .plan-price small { color: rgba(0,0,0,0.4); }
+    .plan-delivery { font-size: 0.7rem; color: var(--green); font-weight: 600; letter-spacing: 0.08em; margin: 10px 0; }
+    .plan.featured .plan-delivery { color: rgba(0,0,0,0.6); }
     .plan-name {
       font-family: 'Oswald', sans-serif;
-      font-size: 1.2rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.08em; margin: 20px 0 16px;
-      color: var(--white);
+      font-size: 1.1rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; margin: 18px 0 14px; color: var(--white);
     }
     .plan.featured .plan-name { color: var(--black); }
-    .plan-desc { font-size: 0.82rem; color: var(--grey); line-height: 1.65; margin-bottom: 28px; }
-    .plan.featured .plan-desc { color: rgba(0,0,0,0.55); }
-    .plan-features { list-style: none; margin-bottom: 36px; }
+    .plan-desc { font-size: 0.8rem; color: var(--grey); line-height: 1.65; margin-bottom: 24px; }
+    .plan.featured .plan-desc { color: rgba(0,0,0,0.5); }
+    .plan-features { list-style: none; margin-bottom: 32px; }
     .plan-features li {
-      font-size: 0.8rem; color: var(--grey);
-      padding: 9px 0; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 12px;
+      font-size: 0.78rem; color: var(--grey);
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
     }
-    .plan.featured .plan-features li { color: rgba(0,0,0,0.6); border-bottom-color: rgba(0,0,0,0.1); }
-    .plan-features li::before {
-      content: ''; width: 14px; height: 1px;
-      background: var(--orange); flex-shrink: 0;
-    }
+    .plan.featured .plan-features li { color: rgba(0,0,0,0.55); border-bottom-color: rgba(0,0,0,0.08); }
+    .plan-features li::before { content: ''; width: 12px; height: 1px; background: var(--orange); flex-shrink: 0; }
     .plan.featured .plan-features li::before { background: var(--black); }
     .plan-btn {
-      display: block; text-align: center; padding: 14px;
-      font-family: 'Oswald', sans-serif; font-size: 0.82rem;
+      display: block; text-align: center; padding: 13px;
+      font-family: 'Oswald', sans-serif; font-size: 0.8rem;
       font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
       text-decoration: none; border: 1px solid var(--border); color: var(--white);
       transition: all 0.3s;
@@ -574,405 +717,375 @@
     .plan-badge {
       position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
       background: var(--black); color: var(--orange);
-      font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
-      padding: 5px 14px; white-space: nowrap;
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 4px 12px; white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
     }
-    .precos-extras {
-      text-align: center; margin-top: 32px;
-      font-size: 0.78rem; color: var(--grey);
-    }
-    .precos-extras span { color: rgba(255,255,255,0.35); margin: 0 10px; }
+    .precos-extras { text-align: center; margin-top: 28px; font-size: 0.76rem; color: var(--grey); }
+    .precos-extras span { color: rgba(255,255,255,0.2); margin: 0 8px; }
 
-    /* ─── COMPARAÇÃO ─── */
+    /* ══════════════════════════════════════════════════════════
+       COMPARAÇÃO
+    ══════════════════════════════════════════════════════════ */
     #comparacao { background: var(--dark); }
     .comp-title {
       font-family: 'Oswald', sans-serif;
       font-size: clamp(2rem, 4vw, 4rem);
       font-weight: 700; text-transform: uppercase;
-      line-height: 1; letter-spacing: -0.02em; margin-bottom: 48px;
+      line-height: 1; letter-spacing: -0.02em; margin-bottom: 44px; opacity: 0;
     }
-    .vs-table {
-      width: 100%; border-collapse: collapse;
-    }
+    .vs-table { width: 100%; border-collapse: collapse; opacity: 0; }
     .vs-table th {
       font-family: 'Oswald', sans-serif;
-      font-size: 0.85rem; font-weight: 600;
+      font-size: 0.82rem; font-weight: 600;
       letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 16px 20px; text-align: left;
+      padding: 14px 18px; text-align: left;
       border-bottom: 1px solid var(--border);
     }
     .vs-table th:nth-child(2) { color: var(--orange); }
     .vs-table th:first-child, .vs-table th:last-child { color: var(--grey); }
     .vs-table td {
-      padding: 14px 20px; font-size: 0.83rem;
+      padding: 13px 18px; font-size: 0.82rem;
       border-bottom: 1px solid var(--border);
     }
     .vs-table tr:last-child td { border-bottom: none; }
     .vs-table td:first-child { color: var(--grey); }
     .vs-table td:nth-child(2) { color: var(--green); font-weight: 600; }
     .vs-table td:last-child { color: #f87171; }
+    .vs-table tbody tr { transition: background 0.2s; }
     .vs-table tbody tr:hover td { background: rgba(249,115,22,0.03); }
 
-    /* ─── FAQ ─── */
+    /* ══════════════════════════════════════════════════════════
+       FAQ
+    ══════════════════════════════════════════════════════════ */
     #faq { background: var(--black); }
     .faq-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; }
     .faq-left .faq-title {
       font-family: 'Oswald', sans-serif;
       font-size: clamp(2rem, 4vw, 4rem);
       font-weight: 700; text-transform: uppercase;
-      line-height: 1; letter-spacing: -0.02em;
+      line-height: 1; letter-spacing: -0.02em; opacity: 0;
     }
-    .faq-list { display: flex; flex-direction: column; gap: 0; }
+    .faq-list { display: flex; flex-direction: column; opacity: 0; }
     .faq-item { border-bottom: 1px solid var(--border); }
     .faq-q {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 20px 0; cursor: pointer;
-      font-size: 0.9rem; font-weight: 500;
-      gap: 20px; user-select: none;
-      transition: color 0.3s;
+      padding: 18px 0; cursor: pointer; font-size: 0.88rem; font-weight: 500;
+      gap: 20px; user-select: none; transition: color 0.3s;
     }
     .faq-q:hover { color: var(--orange); }
     .faq-icon {
-      width: 28px; height: 28px; border: 1px solid var(--border);
+      width: 26px; height: 26px; border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem; color: var(--grey); flex-shrink: 0;
-      transition: border-color 0.3s, color 0.3s, transform 0.3s;
+      font-size: 0.85rem; color: var(--grey); flex-shrink: 0;
+      transition: border-color 0.3s, color 0.3s, transform 0.4s;
     }
     .faq-item.open .faq-icon { border-color: var(--orange); color: var(--orange); transform: rotate(45deg); }
-    .faq-a {
-      display: none; padding: 0 0 20px;
-      font-size: 0.85rem; color: var(--grey); line-height: 1.75;
-    }
+    .faq-a { display: none; padding: 0 0 18px; font-size: 0.83rem; color: var(--grey); line-height: 1.8; }
     .faq-item.open .faq-a { display: block; }
 
-    /* ─── CONTACTO / CTA FINAL ─── */
+    /* ══════════════════════════════════════════════════════════
+       CONTACTO
+    ══════════════════════════════════════════════════════════ */
     #contacto {
-      background: var(--dark); padding: 120px 60px;
+      background: var(--dark); padding: 110px 60px;
       display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
     }
     .cta-left h2 {
       font-family: 'Oswald', sans-serif;
       font-size: clamp(3rem, 6vw, 6.5rem);
       font-weight: 700; text-transform: uppercase;
-      line-height: 0.95; letter-spacing: -0.02em;
+      line-height: 0.95; letter-spacing: -0.02em; opacity: 0;
     }
     .cta-left h2 span { color: var(--orange); }
-    .cta-left p { color: var(--grey); font-size: 0.9rem; margin-top: 24px; line-height: 1.75; }
-    .cta-right { display: flex; flex-direction: column; gap: 12px; }
+    .cta-left p { color: var(--grey); font-size: 0.9rem; margin-top: 22px; line-height: 1.8; opacity: 0; }
+    .cta-right { display: flex; flex-direction: column; gap: 10px; }
     .contact-row {
-      display: flex; align-items: center; gap: 20px;
-      padding: 20px 24px; border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 18px;
+      padding: 18px 22px; border: 1px solid var(--border);
       text-decoration: none; color: var(--white);
       transition: border-color 0.3s, background 0.3s;
+      opacity: 0;
     }
     .contact-row:hover { border-color: var(--orange); background: rgba(249,115,22,0.04); }
     .cr-icon {
-      width: 44px; height: 44px; border: 1px solid var(--border);
+      width: 42px; height: 42px; border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; flex-shrink: 0;
-      transition: border-color 0.3s;
+      font-size: 1rem; flex-shrink: 0; transition: border-color 0.3s;
     }
     .contact-row:hover .cr-icon { border-color: var(--orange); }
-    .cr-title { font-weight: 600; font-size: 0.88rem; }
-    .cr-sub { font-size: 0.75rem; color: var(--grey); margin-top: 2px; }
-    .cta-promises { margin-top: 28px; display: flex; flex-direction: column; gap: 0; }
+    .cr-title { font-weight: 600; font-size: 0.85rem; }
+    .cr-sub { font-size: 0.72rem; color: var(--grey); margin-top: 2px; }
+    .cta-promises { margin-top: 24px; display: flex; flex-direction: column; opacity: 0; }
     .promise {
-      display: flex; align-items: center; gap: 14px;
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-      font-size: 0.82rem; color: var(--grey);
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--grey);
     }
     .promise:last-child { border-bottom: none; }
     .promise::before { content: '—'; color: var(--orange); font-weight: 700; flex-shrink: 0; }
 
-    /* ─── FOOTER ─── */
+    /* ══════════════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════════════ */
     footer {
-      background: var(--black);
-      padding: 40px 60px;
+      background: var(--black); padding: 36px 60px;
       border-top: 1px solid var(--border);
-      display: flex; align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
     }
     .footer-logo {
-      font-family: 'Oswald', sans-serif; font-size: 1.1rem;
-      font-weight: 700; letter-spacing: 0.08em;
-      color: var(--white); text-decoration: none;
+      font-family: 'Oswald', sans-serif; font-size: 1rem;
+      font-weight: 700; letter-spacing: 0.1em; color: var(--white); text-decoration: none;
     }
     .footer-logo span { color: var(--orange); }
     footer p { font-size: 0.72rem; color: var(--grey); }
-    .footer-links { display: flex; gap: 20px; }
+    .footer-links { display: flex; gap: 24px; }
     .footer-links a {
-      font-size: 0.7rem; color: var(--grey);
-      text-decoration: none; letter-spacing: 0.1em;
-      text-transform: uppercase; transition: color 0.3s;
+      font-size: 0.7rem; color: var(--grey); text-decoration: none;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.3s;
     }
-    .footer-links a:hover { color: var(--orange); }
-
-    /* ─── REVEAL ─── */
-    .reveal {
-      opacity: 0; transform: translateY(36px);
-      transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .rd1 { transition-delay: 0.1s; }
-    .rd2 { transition-delay: 0.2s; }
-    .rd3 { transition-delay: 0.3s; }
-    .rd4 { transition-delay: 0.4s; }
-
-    /* ─── KEYFRAMES ─── */
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes slideIn { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 1100px) {
-      nav { padding: 22px 32px; }
-      nav.scrolled { padding: 12px 32px; }
-      section { padding: 80px 32px; }
-      #hero { padding: 0 32px 60px; }
-      .hero-float-stats { display: none; }
-      #sobre { grid-template-columns: 1fr; gap: 48px; }
-      .steps-grid { grid-template-columns: repeat(2,1fr); }
-      .demos-grid { grid-template-columns: repeat(2,1fr); }
-      .plans-grid { grid-template-columns: 1fr; max-width: 400px; }
-      .faq-layout { grid-template-columns: 1fr; gap: 40px; }
-      #contacto { grid-template-columns: 1fr; gap: 48px; }
-      .footer-links { display: none; }
-    }
-    @media (max-width: 640px) {
-      nav { padding: 18px 24px; }
-      .nav-links { display: none; }
-      section { padding: 60px 24px; }
-      #hero { padding: 0 24px 48px; }
-      .steps-grid { grid-template-columns: 1fr; }
-      .demos-grid { grid-template-columns: 1fr; }
-      .demo-card.featured { grid-column: span 1 !important; height: auto !important; aspect-ratio: 4/3 !important; }
-      .demo-filters { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; scrollbar-width: none; }
-      .demo-filters::-webkit-scrollbar { display: none; }
-      .demo-filter-btn { flex-shrink: 0; }
-      footer { flex-direction: column; gap: 16px; text-align: center; }
-    }
+    .footer-links a:hover { color: var(--white); }
   </style>
 </head>
 <body>
 
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursor-ring"></div>
+<!-- ══ CURSOR ══════════════════════════════════════════════════ -->
+<div id="c-dot"></div>
+<div id="c-ring"></div>
+<div id="c-label"></div>
 
-  <!-- NAV -->
-  <nav id="navbar">
-    <a href="#" class="nav-logo">dinis<span>.</span>pt</a>
-    <ul class="nav-links">
-      <li><a href="#sobre">Sobre</a></li>
-      <li><a href="#processo">Processo</a></li>
-      <li><a href="#portfolio">Portfólio</a></li>
-      <li><a href="#precos">Preços</a></li>
-      <li><a href="#faq">FAQ</a></li>
-    </ul>
-    <a href="https://wa.me/351926188888?text=Olá Dinis! Gostava de saber mais sobre os teus serviços." class="nav-cta">WhatsApp →</a>
-  </nav>
+<!-- ══ NAV ═════════════════════════════════════════════════════ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">dinis<span>.</span>pt</a>
+  <ul class="nav-links">
+    <li><a href="#sobre"     data-cursor="Sobre">Sobre</a></li>
+    <li><a href="#portfolio" data-cursor="Demos">Demos</a></li>
+    <li><a href="#precos"    data-cursor="Preços">Preços</a></li>
+    <li><a href="#contacto"  data-cursor="Contacto">Contacto</a></li>
+  </ul>
+  <a href="https://wa.me/351926188888?text=Olá Dinis! Gostava de pedir um orçamento gratuito."
+     class="nav-cta magnetic" data-cursor="→ WhatsApp">Orçamento grátis</a>
+</nav>
 
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-bg"></div>
+<!-- ══ HERO ════════════════════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-gradient"></div>
 
-    <div class="hero-float-stats">
-      <div class="fstat">
-        <div class="fstat-num">€299<em>+</em></div>
-        <div class="fstat-lbl">Preço de entrada</div>
-      </div>
-      <div class="fstat">
-        <div class="fstat-num">5–7<em>d</em></div>
-        <div class="fstat-lbl">Dias de entrega</div>
-      </div>
-      <div class="fstat">
-        <div class="fstat-num">30<em>d</em></div>
-        <div class="fstat-lbl">Suporte grátis</div>
-      </div>
+  <div class="hero-float-stats" id="heroStats">
+    <div class="fstat">
+      <div class="fstat-num"><span class="count" data-target="7">0</span><em>+</em></div>
+      <div class="fstat-lbl">Demos criados</div>
     </div>
-
-    <div class="hero-available">
-      <div class="avail-dot"></div>
-      <span class="avail-text"><strong>Disponível</strong> para novos projetos — respondo em 24h</span>
+    <div class="fstat">
+      <div class="fstat-num"><span class="count" data-target="5">0</span><em>–21</em></div>
+      <div class="fstat-lbl">Dias de entrega</div>
     </div>
-
-    <div class="hero-headline">
-      <h1>
-        <span class="hl1">Websites</span>
-        <span class="hl2">que fazem</span>
-        <span class="hl3">clientes.</span>
-      </h1>
-    </div>
-
-    <div class="hero-bottom">
-      <p class="hero-desc">
-        Crio websites WordPress para <strong>pequenos negócios em Portugal</strong> — rápido, sem burocracia de agência, a preços que fazem sentido para o teu negócio.
-      </p>
-      <div class="hero-actions">
-        <div class="hero-scroll-hint" onclick="document.getElementById('sobre').scrollIntoView({behavior:'smooth'})">
-          <div class="scroll-bar"></div>
-          <span>Scroll</span>
-        </div>
-        <a href="https://wa.me/351926188888?text=Olá Dinis! Gostava de pedir um orçamento gratuito." class="btn-primary">
-          Pedir orçamento grátis
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M3 8H13M8 3L13 8L8 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- MARQUEE -->
-  <div class="marquee-band">
-    <div class="marquee-inner">
-      <span class="mq-item">WordPress</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">WooCommerce</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Vale de Cambra</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Portugal</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">SEO incluído</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">MB WAY + Multibanco</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Entrega em 5–7 dias</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">SSL certificado</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Domínio .pt</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">WordPress</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">WooCommerce</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Vale de Cambra</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Portugal</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">SEO incluído</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">MB WAY + Multibanco</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Entrega em 5–7 dias</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">SSL certificado</span><span class="mq-item mq-dot">✦</span>
-      <span class="mq-item">Domínio .pt</span><span class="mq-item mq-dot">✦</span>
+    <div class="fstat">
+      <div class="fstat-num"><em>€</em><span class="count" data-target="299">0</span></div>
+      <div class="fstat-lbl">Preço inicial</div>
     </div>
   </div>
 
-  <!-- SOBRE / APRESENTAÇÃO -->
-  <section id="sobre">
-    <div class="sobre-left reveal">
-      <div class="sec-label">Sobre mim</div>
-      <h2 class="about-big">
-        Não sou<br>
-        <em>uma</em><br>
-        agência.<br>
-        Sou <span class="o">o Dinis.</span>
-      </h2>
-    </div>
-    <div class="sobre-right">
-      <p class="reveal rd1">
-        Tenho 19 anos, sou de Vale de Cambra e aprendi a criar websites do zero — servidores, domínios, WordPress, tudo configurado à mão. <strong>Sem ferramentas de drag-and-drop que toda a gente usa.</strong>
-      </p>
-      <p class="reveal rd2">
-        Quando me contactas, falas diretamente comigo — não com um gestor de conta. Isso significa <strong>menos burocracia, mais rapidez, preços que fazem sentido</strong> para o teu negócio.
-      </p>
-      <div class="about-divider reveal rd2"></div>
-      <div class="values-list">
-        <div class="val-item reveal rd2">
-          <div class="val-num">01</div>
-          <div>
-            <div class="val-title">Entrego quando digo</div>
-            <div class="val-desc">Dou prazos concretos e cumpro-os. Não há o "está quase pronto" durante semanas.</div>
-          </div>
-        </div>
-        <div class="val-item reveal rd3">
-          <div class="val-num">02</div>
-          <div>
-            <div class="val-title">O site é 100% teu</div>
-            <div class="val-desc">Domínio, hosting e painel WordPress ficam em teu nome. Nunca ficas dependente de mim.</div>
-          </div>
-        </div>
-        <div class="val-item reveal rd4">
-          <div class="val-num">03</div>
-          <div>
-            <div class="val-title">Preço fechado antes de começar</div>
-            <div class="val-desc">Dou-te um valor fixo na proposta. Não há surpresas no final.</div>
-          </div>
-        </div>
-      </div>
-      <div class="profile-mini reveal rd2">
-        <div class="pm-top">
-          <div class="pm-avatar">DW</div>
-          <div>
-            <div class="pm-name">Dinis Wang Lin</div>
-            <div class="pm-role">Freelancer WordPress · Vale de Cambra, PT</div>
-          </div>
-        </div>
-        <div class="pm-tags">
-          <span class="pm-tag">WordPress</span>
-          <span class="pm-tag">WooCommerce</span>
-          <span class="pm-tag">PHP</span>
-          <span class="pm-tag">MySQL</span>
-          <span class="pm-tag">LAMP Stack</span>
-          <span class="pm-tag">SEO</span>
-          <span class="pm-tag">cPanel</span>
-          <span class="pm-tag">SSL/HTTPS</span>
-        </div>
-        <div class="pm-stats">
-          <div class="pm-row"><span>Localização</span><strong>Vale de Cambra</strong></div>
-          <div class="pm-row"><span>Serviço</span><strong>Portugal inteiro</strong></div>
-          <div class="pm-row"><span>Resposta</span><strong>&lt; 24 horas</strong></div>
-          <div class="pm-row"><span>Idioma</span><strong>Português</strong></div>
-        </div>
-        <a href="https://wa.me/351926188888" class="pm-wa">💬 Fala comigo agora</a>
-      </div>
-    </div>
-  </section>
+  <div class="hero-available" id="heroAvail">
+    <div class="avail-dot"></div>
+    <span class="avail-text">Disponível agora — <strong>resposta em &lt; 24h</strong></span>
+  </div>
 
-  <!-- PROCESSO -->
-  <section id="processo">
-    <div class="sec-label reveal">Processo</div>
-    <h2 class="processo-title reveal">Do contacto<br>ao site online.</h2>
-    <div class="steps-grid">
-      <div class="step-block reveal">
-        <div class="step-big-num">01</div>
-        <div class="step-name">Falas comigo</div>
-        <div class="step-desc">Envias mensagem pelo WhatsApp ou email. Conto-te o que preciso de ti e dou-te um orçamento em 24 horas — gratuito e sem compromisso.</div>
+  <div class="hero-headline">
+    <h1>
+      <span class="hl-wrap hl1">
+        <span class="hl-ghost" aria-hidden="true">Websites</span>
+        <span class="hl-fill" id="hl1">Websites</span>
+      </span>
+      <span class="hl-wrap hl2">
+        <span class="hl-ghost" aria-hidden="true">que fazem</span>
+        <span class="hl-fill" id="hl2">que fazem</span>
+      </span>
+      <span class="hl-wrap hl3">
+        <span class="hl-ghost" aria-hidden="true">clientes.</span>
+        <span class="hl-fill" id="hl3">clientes.</span>
+      </span>
+    </h1>
+  </div>
+
+  <div class="hero-bottom" id="heroBottom">
+    <p class="hero-desc">
+      Crio websites WordPress para <strong>pequenos negócios em Portugal</strong> — rápido, sem burocracia de agência, a preços que fazem sentido para o teu negócio.
+    </p>
+    <div class="hero-actions">
+      <div class="hero-scroll-hint" onclick="document.getElementById('sobre').scrollIntoView({behavior:'smooth'})">
+        <div class="scroll-bar"></div>
+        <span>Scroll</span>
       </div>
-      <div class="step-block reveal rd1">
-        <div class="step-big-num">02</div>
-        <div class="step-name">Envias os materiais</div>
-        <div class="step-desc">Logótipo, fotos do negócio e um texto simples descrevendo o que fazes. Se não tiveres, ajudo a resolver isso também.</div>
+      <a href="https://wa.me/351926188888?text=Olá Dinis! Gostava de pedir um orçamento gratuito."
+         class="btn-primary magnetic" data-cursor="→ Orçamento grátis">
+        Pedir orçamento grátis
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M8 3L13 8L8 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ══════════════════════════════════════════════════ -->
+<div class="marquee-band">
+  <div class="marquee-inner">
+    <span class="mq-item">WordPress</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">WooCommerce</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Vale de Cambra</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Portugal</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">SEO incluído</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">MB WAY + Multibanco</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Entrega em 5–21 dias</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">SSL certificado</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Domínio .pt</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">WordPress</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">WooCommerce</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Vale de Cambra</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Portugal</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">SEO incluído</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">MB WAY + Multibanco</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Entrega em 5–21 dias</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">SSL certificado</span><span class="mq-item mq-dot">✦</span>
+    <span class="mq-item">Domínio .pt</span><span class="mq-item mq-dot">✦</span>
+  </div>
+</div>
+
+<!-- ══ SOBRE ════════════════════════════════════════════════════ -->
+<section id="sobre">
+  <div class="sobre-left">
+    <div class="sec-label" data-reveal>Sobre mim</div>
+    <h2 class="about-big reveal">
+      Não sou<br>
+      <em>uma</em><br>
+      agência.<br>
+      Sou <span class="o">o Dinis.</span>
+    </h2>
+  </div>
+  <div class="sobre-right">
+    <p class="reveal">
+      Tenho 19 anos, sou de Vale de Cambra e aprendi a criar websites do zero — servidores, domínios, WordPress, tudo configurado à mão. <strong>Sem ferramentas de drag-and-drop que toda a gente usa.</strong>
+    </p>
+    <p class="reveal">
+      Quando me contactas, falas diretamente comigo — não com um gestor de conta. Isso significa <strong>menos burocracia, mais rapidez, preços que fazem sentido</strong> para o teu negócio.
+    </p>
+    <div class="about-divider reveal"></div>
+    <div class="values-list">
+      <div class="val-item reveal">
+        <div class="val-num">01</div>
+        <div>
+          <div class="val-title">Entrego quando digo</div>
+          <div class="val-desc">Dou prazos concretos e cumpro-os. Não há o "está quase pronto" durante semanas.</div>
+        </div>
       </div>
-      <div class="step-block reveal rd2">
-        <div class="step-big-num">03</div>
-        <div class="step-name">Construo o site</div>
-        <div class="step-desc">Em 5 a 21 dias tens o primeiro esboço para ver. Ajustamos juntos até ficares satisfeito — inclui duas rondas de revisão.</div>
+      <div class="val-item reveal">
+        <div class="val-num">02</div>
+        <div>
+          <div class="val-title">O site é 100% teu</div>
+          <div class="val-desc">Domínio, hosting e painel WordPress ficam em teu nome. Nunca ficas dependente de mim.</div>
+        </div>
       </div>
-      <div class="step-block reveal rd3">
-        <div class="step-big-num">04</div>
-        <div class="step-name">Site no ar, site teu</div>
-        <div class="step-desc">Lanço o site, configuro Google Analytics e SEO básico. O painel WordPress fica em teu nome — nunca dependes de mim para o gerir.</div>
+      <div class="val-item reveal">
+        <div class="val-num">03</div>
+        <div>
+          <div class="val-title">Preço fechado antes de começar</div>
+          <div class="val-desc">Dou-te um valor fixo na proposta. Não há surpresas no final.</div>
+        </div>
       </div>
     </div>
-  </section>
-
-  <!-- PORTFÓLIO -->
-  <section id="portfolio">
-    <div class="portfolio-header reveal">
-      <div>
-        <div class="sec-label">Portfólio</div>
-        <h2 class="portfolio-title">Demos &<br>Projetos.</h2>
+    <div class="profile-mini reveal">
+      <div class="pm-top">
+        <div class="pm-avatar">DW</div>
+        <div>
+          <div class="pm-name">Dinis Wang Lin</div>
+          <div class="pm-role">Freelancer WordPress · Vale de Cambra, PT</div>
+        </div>
       </div>
-      <span class="portfolio-count">7 demos · cada um único</span>
+      <div class="pm-tags">
+        <span class="pm-tag">WordPress</span><span class="pm-tag">WooCommerce</span>
+        <span class="pm-tag">PHP</span><span class="pm-tag">MySQL</span>
+        <span class="pm-tag">LAMP Stack</span><span class="pm-tag">SEO</span>
+        <span class="pm-tag">cPanel</span><span class="pm-tag">SSL/HTTPS</span>
+      </div>
+      <div class="pm-stats">
+        <div class="pm-row"><span>Localização</span><strong>Vale de Cambra</strong></div>
+        <div class="pm-row"><span>Serviço</span><strong>Portugal inteiro</strong></div>
+        <div class="pm-row"><span>Resposta</span><strong>&lt; 24 horas</strong></div>
+        <div class="pm-row"><span>Idioma</span><strong>Português</strong></div>
+      </div>
+      <a href="https://wa.me/351926188888" class="pm-wa">💬 Fala comigo agora</a>
     </div>
+  </div>
+</section>
 
-    <!-- Filter tabs -->
-    <div class="demo-filters reveal">
-      <button class="demo-filter-btn active" onclick="filterDemos('todos', this)">Todos</button>
-      <button class="demo-filter-btn" onclick="filterDemos('restauracao', this)">Restauração</button>
-      <button class="demo-filter-btn" onclick="filterDemos('fitness', this)">Fitness</button>
-      <button class="demo-filter-btn" onclick="filterDemos('estetica', this)">Estética</button>
-      <button class="demo-filter-btn" onclick="filterDemos('imobiliario', this)">Imobiliário</button>
-      <button class="demo-filter-btn" onclick="filterDemos('moda', this)">Moda</button>
-      <button class="demo-filter-btn" onclick="filterDemos('fotografia', this)">Fotografia</button>
-      <button class="demo-filter-btn" onclick="filterDemos('barbearia', this)">Barbearia</button>
+<!-- ══ PROCESSO ════════════════════════════════════════════════ -->
+<section id="processo">
+  <div class="sec-label" data-reveal>Processo</div>
+  <h2 class="processo-title">Do contacto<br>ao site online.</h2>
+  <div class="steps-grid">
+    <div class="step-block">
+      <div class="step-big-num">01</div>
+      <div class="step-name">Falas comigo</div>
+      <div class="step-desc">Envias mensagem pelo WhatsApp ou email. Conto-te o que preciso de ti e dou-te um orçamento em 24 horas — gratuito e sem compromisso.</div>
     </div>
+    <div class="step-block">
+      <div class="step-big-num">02</div>
+      <div class="step-name">Envias os materiais</div>
+      <div class="step-desc">Logótipo, fotos do negócio e um texto simples descrevendo o que fazes. Se não tiveres, ajudo a resolver isso também.</div>
+    </div>
+    <div class="step-block">
+      <div class="step-big-num">03</div>
+      <div class="step-name">Construo o site</div>
+      <div class="step-desc">Em 5 a 21 dias tens o primeiro esboço para ver. Ajustamos juntos até ficares satisfeito — inclui duas rondas de revisão.</div>
+    </div>
+    <div class="step-block">
+      <div class="step-big-num">04</div>
+      <div class="step-name">Site no ar, site teu</div>
+      <div class="step-desc">Lanço o site, configuro Google Analytics e SEO básico. O painel WordPress fica em teu nome — nunca dependes de mim para o gerir.</div>
+    </div>
+  </div>
+</section>
 
-    <div class="demos-grid" id="demosGrid">
+<!-- ══ PORTFÓLIO ════════════════════════════════════════════════ -->
+<section id="portfolio">
+  <div class="portfolio-header">
+    <div>
+      <div class="sec-label" data-reveal>Portfólio</div>
+      <h2 class="portfolio-title">Demos &<br>Projetos.</h2>
+    </div>
+    <span class="portfolio-count">7 demos · arrasta para revelar</span>
+  </div>
 
-      <!-- APEX — Ginásio (featured, full width) -->
-      <div class="demo-card featured reveal" data-cat="fitness">
+  <div class="demo-filters">
+    <button class="demo-filter-btn active" onclick="filterDemos('todos',this)">Todos</button>
+    <button class="demo-filter-btn" onclick="filterDemos('restauracao',this)">Restauração</button>
+    <button class="demo-filter-btn" onclick="filterDemos('fitness',this)">Fitness</button>
+    <button class="demo-filter-btn" onclick="filterDemos('estetica',this)">Estética</button>
+    <button class="demo-filter-btn" onclick="filterDemos('imobiliario',this)">Imobiliário</button>
+    <button class="demo-filter-btn" onclick="filterDemos('moda',this)">Moda</button>
+    <button class="demo-filter-btn" onclick="filterDemos('fotografia',this)">Fotografia</button>
+    <button class="demo-filter-btn" onclick="filterDemos('barbearia',this)">Barbearia</button>
+  </div>
+
+  <div class="demos-grid" id="demosGrid">
+
+    <!-- APEX — Ginásio (featured) -->
+    <div class="demo-card featured" data-cat="fitness" data-cursor="Ginásio">
+      <!-- BEFORE -->
+      <div class="ba-before">
+        <div class="ba-before-inner">
+          <span class="ba-before-label">Sem website</span>
+          <span class="ba-before-name">Apex Gym</span>
+          <span class="ba-before-info">📍 Vale de Cambra<br>📱 +351 9XX XXX XXX<br>Encontre-nos no Google Maps</span>
+          <span class="ba-before-link">Ver no Facebook →</span>
+        </div>
+      </div>
+      <!-- AFTER -->
+      <div class="ba-after">
         <div class="demo-visual" style="background:linear-gradient(135deg,#0a0a08 0%,#111a08 50%,#0a0a08 100%);position:relative;overflow:hidden;">
-          <!-- Alternating stripes hint -->
           <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent 48%,rgba(200,241,53,0.04) 48%,rgba(200,241,53,0.04) 52%);"></div>
           <span class="demo-ghost" style="color:rgba(200,241,53,0.08);font-size:9rem;">APEX</span>
         </div>
@@ -986,11 +1099,26 @@
             <span class="demo-tag">Scroll horizontal</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-ginasio.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
+      <!-- Labels -->
+      <div class="ba-label-before">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <!-- Divider -->
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-ginasio.html" target="_blank" class="demo-link">Ver Demo ↗</a>
+    </div>
 
-      <!-- FOGO — Restaurante -->
-      <div class="demo-card reveal" data-cat="restauracao">
+    <!-- FOGO — Restaurante -->
+    <div class="demo-card" data-cat="restauracao" data-cursor="Restaurante">
+      <div class="ba-before">
+        <div class="ba-before-inner">
+          <span class="ba-before-label">Sem website</span>
+          <span class="ba-before-name">Restaurante Fogo</span>
+          <span class="ba-before-info">📍 Rua Principal, nº 12<br>📱 Reservas: 912 XXX XXX<br>Segunda a Domingo, 12h–23h</span>
+          <span class="ba-before-link">Ver no TripAdvisor →</span>
+        </div>
+      </div>
+      <div class="ba-after">
         <div class="demo-visual" style="background:linear-gradient(160deg,#080604 0%,#1a1208 100%);position:relative;overflow:hidden;">
           <div style="position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to top,rgba(200,144,58,0.12),transparent);"></div>
           <span class="demo-ghost" style="color:rgba(200,144,58,0.1);">FOGO</span>
@@ -1005,11 +1133,24 @@
             <span class="demo-tag">Loading screen</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-restaurante.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
+      <div class="ba-label-before">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-restaurante.html" target="_blank" class="demo-link">Ver Demo ↗</a>
+    </div>
 
-      <!-- AURORA — Estética (light card) -->
-      <div class="demo-card light-card reveal rd1" data-cat="estetica">
+    <!-- AURORA — Estética -->
+    <div class="demo-card light-card" data-cat="estetica" data-cursor="Estética">
+      <div class="ba-before" style="background:#f0eeea;">
+        <div class="ba-before-inner">
+          <span class="ba-before-label" style="color:rgba(0,0,0,0.25);border-color:rgba(0,0,0,0.1);">Sem website</span>
+          <span class="ba-before-name" style="color:rgba(0,0,0,0.45);">Aurora Estética</span>
+          <span class="ba-before-info" style="color:rgba(0,0,0,0.28);">✦ Tratamentos de rosto e corpo<br>📱 Marcações: 913 XXX XXX<br>Seg–Sex 9h–19h · Sáb 9h–13h</span>
+          <span class="ba-before-link" style="color:rgba(74,124,89,0.5);">Ver no Instagram →</span>
+        </div>
+      </div>
+      <div class="ba-after">
         <div class="demo-visual" style="background:linear-gradient(160deg,#f7f5f0 0%,#eae7e0 100%);position:relative;overflow:hidden;">
           <div style="position:absolute;top:0;right:0;width:50%;height:100%;background:rgba(74,124,89,0.05);clip-path:polygon(12% 0,100% 0,100% 100%,0 100%);"></div>
           <span class="demo-ghost" style="color:rgba(74,124,89,0.1);">AURORA</span>
@@ -1024,11 +1165,24 @@
             <span class="demo-tag">Tema claro</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-estetica.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
+      <div class="ba-label-before" style="color:rgba(0,0,0,0.3);">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-estetica.html" target="_blank" class="demo-link">Ver Demo ↗</a>
+    </div>
 
-      <!-- VALOR — Imobiliária -->
-      <div class="demo-card reveal rd2" data-cat="imobiliario">
+    <!-- VALOR — Imobiliária -->
+    <div class="demo-card" data-cat="imobiliario" data-cursor="Imobiliária">
+      <div class="ba-before">
+        <div class="ba-before-inner">
+          <span class="ba-before-label">Sem website</span>
+          <span class="ba-before-name">Valor Imobiliária</span>
+          <span class="ba-before-info">🏠 Compra · Venda · Arrendamento<br>📱 +351 9XX XXX XXX<br>Ver anúncios no OLX ou Idealista</span>
+          <span class="ba-before-link">Ver anúncios no Idealista →</span>
+        </div>
+      </div>
+      <div class="ba-after">
         <div class="demo-visual" style="background:linear-gradient(160deg,#05080f 0%,#0a1020 100%);position:relative;overflow:hidden;">
           <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(201,165,90,0.05) 39px,rgba(201,165,90,0.05) 40px);"></div>
           <span class="demo-ghost" style="color:rgba(201,165,90,0.1);">VALOR</span>
@@ -1043,11 +1197,24 @@
             <span class="demo-tag">Hover overlay</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-imobiliaria.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
+      <div class="ba-label-before">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-imobiliaria.html" target="_blank" class="demo-link">Ver Demo ↗</a>
+    </div>
 
-      <!-- LENS — Fotógrafo -->
-      <div class="demo-card reveal" data-cat="fotografia">
+    <!-- LENS — Fotógrafo -->
+    <div class="demo-card" data-cat="fotografia" data-cursor="Fotógrafo">
+      <div class="ba-before">
+        <div class="ba-before-inner">
+          <span class="ba-before-label">Sem website</span>
+          <span class="ba-before-name">Lens Photography</span>
+          <span class="ba-before-info">📷 Fotografia de casamentos<br>e eventos empresariais<br>📱 Contacto via Instagram DM</span>
+          <span class="ba-before-link">@lens.foto no Instagram →</span>
+        </div>
+      </div>
+      <div class="ba-after">
         <div class="demo-visual" style="background:#050505;position:relative;overflow:hidden;">
           <div style="position:absolute;top:50%;left:50%;width:240px;height:240px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(77,184,255,0.08) 0%,transparent 70%);border-radius:50%;"></div>
           <span class="demo-ghost" style="color:rgba(77,184,255,0.08);font-size:5rem;">LENS</span>
@@ -1062,11 +1229,24 @@
             <span class="demo-tag">Text scramble</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-fotografo.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
+      <div class="ba-label-before">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-fotografo.html" target="_blank" class="demo-link">Ver Demo ↗</a>
+    </div>
 
-      <!-- NAVALHA — Barbearia -->
-      <div class="demo-card reveal rd1" data-cat="barbearia">
+    <!-- NAVALHA — Barbearia -->
+    <div class="demo-card" data-cat="barbearia" data-cursor="Barbearia">
+      <div class="ba-before">
+        <div class="ba-before-inner">
+          <span class="ba-before-label">Sem website</span>
+          <span class="ba-before-name">Navalha Barbearia</span>
+          <span class="ba-before-info">✂️ Cortes · Barbas · Tratamentos<br>📱 Marcações: 915 XXX XXX<br>Seg–Sáb 9h–19h</span>
+          <span class="ba-before-link">Ver no Google Maps →</span>
+        </div>
+      </div>
+      <div class="ba-after">
         <div class="demo-visual" style="background:linear-gradient(160deg,#0d0a05 0%,#1a1409 100%);position:relative;overflow:hidden;">
           <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(201,165,90,0.03) 18px,rgba(201,165,90,0.03) 19px);"></div>
           <span class="demo-ghost" style="color:rgba(201,165,90,0.09);font-size:4rem;">NAVALHA</span>
@@ -1081,11 +1261,24 @@
             <span class="demo-tag">Playfair Display</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-barbearia.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
+      <div class="ba-label-before">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-barbearia.html" target="_blank" class="demo-link">Ver Demo ↗</a>
+    </div>
 
-      <!-- BRUMA — Boutique (light card) -->
-      <div class="demo-card light-card reveal rd2" data-cat="moda">
+    <!-- BRUMA — Boutique -->
+    <div class="demo-card light-card" data-cat="moda" data-cursor="Boutique">
+      <div class="ba-before" style="background:#f0eeea;">
+        <div class="ba-before-inner">
+          <span class="ba-before-label" style="color:rgba(0,0,0,0.25);border-color:rgba(0,0,0,0.1);">Sem website</span>
+          <span class="ba-before-name" style="color:rgba(0,0,0,0.45);">Bruma Boutique</span>
+          <span class="ba-before-info" style="color:rgba(0,0,0,0.28);">👗 Roupa feminina · Acessórios<br>📍 Rua da Moda, nº 8<br>📱 Encomendas via WhatsApp</span>
+          <span class="ba-before-link" style="color:rgba(0,0,0,0.3);">Ver no Instagram →</span>
+        </div>
+      </div>
+      <div class="ba-after">
         <div class="demo-visual" style="background:linear-gradient(160deg,#f5f2ed 0%,#ede8e0 100%);position:relative;overflow:hidden;">
           <div style="position:absolute;top:20px;right:20px;width:60%;height:70%;background:rgba(0,0,0,0.03);"></div>
           <div style="position:absolute;top:40px;right:40px;width:40%;height:50%;background:rgba(0,0,0,0.03);"></div>
@@ -1101,281 +1294,583 @@
             <span class="demo-tag">Tema claro</span>
           </div>
         </div>
-        <a href="Web_Design/Demos/demo-aboutique-website.html" target="_blank" class="demo-link">Ver Demo ↗</a>
       </div>
-
+      <div class="ba-label-before" style="color:rgba(0,0,0,0.3);">ANTES</div>
+      <div class="ba-label-after">DEPOIS</div>
+      <div class="ba-divider"><div class="ba-divider-handle"></div></div>
+      <a href="Web_Design/Demos/demo-aboutique-website.html" target="_blank" class="demo-link">Ver Demo ↗</a>
     </div>
-  </section>
 
-  <!-- PREÇOS -->
-  <section id="precos">
-    <div class="precos-header reveal">
-      <div class="sec-label" style="justify-content:center;">Preços</div>
-      <h2 class="precos-title">Escolhe o teu<br><span>pacote.</span></h2>
-      <p class="precos-note">Preços transparentes, definidos antes de começar. 50% no início, 50% quando estiveres satisfeito.</p>
+  </div>
+</section>
+
+<!-- ══ PREÇOS ═══════════════════════════════════════════════════ -->
+<section id="precos">
+  <div class="precos-header">
+    <div class="sec-label" style="justify-content:center;" data-reveal>Preços</div>
+    <h2 class="precos-title">Escolhe o teu<br><span>pacote.</span></h2>
+    <p class="precos-note">Preços transparentes, definidos antes de começar. 50% no início, 50% quando estiveres satisfeito.</p>
+  </div>
+  <div class="plans-grid">
+    <div class="plan">
+      <div class="plan-tier">Presença Online</div>
+      <div class="plan-price">€299 <small>– €499</small></div>
+      <div class="plan-delivery">⚡ Entrega em 5 a 7 dias úteis</div>
+      <div class="plan-name">Starter</div>
+      <p class="plan-desc">Para quem precisa de marcar presença online com um site simples e profissional.</p>
+      <ul class="plan-features">
+        <li>Até 5 páginas (Início, Sobre, Serviços, Galeria, Contacto)</li>
+        <li>Design adaptado a telemóvel</li>
+        <li>Formulário de contacto</li>
+        <li>Certificado SSL incluído</li>
+        <li>SEO básico + Google Analytics</li>
+        <li>30 dias de suporte gratuito</li>
+      </ul>
+      <a href="https://wa.me/351926188888?text=Olá! Tenho interesse no Pacote Starter." class="plan-btn">Pedir orçamento →</a>
     </div>
-    <div class="plans-grid">
-
-      <div class="plan reveal">
-        <div class="plan-tier">Presença Online</div>
-        <div class="plan-price">€299 <small>– €499</small></div>
-        <div class="plan-delivery">⚡ Entrega em 5 a 7 dias úteis</div>
-        <div class="plan-name">Starter</div>
-        <p class="plan-desc">Para quem precisa de marcar presença online com um site simples e profissional. Cabeleireiros, contabilistas, fotógrafos, serviços locais.</p>
-        <ul class="plan-features">
-          <li>Até 5 páginas (Início, Sobre, Serviços, Galeria, Contacto)</li>
-          <li>Design adaptado a telemóvel</li>
-          <li>Formulário de contacto</li>
-          <li>Certificado SSL incluído</li>
-          <li>SEO básico + Google Analytics</li>
-          <li>30 dias de suporte gratuito</li>
-        </ul>
-        <a href="https://wa.me/351926188888?text=Olá! Tenho interesse no Pacote Starter." class="plan-btn">Pedir orçamento →</a>
-      </div>
-
-      <div class="plan featured reveal rd1">
-        <div class="plan-badge">Mais popular</div>
-        <div class="plan-tier">Destaque Local</div>
-        <div class="plan-price">€599 <small>– €999</small></div>
-        <div class="plan-delivery">⚡ Entrega em 7 a 14 dias úteis</div>
-        <div class="plan-name">Business</div>
-        <p class="plan-desc">Para restaurantes, salões, clínicas, ginásios e lojas físicas que querem destacar-se online.</p>
-        <ul class="plan-features">
-          <li>Até 10 páginas</li>
-          <li>Galeria de fotos profissional</li>
-          <li>Google Maps integrado</li>
-          <li>Blog para publicar novidades</li>
-          <li>SEO completo + Google Analytics</li>
-          <li>Design personalizado à marca</li>
-          <li>30 dias de suporte gratuito</li>
-        </ul>
-        <a href="https://wa.me/351926188888?text=Olá! Tenho interesse no Pacote Business." class="plan-btn">Pedir orçamento →</a>
-      </div>
-
-      <div class="plan reveal rd2">
-        <div class="plan-tier">Loja Online</div>
-        <div class="plan-price">€1.200 <small>– €1.800</small></div>
-        <div class="plan-delivery">⚡ Entrega em 14 a 21 dias úteis</div>
-        <div class="plan-name">Online Shop</div>
-        <p class="plan-desc">Loja WooCommerce completa para vender online. Artesãos, produtores locais, lojas físicas que querem expandir.</p>
-        <ul class="plan-features">
-          <li>Loja WooCommerce completa</li>
-          <li>Até 50 produtos carregados</li>
-          <li>MB WAY + Multibanco</li>
-          <li>Configuração de envios</li>
-          <li>SEO por produto</li>
-          <li>Painel de gestão de encomendas</li>
-          <li>30 dias de suporte gratuito</li>
-        </ul>
-        <a href="https://wa.me/351926188888?text=Olá! Tenho interesse no Pacote Online Shop." class="plan-btn">Pedir orçamento →</a>
-      </div>
-
+    <div class="plan featured">
+      <div class="plan-badge">Mais popular</div>
+      <div class="plan-tier">Destaque Local</div>
+      <div class="plan-price">€599 <small>– €999</small></div>
+      <div class="plan-delivery">⚡ Entrega em 7 a 14 dias úteis</div>
+      <div class="plan-name">Business</div>
+      <p class="plan-desc">Para restaurantes, salões, clínicas, ginásios e lojas físicas que querem destacar-se online.</p>
+      <ul class="plan-features">
+        <li>Até 10 páginas</li>
+        <li>Galeria de fotos profissional</li>
+        <li>Google Maps integrado</li>
+        <li>Blog para publicar novidades</li>
+        <li>SEO completo + Google Analytics</li>
+        <li>Design personalizado à marca</li>
+        <li>30 dias de suporte gratuito</li>
+      </ul>
+      <a href="https://wa.me/351926188888?text=Olá! Tenho interesse no Pacote Business." class="plan-btn">Pedir orçamento →</a>
     </div>
-    <p class="precos-extras">
-      Domínio + hosting: €50 (taxa única)
-      <span>·</span>
-      Manutenção mensal a partir de €30/mês
-      <span>·</span>
-      Logótipo simples: €50–€150
-    </p>
-  </section>
-
-  <!-- COMPARAÇÃO -->
-  <section id="comparacao">
-    <div class="sec-label reveal">Comparação</div>
-    <h2 class="comp-title reveal">Eu vs. agência<br>de design.</h2>
-    <div class="reveal">
-      <table class="vs-table">
-        <thead>
-          <tr>
-            <th>Característica</th>
-            <th>Dinis (freelancer)</th>
-            <th>Agência / Wix</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Preço</td><td>€299 – €1.800</td><td>€2.000 – €10.000+</td></tr>
-          <tr><td>Prazo de entrega</td><td>5 a 21 dias</td><td>2 a 6 meses</td></tr>
-          <tr><td>Com quem falas</td><td>Diretamente comigo</td><td>Gestor intermediário</td></tr>
-          <tr><td>Propriedade do site</td><td>100% tua, sempre</td><td>Wix: bloqueado à plataforma</td></tr>
-          <tr><td>Mercado PT</td><td>MB WAY, .pt, PT-PT</td><td>Depende da agência</td></tr>
-          <tr><td>Suporte pós-entrega</td><td>30 dias grátis incluídos</td><td>Contrato separado ou tarifa/hora</td></tr>
-          <tr><td>Alterações futuras</td><td>Tu próprio no WordPress</td><td>Pagas por cada pequena mudança</td></tr>
-        </tbody>
-      </table>
+    <div class="plan">
+      <div class="plan-tier">Loja Online</div>
+      <div class="plan-price">€1.200 <small>– €1.800</small></div>
+      <div class="plan-delivery">⚡ Entrega em 14 a 21 dias úteis</div>
+      <div class="plan-name">Online Shop</div>
+      <p class="plan-desc">Loja WooCommerce completa para vender online. Artesãos, produtores locais, lojas físicas.</p>
+      <ul class="plan-features">
+        <li>Loja WooCommerce completa</li>
+        <li>Até 50 produtos carregados</li>
+        <li>MB WAY + Multibanco</li>
+        <li>Configuração de envios</li>
+        <li>SEO por produto</li>
+        <li>Painel de gestão de encomendas</li>
+        <li>30 dias de suporte gratuito</li>
+      </ul>
+      <a href="https://wa.me/351926188888?text=Olá! Tenho interesse no Pacote Online Shop." class="plan-btn">Pedir orçamento →</a>
     </div>
-  </section>
+  </div>
+  <p class="precos-extras">
+    Domínio + hosting: €50 (taxa única)
+    <span>·</span> Manutenção mensal a partir de €30/mês
+    <span>·</span> Logótipo simples: €50–€150
+  </p>
+</section>
 
-  <!-- FAQ -->
-  <section id="faq">
-    <div class="faq-layout">
-      <div class="faq-left reveal">
-        <div class="sec-label">FAQ</div>
-        <h2 class="faq-title">Tens dúvidas.<br>Tenho<br><span style="color:var(--orange)">respostas.</span></h2>
+<!-- ══ COMPARAÇÃO ══════════════════════════════════════════════ -->
+<section id="comparacao">
+  <div class="sec-label" data-reveal>Comparação</div>
+  <h2 class="comp-title">Eu vs. agência<br>de design.</h2>
+  <table class="vs-table">
+    <thead>
+      <tr>
+        <th>Característica</th>
+        <th>Dinis (freelancer)</th>
+        <th>Agência / Wix</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Preço</td><td>€299 – €1.800</td><td>€2.000 – €10.000+</td></tr>
+      <tr><td>Prazo de entrega</td><td>5 a 21 dias</td><td>2 a 6 meses</td></tr>
+      <tr><td>Com quem falas</td><td>Diretamente comigo</td><td>Gestor intermediário</td></tr>
+      <tr><td>Propriedade do site</td><td>100% tua, sempre</td><td>Wix: bloqueado à plataforma</td></tr>
+      <tr><td>Mercado PT</td><td>MB WAY, .pt, PT-PT</td><td>Depende da agência</td></tr>
+      <tr><td>Suporte pós-entrega</td><td>30 dias grátis incluídos</td><td>Contrato separado ou tarifa/hora</td></tr>
+      <tr><td>Alterações futuras</td><td>Tu próprio no WordPress</td><td>Pagas por cada pequena mudança</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ FAQ ══════════════════════════════════════════════════════ -->
+<section id="faq">
+  <div class="faq-layout">
+    <div class="faq-left">
+      <div class="sec-label" data-reveal>FAQ</div>
+      <h2 class="faq-title">Tens dúvidas.<br>Tenho<br><span style="color:var(--orange)">respostas.</span></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Não tenho logótipo nem fotografias. Posso mesmo assim ter um site?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">Sim. Para o logótipo posso criar um simples por €50 a €150. Para as fotos, posso usar imagens stock de qualidade profissional sem custo, ou podes tirar fotos razoáveis com o telemóvel. O mais importante é ter o site online — as fotos melhores vêm depois.</div>
       </div>
-      <div class="faq-list reveal rd1">
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Não tenho logótipo nem fotografias. Posso mesmo assim ter um site?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Sim. Para o logótipo posso criar um simples por €50 a €150. Para as fotos, posso usar imagens stock de qualidade profissional sem custo, ou podes tirar fotos razoáveis com o telemóvel. O mais importante é ter o site online — as fotos melhores vêm depois.</div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          O que preciso de fazer do meu lado para o projeto avançar?
+          <div class="faq-icon">+</div>
         </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            O que preciso de fazer do meu lado para o projeto avançar?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Preciso de: (1) um texto básico descrevendo o teu negócio e serviços, (2) o teu número de telefone e morada, (3) fotografias se tiveres, (4) exemplos de sites que gostes (opcional). O resto trato eu.</div>
+        <div class="faq-a">Preciso de: (1) um texto básico descrevendo o teu negócio e serviços, (2) o teu número de telefone e morada, (3) fotografias se tiveres, (4) exemplos de sites que gostes (opcional). O resto trato eu.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Já tenho domínio e hosting. Podes trabalhar com isso?
+          <div class="faq-icon">+</div>
         </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Já tenho domínio e hosting. Podes trabalhar com isso?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Sim, trabalho com qualquer hosting que suporte WordPress. Se precisares de mudar de hosting, trato da migração sem custo adicional.</div>
+        <div class="faq-a">Sim, trabalho com qualquer hosting que suporte WordPress. Se precisares de mudar de hosting, trato da migração sem custo adicional.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Consigo atualizar o site sozinho depois?
+          <div class="faq-icon">+</div>
         </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Consigo atualizar o site sozinho depois?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Sim. O WordPress tem um painel muito simples — mostro-te como funciona na entrega. Adicionar texto, fotos ou preços não requer conhecimentos técnicos. Os 30 dias de suporte grátis servem exatamente para tirares dúvidas iniciais.</div>
+        <div class="faq-a">Sim. O WordPress tem um painel muito simples — mostro-te como funciona na entrega. Adicionar texto, fotos ou preços não requer conhecimentos técnicos. Os 30 dias de suporte grátis servem exatamente para tirares dúvidas iniciais.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Como funciona o pagamento?
+          <div class="faq-icon">+</div>
         </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            Como funciona o pagamento?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Pagas 50% antes de eu começar, e os restantes 50% quando vires o site pronto e estiveres satisfeito. Aceito MB WAY (926 188 888) e transferência bancária. Nunca lanço o site sem a tua aprovação.</div>
+        <div class="faq-a">Pagas 50% antes de eu começar, e os restantes 50% quando vires o site pronto e estiveres satisfeito. Aceito MB WAY (926 188 888) e transferência bancária. Nunca lanço o site sem a tua aprovação.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          O site vai aparecer no Google?
+          <div class="faq-icon">+</div>
         </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            O site vai aparecer no Google?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Todos os meus sites incluem SEO básico: título, meta descrições, imagens otimizadas, Google Analytics e submissão ao Google Search Console. Resultados orgânicos demoram normalmente 2 a 4 semanas após o lançamento.</div>
+        <div class="faq-a">Todos os meus sites incluem SEO básico: título, meta descrições, imagens otimizadas, Google Analytics e submissão ao Google Search Console. Resultados orgânicos demoram normalmente 2 a 4 semanas após o lançamento.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          E se não gostar do resultado final?
+          <div class="faq-icon">+</div>
         </div>
-        <div class="faq-item">
-          <div class="faq-q" onclick="toggleFaq(this)">
-            E se não gostar do resultado final?
-            <div class="faq-icon">+</div>
-          </div>
-          <div class="faq-a">Todos os pacotes incluem duas rondas de revisão. Só cobro os 50% finais quando declarares que estás satisfeito. Não há lançamento sem a tua aprovação.</div>
-        </div>
+        <div class="faq-a">Todos os pacotes incluem duas rondas de revisão. Só cobro os 50% finais quando declarares que estás satisfeito. Não há lançamento sem a tua aprovação.</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CONTACTO / CTA FINAL -->
-  <section id="contacto">
-    <div class="cta-left reveal">
-      <div class="sec-label">Contacto</div>
-      <h2>Vamos<br><span>trabalhar</span><br>juntos?</h2>
-      <p>Orçamento gratuito, sem compromisso. Conta-me um pouco sobre o teu negócio e eu respondo com uma proposta em 24 horas.</p>
+<!-- ══ CONTACTO ════════════════════════════════════════════════ -->
+<section id="contacto">
+  <div class="cta-left">
+    <div class="sec-label" data-reveal>Contacto</div>
+    <h2>Vamos<br><span>trabalhar</span><br>juntos?</h2>
+    <p>Orçamento gratuito, sem compromisso. Conta-me um pouco sobre o teu negócio e eu respondo com uma proposta em 24 horas.</p>
+  </div>
+  <div class="cta-right">
+    <a href="https://wa.me/351926188888?text=Olá Dinis! Gostava de pedir um orçamento para o meu negócio."
+       class="contact-row" data-cursor="→ WhatsApp">
+      <div class="cr-icon">💬</div>
+      <div><div class="cr-title">WhatsApp — +351 926 188 888</div><div class="cr-sub">A forma mais rápida — respondo em horas</div></div>
+    </a>
+    <a href="mailto:wangdinis@gmail.com" class="contact-row" data-cursor="→ Email">
+      <div class="cr-icon">✉️</div>
+      <div><div class="cr-title">wangdinis@gmail.com</div><div class="cr-sub">Para propostas e orçamentos formais</div></div>
+    </a>
+    <a href="https://instagram.com/dinisw06" class="contact-row" data-cursor="→ Instagram">
+      <div class="cr-icon">📷</div>
+      <div><div class="cr-title">dinisw06</div><div class="cr-sub">Vê o meu trabalho e envia DM</div></div>
+    </a>
+    <div class="cta-promises">
+      <div class="promise">Orçamento gratuito e sem compromisso</div>
+      <div class="promise">Resposta em menos de 24 horas</div>
+      <div class="promise">Preço fechado antes de começar</div>
+      <div class="promise">Só pagas o restante quando estiveres satisfeito</div>
     </div>
-    <div class="cta-right">
-      <a href="https://wa.me/351926188888?text=Olá Dinis! Gostava de pedir um orçamento para o meu negócio." class="contact-row reveal rd1">
-        <div class="cr-icon">💬</div>
-        <div>
-          <div class="cr-title">WhatsApp — +351 926 188 888</div>
-          <div class="cr-sub">A forma mais rápida — respondo em horas</div>
-        </div>
-      </a>
-      <a href="mailto:wangdinis@gmail.com" class="contact-row reveal rd2">
-        <div class="cr-icon">✉️</div>
-        <div>
-          <div class="cr-title">wangdinis@gmail.com</div>
-          <div class="cr-sub">Para propostas e orçamentos formais</div>
-        </div>
-      </a>
-      <a href="https://instagram.com/dinisw06" class="contact-row reveal rd3">
-        <div class="cr-icon">📷</div>
-        <div>
-          <div class="cr-title">dinisw06</div>
-          <div class="cr-sub">Vê o meu trabalho e envia DM</div>
-        </div>
-      </a>
-      <div class="cta-promises reveal rd4">
-        <div class="promise">Orçamento gratuito e sem compromisso</div>
-        <div class="promise">Resposta em menos de 24 horas</div>
-        <div class="promise">Preço fechado antes de começar</div>
-        <div class="promise">Só pagas o restante quando estiveres satisfeito</div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <a href="#" class="footer-logo">dinis<span>.</span>pt</a>
-    <p>© 2025 Dinis Wang Lin · Vale de Cambra, Portugal</p>
-    <div class="footer-links">
-      <a href="#sobre">Sobre</a>
-      <a href="#precos">Preços</a>
-      <a href="#contacto">Contacto</a>
-      <a href="https://wa.me/351926188888">WhatsApp</a>
-    </div>
-  </footer>
+<!-- ══ FOOTER ══════════════════════════════════════════════════ -->
+<footer>
+  <a href="#" class="footer-logo">dinis<span>.</span>pt</a>
+  <p>© 2025 Dinis Wang Lin · Vale de Cambra, Portugal</p>
+  <div class="footer-links">
+    <a href="#sobre">Sobre</a>
+    <a href="#precos">Preços</a>
+    <a href="#contacto">Contacto</a>
+    <a href="https://wa.me/351926188888">WhatsApp</a>
+  </div>
+</footer>
 
-  <script>
-    // ─── Cursor ───
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursor-ring');
-    let mx = 0, my = 0, rx = 0, ry = 0;
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
 
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.transform = `translate(${mx-5}px,${my-5}px)`;
+// ────────────────────────────────────────────────────────────
+// CURSOR
+// ────────────────────────────────────────────────────────────
+const dot   = document.getElementById('c-dot');
+const ring  = document.getElementById('c-ring');
+const label = document.getElementById('c-label');
+let mx = 0, my = 0, rx = 0, ry = 0, lx = 0, ly = 0;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+(function cursorLoop() {
+  // Dot — immediate
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  // Ring — lag
+  rx += (mx - rx) * 0.14;
+  ry += (my - ry) * 0.14;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  // Label — more lag
+  lx += (mx - lx) * 0.10;
+  ly += (my - ly) * 0.10;
+  label.style.left = lx + 'px';
+  label.style.top  = (ly - 22) + 'px';
+
+  requestAnimationFrame(cursorLoop);
+})();
+
+// Context label — data-cursor attribute
+document.querySelectorAll('[data-cursor]').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    label.textContent = el.dataset.cursor;
+    label.classList.add('visible');
+    ring.classList.add('expand');
+  });
+  el.addEventListener('mouseleave', () => {
+    label.classList.remove('visible');
+    ring.classList.remove('expand');
+  });
+});
+
+// Cursor on links
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('expand'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('expand'));
+});
+
+// ────────────────────────────────────────────────────────────
+// HERO CANVAS — animated dot grid
+// ────────────────────────────────────────────────────────────
+(function initDotGrid() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+  const GAP    = 32;
+  let W, H, dots = [];
+  let hmx = -999, hmy = -999;
+
+  function build() {
+    dots = [];
+    for (let x = 0; x <= W; x += GAP)
+      for (let y = 0; y <= H; y += GAP)
+        dots.push({ x, y, a: 0.05, ta: 0.05 });
+  }
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    build();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  document.addEventListener('mousemove', e => {
+    const r = canvas.getBoundingClientRect();
+    hmx = e.clientX - r.left;
+    hmy = e.clientY - r.top;
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const d of dots) {
+      const dist = Math.hypot(d.x - hmx, d.y - hmy);
+      d.ta = dist < 140 ? 0.05 + (1 - dist / 140) * 0.38 : 0.05;
+      d.a += (d.ta - d.a) * 0.08;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 1.1, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(249,115,22,${d.a.toFixed(3)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ────────────────────────────────────────────────────────────
+// SCRAMBLE TEXT
+// ────────────────────────────────────────────────────────────
+const CHARS = 'A!B@C#D$E%F&G*H?J[K]L{M}N=O+P-QRSTUVWXYZ0123456789';
+
+function scramble(el, finalText, duration, onStart) {
+  const totalFrames = Math.round(duration * 60);
+  let frame = 0;
+
+  // Pre-fill at correct width
+  el.textContent = finalText.split('').map(c =>
+    c === ' ' ? ' ' : CHARS[Math.floor(Math.random() * CHARS.length)]
+  ).join('');
+
+  if (onStart) onStart();
+
+  const id = setInterval(() => {
+    const progress = frame / totalFrames;
+    let result = '';
+    for (let i = 0; i < finalText.length; i++) {
+      if (finalText[i] === ' ') result += ' ';
+      else if (i / finalText.length <= progress) result += finalText[i];
+      else result += CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
+    el.textContent = result;
+    frame++;
+    if (frame >= totalFrames) { clearInterval(id); el.textContent = finalText; }
+  }, 1000 / 60);
+}
+
+// ────────────────────────────────────────────────────────────
+// HERO SEQUENCE
+// ────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const avail   = document.getElementById('heroAvail');
+  const stats   = document.getElementById('heroStats');
+  const bottom  = document.getElementById('heroBottom');
+  const hl1el   = document.getElementById('hl1');
+  const hl2el   = document.getElementById('hl2');
+  const hl3el   = document.getElementById('hl3');
+
+  const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+  // Available badge
+  tl.to(avail, { opacity: 1, y: 0, duration: 0.6 }, 0.2);
+
+  // Line 1 — scramble + clip-path wipe in parallel
+  tl.call(() => {
+    scramble(hl1el, 'Websites', 1.1, () => {
+      gsap.to(hl1el, { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: 'power3.inOut' });
     });
-    (function animateRing() {
-      rx += (mx - rx - 18) * 0.12;
-      ry += (my - ry - 18) * 0.12;
-      ring.style.transform = `translate(${rx}px,${ry}px)`;
-      requestAnimationFrame(animateRing);
-    })();
+  }, null, 0.5);
 
-    // ─── Nav scroll ───
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 70);
+  // Line 2
+  tl.call(() => {
+    scramble(hl2el, 'que fazem', 1.1, () => {
+      gsap.to(hl2el, { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: 'power3.inOut' });
     });
+  }, null, 0.9);
 
-    // ─── Scroll Reveal ───
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  // Line 3
+  tl.call(() => {
+    scramble(hl3el, 'clientes.', 1.1, () => {
+      gsap.to(hl3el, { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: 'power3.inOut' });
+    });
+  }, null, 1.3);
 
-    // ─── Demo filters ───
-    function filterDemos(cat, btn) {
-      document.querySelectorAll('.demo-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const grid = document.getElementById('demosGrid');
-      const cards = grid.querySelectorAll('.demo-card');
-      cards.forEach(card => {
-        const cardCat = card.dataset.cat;
-        if (cat === 'todos' || cardCat === cat) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
+  // Stats + bottom
+  tl.to(stats, { opacity: 1, y: 0, duration: 0.8 }, 1.8);
+  tl.to(bottom, { opacity: 1, y: 0, duration: 0.8 }, 2.0);
+
+  // Animated counters
+  setTimeout(() => {
+    document.querySelectorAll('.count').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      gsap.fromTo(el, { textContent: 0 }, {
+        textContent: target, duration: 1.4,
+        ease: 'power2.out', delay: 0.2,
+        snap: { textContent: 1 },
       });
-      // Re-stack grid: featured card only spans 3 cols when visible in "todos"
-      const featured = grid.querySelector('.demo-card.featured');
-      if (featured && !featured.classList.contains('hidden')) {
-        featured.style.gridColumn = cat === 'todos' ? 'span 3' : 'span 1';
-        featured.style.height = cat === 'todos' ? '300px' : '';
-        featured.style.aspectRatio = cat === 'todos' ? 'unset' : '4/3';
-      }
-    }
+    });
+  }, 1800);
+});
 
-    // ─── FAQ ───
-    function toggleFaq(btn) {
-      const item = btn.closest('.faq-item');
-      const wasOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-      if (!wasOpen) item.classList.add('open');
+// ────────────────────────────────────────────────────────────
+// SECTION REVEALS — GSAP ScrollTrigger
+// ────────────────────────────────────────────────────────────
+// Section labels
+document.querySelectorAll('[data-reveal]').forEach(el => {
+  gsap.fromTo(el,
+    { opacity: 0, y: 16 },
+    { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
+      scrollTrigger: { trigger: el, start: 'top 88%' }
     }
-  </script>
+  );
+});
+
+// Generic .reveal elements — stagger within each parent
+document.querySelectorAll('.reveal').forEach((el, i) => {
+  gsap.to(el, {
+    opacity: 1, y: 0, duration: 0.75, ease: 'power2.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' },
+    delay: (i % 4) * 0.08,
+  });
+});
+
+// Processo title
+ScrollTrigger.create({
+  trigger: '#processo',
+  start: 'top 75%',
+  onEnter: () => {
+    gsap.to('.processo-title', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' });
+    gsap.to('.step-block', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.12, delay: 0.2 });
+  }
+});
+
+// Portfolio header
+ScrollTrigger.create({
+  trigger: '#portfolio',
+  start: 'top 80%',
+  onEnter: () => {
+    gsap.to('.portfolio-header', { opacity: 1, y: 0, duration: 0.7 });
+    gsap.to('.demo-filters', { opacity: 1, y: 0, duration: 0.6, delay: 0.2 });
+  }
+});
+
+// Preços
+ScrollTrigger.create({
+  trigger: '#precos',
+  start: 'top 75%',
+  onEnter: () => {
+    gsap.to('.precos-header', { opacity: 1, y: 0, duration: 0.8 });
+    gsap.to('.plan', { opacity: 1, y: 0, duration: 0.65, stagger: 0.15, delay: 0.3 });
+  }
+});
+
+// Comparação
+ScrollTrigger.create({
+  trigger: '#comparacao',
+  start: 'top 80%',
+  onEnter: () => {
+    gsap.to('.comp-title', { opacity: 1, y: 0, duration: 0.7 });
+    gsap.to('.vs-table', { opacity: 1, y: 0, duration: 0.6, delay: 0.2 });
+  }
+});
+
+// FAQ
+ScrollTrigger.create({
+  trigger: '#faq',
+  start: 'top 80%',
+  onEnter: () => {
+    gsap.to('.faq-title', { opacity: 1, y: 0, duration: 0.7 });
+    gsap.to('.faq-list', { opacity: 1, y: 0, duration: 0.7, delay: 0.15 });
+  }
+});
+
+// Contacto
+ScrollTrigger.create({
+  trigger: '#contacto',
+  start: 'top 80%',
+  onEnter: () => {
+    gsap.to('.cta-left h2', { opacity: 1, y: 0, duration: 0.8 });
+    gsap.to('.cta-left p',  { opacity: 1, y: 0, duration: 0.7, delay: 0.2 });
+    gsap.to('.contact-row', { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, delay: 0.3 });
+    gsap.to('.cta-promises',{ opacity: 1, y: 0, duration: 0.6, delay: 0.6 });
+  }
+});
+
+// Scramble section titles on scroll
+[
+  { sel: '.about-big',   text: ['Não sou','uma','agência.','Sou o Dinis.'] },
+].forEach(({ sel, text }) => {
+  const el = document.querySelector(sel);
+  if (!el) return;
+  ScrollTrigger.create({
+    trigger: el, start: 'top 80%',
+    onEnter: () => {
+      // just reveal — content preserved from HTML
+      gsap.fromTo(el, { clipPath: 'inset(0 100% 0 0)' },
+        { clipPath: 'inset(0 0% 0 0)', duration: 1.0, ease: 'power3.inOut' });
+    }
+  });
+});
+
+// ────────────────────────────────────────────────────────────
+// BEFORE / AFTER DEMO CARDS
+// ────────────────────────────────────────────────────────────
+document.querySelectorAll('.demo-card').forEach(card => {
+  const after   = card.querySelector('.ba-after');
+  const divider = card.querySelector('.ba-divider');
+  if (!after || !divider) return;
+
+  let entered = false;
+
+  card.addEventListener('mouseenter', () => {
+    entered = true;
+    // Divider appears at 50% — demo still fully visible until user moves cursor left
+    gsap.to(divider, { left: '50%', opacity: 1, duration: 0.4, ease: 'power2.out' });
+  });
+
+  card.addEventListener('mousemove', e => {
+    if (!entered) return;
+    card.classList.add('tracking');
+    const rect = card.getBoundingClientRect();
+    const pct  = Math.max(5, Math.min(95, (e.clientX - rect.left) / rect.width * 100));
+    // After (demo) clips from the right — drag left to reveal "before"
+    after.style.clipPath = `inset(0 ${(100 - pct).toFixed(1)}% 0 0)`;
+    divider.style.left   = pct.toFixed(1) + '%';
+  });
+
+  card.addEventListener('mouseleave', () => {
+    entered = false;
+    card.classList.remove('tracking');
+    // Restore demo fully visible
+    gsap.to(after, { clipPath: 'inset(0 0% 0 0)', duration: 0.5, ease: 'power2.out' });
+    gsap.to(divider, { opacity: 0, duration: 0.35 });
+  });
+});
+
+// ────────────────────────────────────────────────────────────
+// MAGNETIC ELEMENTS
+// ────────────────────────────────────────────────────────────
+document.querySelectorAll('.magnetic').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r  = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top  + r.height / 2;
+    gsap.to(el, {
+      x: (e.clientX - cx) * 0.32,
+      y: (e.clientY - cy) * 0.32,
+      duration: 0.4, ease: 'power2.out'
+    });
+  });
+  el.addEventListener('mouseleave', () => {
+    gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.55)' });
+  });
+});
+
+// ────────────────────────────────────────────────────────────
+// NAV SCROLL
+// ────────────────────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 70);
+}, { passive: true });
+
+// ────────────────────────────────────────────────────────────
+// DEMO FILTERS
+// ────────────────────────────────────────────────────────────
+function filterDemos(cat, btn) {
+  document.querySelectorAll('.demo-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('demosGrid');
+  grid.querySelectorAll('.demo-card').forEach(card => {
+    card.classList.toggle('hidden', cat !== 'todos' && card.dataset.cat !== cat);
+  });
+  const featured = grid.querySelector('.demo-card.featured');
+  if (featured && !featured.classList.contains('hidden')) {
+    featured.style.gridColumn = cat === 'todos' ? 'span 3' : 'span 1';
+    featured.style.height     = cat === 'todos' ? '280px' : '';
+    featured.style.aspectRatio= cat === 'todos' ? 'unset' : '4/3';
+  }
+}
+
+// ────────────────────────────────────────────────────────────
+// FAQ
+// ────────────────────────────────────────────────────────────
+function toggleFaq(btn) {
+  const item    = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+</script>
 </body>
 </html>
