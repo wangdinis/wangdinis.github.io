@@ -36,7 +36,7 @@ body::before{content:'';position:fixed;inset:0;z-index:8100;pointer-events:none;
 background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px 256px}
 
 /* SCROLL PROGRESS */
-#sp{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(to right,var(--red),var(--gold));z-index:8000;pointer-events:none;transition:opacity .3s}
+#sp{position:fixed;top:0;left:0;height:2px;width:0%;max-width:100%;background:linear-gradient(to right,var(--red),var(--gold));z-index:8000;pointer-events:none;transition:opacity .3s}
 body.loading #sp{opacity:0}
 
 /* CURSOR */
@@ -45,6 +45,67 @@ body.loading #sp{opacity:0}
 .cursor.hover .c-dot{width:40px;height:40px;opacity:.45}
 body.loading .cursor{opacity:0}
 @media(hover:none){.cursor{display:none}body{cursor:auto}}
+
+/* ═══ CINEMA REVEAL ══════════════════════════════════════════════ */
+#cinema{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:var(--bg);overflow:hidden;border-top:1px solid var(--border)}
+.cinema-char{font-family:var(--fd);font-size:clamp(160px,26vw,360px);font-weight:700;color:transparent;-webkit-text-stroke:1.5px rgba(0,217,190,.4);line-height:1;opacity:0;filter:blur(40px);transform:scale(.6) rotate(-12deg);will-change:transform,filter,opacity;position:relative;z-index:2}
+.cinema-tagline{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim);opacity:0;margin-top:32px;position:relative;z-index:2}
+.cinema-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.cinema-ring{position:absolute;border-radius:50%;border:1px solid rgba(0,217,190,.055);transform:scale(0);opacity:0}
+.cinema-corner-tl,.cinema-corner-tr{position:absolute;top:56px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(0,217,190,.32)}
+.cinema-corner-tl{left:60px}.cinema-corner-tr{right:60px}
+.cinema-scroll-cue{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0}
+.cinema-scroll-cue>span{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.cinema-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:sc2 2s ease-in-out infinite}
+
+/* ═══ HORIZONTAL DEMO REEL ═══════════════════════════════════════ */
+#demos{padding:0!important;border-top:1px solid var(--border);background:var(--bg)}
+.demos-header{padding:100px 60px 48px}
+.demos-reel-wrap{position:relative;height:calc(100vh - 220px);overflow:hidden}
+#demosTrack{display:flex;gap:2px;height:100%;position:absolute;top:0;left:0;will-change:transform;padding-right:120px}
+#demosTrack .demo-card{flex:0 0 320px;min-width:320px;height:100%;display:flex;flex-direction:column}
+#demosTrack .demo-card.featured{flex:0 0 500px;min-width:500px}
+#demosTrack .demo-preview{flex:1;min-height:0;aspect-ratio:unset!important}
+#demosTrack .demo-card.featured .demo-preview{aspect-ratio:unset!important}
+.demos-reel-hud{position:absolute;bottom:0;left:0;right:0;padding:14px 60px;display:flex;align-items:center;gap:20px;z-index:5;pointer-events:none;background:linear-gradient(transparent,rgba(6,8,12,.85))}
+.reel-lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);flex-shrink:0}
+.reel-bar{flex:1;height:1px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+.reel-fill{position:absolute;top:0;left:0;height:100%;width:0%;background:var(--gold);transition:none}
+.reel-count{font-family:var(--fd);font-size:11px;color:var(--gold);flex-shrink:0;opacity:.7}
+
+/* ═══ WORD-SPLIT STAGGER ═════════════════════════════════════════ */
+.wsw{display:inline-block;overflow:hidden;vertical-align:bottom;line-height:1.15}
+.wsi{display:inline-block;will-change:transform}
+
+/* ═══ FLOATING VERTICAL TEXT ════════════════════════════════════ */
+#sobre{position:relative;overflow:hidden}
+#sobre>.sobre-left,#sobre>.sobre-right{position:relative;z-index:2}
+.float-strips{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.fstrip{position:absolute;font-family:var(--fd);font-size:13px;color:rgba(0,217,190,.048);letter-spacing:.06em;line-height:2.2;writing-mode:vertical-rl;text-orientation:mixed;user-select:none;will-change:transform;top:110%}
+
+/* ═══ SCROLL EDGE GLOW ═══════════════════════════════════════════ */
+#sglow{position:fixed;inset:0;pointer-events:none;z-index:7990;opacity:0;background:radial-gradient(ellipse at 50% -5%,rgba(0,217,190,.14) 0%,transparent 42%),radial-gradient(ellipse at 50% 105%,rgba(255,85,51,.09) 0%,transparent 42%)}
+
+/* ═══ MOBILE OVERRIDES ═══════════════════════════════════════════ */
+@media(max-width:900px){
+  .demos-reel-wrap{height:auto;overflow:visible}
+  #demosTrack{flex-direction:column;position:static;padding-right:0;height:auto}
+  #demosTrack .demo-card,#demosTrack .demo-card.featured{flex:none;min-width:100%;height:auto}
+  #demosTrack .demo-preview{aspect-ratio:16/9!important;height:auto;flex:none}
+  #demosTrack .demo-card.featured .demo-preview{aspect-ratio:21/9!important}
+  .demos-reel-hud{position:static;background:transparent;padding:16px 24px}
+  #cinema{min-height:60vh}
+  .cinema-corner-tl,.cinema-corner-tr{display:none}
+  .float-strips{display:none}
+  .demos-header{padding:60px 24px 32px}
+}
+
+/* 3D tilt foundation */
+.demo-card { transform-style: preserve-3d; will-change: transform; }
+.demos-grid { perspective: 1200px; }
+
+/* clip-path on s-title now handled by word-split JS */
+.s-title { }
 
 /* CLICK RIPPLE */
 .ripple{position:fixed;width:6px;height:6px;background:rgba(200,16,46,.35);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:8200;animation:rippleOut .65s ease-out forwards}
@@ -92,12 +153,7 @@ nav.scrolled{background:rgba(7,8,10,.93);backdrop-filter:blur(14px);padding:16px
 .mob-link:hover{color:var(--gold)}
 .mob-wa{margin-top:20px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#25D366;text-decoration:none;opacity:0;transform:translateX(30px)}
 
-/* SECTION COUNTER */
-#sc{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;opacity:0;transition:opacity .4s}
-#sc.show{opacity:1}
-#sc-cur{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--gold);font-family:var(--fb)}
-.sc-l{width:1px;height:32px;background:linear-gradient(to bottom,var(--gold),rgba(0,217,190,.08))}
-#sc-tot{font-size:10px;letter-spacing:.1em;color:var(--dim);font-family:var(--fb)}
+/* SECTION COUNTER — removed (overlaps content) */
 
 /* HERO */
 #hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 100px;position:relative;overflow:hidden}
@@ -279,13 +335,8 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 60p
 <body class="loading">
 
 <div id="sp"></div>
+<div id="sglow"></div>
 
-<!-- SECTION COUNTER -->
-<div id="sc" aria-hidden="true">
-  <span id="sc-cur">01</span>
-  <div class="sc-l"></div>
-  <span id="sc-tot">08</span>
-</div>
 
 <!-- CURSOR PREVIEW -->
 <div id="cpreview">
@@ -365,6 +416,23 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 60p
   </div>
 </section>
 
+<!-- CINEMA REVEAL — scroll past hero, discover the character -->
+<section id="cinema">
+  <div class="cinema-rings" aria-hidden="true">
+    <div class="cinema-ring" style="width:480px;height:480px"></div>
+    <div class="cinema-ring" style="width:760px;height:760px"></div>
+    <div class="cinema-ring" style="width:1060px;height:1060px"></div>
+  </div>
+  <div class="cinema-corner-tl">Identidade Visual</div>
+  <div class="cinema-corner-tr">Web Design · Portugal</div>
+  <div class="cinema-char" id="cinemaChar">设</div>
+  <p class="cinema-tagline" id="cinemaTxt">Cada site é uma obra única</p>
+  <div class="cinema-scroll-cue" id="cinemaScrollCue">
+    <span>Continua</span>
+    <div class="cinema-scroll-line"></div>
+  </div>
+</section>
+
 <!-- MARQUEE -->
 <div class="mq">
   <div class="mq-inner">
@@ -373,13 +441,14 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 60p
   </div>
 </div>
 
-<!-- DEMOS -->
+<!-- DEMOS — horizontal scroll reel -->
 <section id="demos">
-  <div class="reveal">
+  <div class="reveal demos-header">
     <p class="s-label">Trabalho Real</p>
-    <h2 class="s-title">14 demos prontos.<br>Escolhe o teu <em>sector.</em></h2>
+    <h2 class="s-title">14 demos prontos. Escolhe o teu <em>sector.</em></h2>
   </div>
-  <div class="demos-grid" id="demosGrid">
+  <div class="demos-reel-wrap" id="demosReelWrap">
+  <div id="demosTrack">
 
     <a class="demo-card featured" href="Web_Design/Demos/demo-chapt.html" target="_blank" data-name="CHAPT" data-sector="Interpretação Bilíngue">
       <div class="demo-preview"><span class="demo-char">信</span><span class="demo-badge">Novo</span><span class="demo-num">01</span></div>
@@ -535,7 +604,13 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 60p
       </div>
     </a>
 
+  </div><!-- /#demosTrack -->
+  <div class="demos-reel-hud">
+    <span class="reel-lbl">← scroll para explorar</span>
+    <div class="reel-bar"><div class="reel-fill" id="reelFill"></div></div>
+    <span class="reel-count" id="reelCount">01 / 14</span>
   </div>
+  </div><!-- /.demos-reel-wrap -->
 </section>
 
 <!-- NUMBERS -->
@@ -616,6 +691,12 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 60p
 
 <!-- SOBRE -->
 <section id="sobre">
+  <div class="float-strips" aria-hidden="true">
+    <div class="fstrip" id="fs1" style="left:6%">设·计·网·站·创·意·美·学·设·计·网·站·创·意</div>
+    <div class="fstrip" id="fs2" style="left:22%">Design · Web · Arte · Forma · Código · Design</div>
+    <div class="fstrip" id="fs3" style="right:18%">葡萄牙·中国·设计·用心·做事·创造·葡萄牙</div>
+    <div class="fstrip" id="fs4" style="right:5%">Vale de Cambra · Portugal · Web · Design</div>
+  </div>
   <div class="sobre-left">
     <p class="s-label">Quem sou</p>
     <h2 class="s-title">Design que<br>fala com <em>clientes.</em></h2>
@@ -683,7 +764,7 @@ gsap.ticker.lagSmoothing(0);
 
 /* ── Scroll progress ─────────────────────────────────────────── */
 const spBar = document.getElementById('sp');
-lenis.on('scroll', ({progress}) => { spBar.style.width = (progress*100)+'%'; });
+lenis.on('scroll', ({progress}) => { spBar.style.width = Math.min(progress*100, 100)+'%'; });
 
 /* ── Cursor ──────────────────────────────────────────────────── */
 const cursor = document.getElementById('cursor');
@@ -815,13 +896,7 @@ gsap.utils.toArray('.reveal').forEach(el => {
   });
 });
 
-/* ── Demo cards stagger ──────────────────────────────────────── */
-gsap.utils.toArray('.demo-card').forEach((card, i) => {
-  gsap.fromTo(card, { opacity:0, y:56 }, {
-    opacity:1, y:0, duration:.8, delay:(i%3)*.09, ease:'power3.out',
-    scrollTrigger:{ trigger:card, start:'top 88%', toggleActions:'play none none none' }
-  });
-});
+/* ── Demo cards stagger — replaced by horizontal reel JS (see v2 block) */
 
 /* ── Number counters (red section) ──────────────────────────── */
 document.querySelectorAll('.cnt').forEach(el => {
@@ -841,25 +916,6 @@ gsap.fromTo('#numbers', { clipPath:'inset(0 100% 0 0)' }, {
   scrollTrigger:{ trigger:'#numbers', start:'top 80%', toggleActions:'play none none none' }
 });
 
-/* ── Section counter ─────────────────────────────────────────── */
-const sc = document.getElementById('sc');
-const scCur = document.getElementById('sc-cur');
-const sections = ['hero','demos','numbers','processo','servicos','sobre','contacto'];
-document.getElementById('sc-tot').textContent = String(sections.length).padStart(2,'0');
-sections.forEach((id,i)=>{
-  const el = document.getElementById(id);
-  if(!el) return;
-  ScrollTrigger.create({
-    trigger:el, start:'top 55%', end:'bottom 45%',
-    onEnter:    ()=>{ scCur.textContent=String(i+1).padStart(2,'0'); },
-    onEnterBack:()=>{ scCur.textContent=String(i+1).padStart(2,'0'); },
-  });
-});
-ScrollTrigger.create({
-  trigger:'#demos', start:'top 80%',
-  onEnter:    ()=>sc.classList.add('show'),
-  onLeaveBack:()=>sc.classList.remove('show'),
-});
 
 /* ── Magnetic buttons ────────────────────────────────────────── */
 document.querySelectorAll('.magnetic').forEach(btn => {
@@ -879,6 +935,372 @@ gsap.to('.sobre-char-big', {
   y:-60, ease:'none',
   scrollTrigger:{ trigger:'#sobre', start:'top bottom', end:'bottom top', scrub:1.5 }
 });
+
+/* ══════════════════════════════════════════════════════════════
+   CHINESE / EAST-ASIAN TECHNIQUES v2
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── CINEMA SECTION ─────────────────────────────────────────── */
+(function(){
+  const char = document.getElementById('cinemaChar');
+  const txt  = document.getElementById('cinemaTxt');
+  const cue  = document.getElementById('cinemaScrollCue');
+  const rings = document.querySelectorAll('.cinema-ring');
+  if(!char) return;
+
+  // Entrance reveal (scroll into view)
+  const entranceTL = gsap.timeline({
+    scrollTrigger:{ trigger:'#cinema', start:'top 72%', toggleActions:'play none none none' }
+  });
+  entranceTL
+    .to(char, { opacity:1, filter:'blur(0px)', scale:1, rotate:0, duration:1.5, ease:'power4.out' }, 0)
+    .to(txt,  { opacity:1, duration:.8, ease:'power3.out' }, .8)
+    .to(cue,  { opacity:1, duration:.5 }, 1.4);
+
+  // Rings expand
+  rings.forEach((r,i) => {
+    gsap.to(r, {
+      scale:1, opacity:1, duration:2, ease:'power3.out', delay:i*.25,
+      scrollTrigger:{ trigger:'#cinema', start:'top 72%', toggleActions:'play none none none' }
+    });
+  });
+
+  // Slow drift while in view
+  gsap.to(char, {
+    rotate:14, scale:1.07, ease:'none',
+    scrollTrigger:{ trigger:'#cinema', start:'top top', end:'bottom top', scrub:2 }
+  });
+
+  // Fade out as section exits
+  gsap.to([char,txt,cue], {
+    opacity:0, y:-80, ease:'none',
+    scrollTrigger:{ trigger:'#cinema', start:'65% top', end:'bottom top', scrub:.8 }
+  });
+  gsap.to(rings, {
+    opacity:0, scale:1.4, ease:'none',
+    scrollTrigger:{ trigger:'#cinema', start:'55% top', end:'bottom top', scrub:1 }
+  });
+})();
+
+/* ── HORIZONTAL DEMO REEL ───────────────────────────────────── */
+(function(){
+  const section = document.getElementById('demos');
+  const track   = document.getElementById('demosTrack');
+  const fill    = document.getElementById('reelFill');
+  const counter = document.getElementById('reelCount');
+  if(!track) return;
+
+  const cards = track.querySelectorAll('.demo-card');
+  const n = cards.length;
+
+  // Kill old per-card ScrollTriggers
+  ScrollTrigger.getAll().forEach(st => {
+    cards.forEach(c=>{ if(st.trigger===c) st.kill(); });
+  });
+
+  const getAmt = () => -(track.scrollWidth - window.innerWidth + 60);
+
+  gsap.to(track, {
+    x: getAmt,
+    ease:'none',
+    scrollTrigger:{
+      trigger: section,
+      pin: true,
+      scrub: 0.9,
+      start: 'top top',
+      end: () => '+=' + Math.abs(getAmt()),
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onUpdate: self => {
+        if(fill) fill.style.width = (self.progress*100)+'%';
+        if(counter){
+          const cur = Math.min(n, Math.round(self.progress*n)+1);
+          counter.textContent = String(cur).padStart(2,'0')+' / '+String(n).padStart(2,'0');
+        }
+      }
+    }
+  });
+
+  // Subtle vertical float on each card as it comes into view horizontally
+  cards.forEach((card,i) => {
+    gsap.from(card, {
+      y: 30, opacity:0, duration:.6, ease:'power3.out',
+      delay: i*0.04,
+      scrollTrigger:{ trigger:section, start:'top 80%', toggleActions:'play none none none' }
+    });
+  });
+})();
+
+/* ── WORD-SPLIT STAGGER on .s-title ────────────────────────── */
+(function(){
+  document.querySelectorAll('.s-title').forEach(el => {
+    if(el.dataset.wsplit) return;
+    el.dataset.wsplit = '1';
+
+    // Reset clip-path from CSS
+    el.style.clipPath = 'none';
+    // Kill existing clip-path STs
+    ScrollTrigger.getAll().forEach(st=>{ if(st.trigger===el) st.kill(); });
+
+    // Split into word spans preserving em/strong
+    function wrapWords(node, out) {
+      if(node.nodeType === 3){
+        // text node — split on spaces
+        const parts = node.textContent.split(/(\s+)/);
+        parts.forEach(p => {
+          if(/^\s+$/.test(p)){
+            out += p;
+          } else if(p){
+            out += `<span class="wsw"><span class="wsi">${p}</span></span>`;
+          }
+        });
+      } else if(node.nodeType === 1){
+        if(node.tagName==='EM' || node.tagName==='STRONG'){
+          out += `<span class="wsw"><${node.tagName} class="wsi">${node.innerHTML}</${node.tagName}></span>`;
+        } else if(node.tagName==='BR'){
+          out += '<br>';
+        } else {
+          let inner = '';
+          node.childNodes.forEach(c => { inner = wrapWords(c, inner); });
+          out += inner;
+        }
+      }
+      return out;
+    }
+
+    let newHtml = '';
+    el.childNodes.forEach(n => { newHtml = wrapWords(n, newHtml); });
+    el.innerHTML = newHtml;
+
+    gsap.fromTo(el.querySelectorAll('.wsi'),
+      { y:'115%', rotate:4, opacity:0 },
+      {
+        y:'0%', rotate:0, opacity:1,
+        duration:.75, ease:'power4.out', stagger:.07,
+        scrollTrigger:{ trigger:el, start:'top 89%', toggleActions:'play none none none' }
+      }
+    );
+  });
+})();
+
+/* ── FLOATING VERTICAL TEXT in #sobre ──────────────────────── */
+(function(){
+  const strips = document.querySelectorAll('.fstrip');
+  if(!strips.length) return;
+  const offsets = ['-130%','-160%','-100%','-190%'];
+  strips.forEach((s,i) => {
+    gsap.set(s, { y: offsets[i % offsets.length] });
+    gsap.to(s, {
+      y:'130%', ease:'none',
+      scrollTrigger:{
+        trigger:'#sobre', start:'top bottom', end:'bottom top',
+        scrub: 0.4 + i*0.15
+      }
+    });
+  });
+})();
+
+/* ── SCROLL EDGE GLOW (velocity-sensitive) ──────────────────── */
+(function(){
+  const glow = document.getElementById('sglow');
+  if(!glow) return;
+  lenis.on('scroll', ({velocity}) => {
+    const v = Math.abs(velocity||0);
+    if(v > 1.8){
+      gsap.to(glow, { opacity: Math.min(v*.1,1), duration:.12, ease:'power2.out', overwrite:true });
+      gsap.to(glow, { opacity:0, duration:.9, ease:'power2.out', delay:.12, overwrite:false });
+    }
+  });
+})();
+
+/* ── CHARACTER CONFETTI on hero CTA ────────────────────────── */
+(function(){
+  const btn = document.querySelector('#hero .btn-red');
+  if(!btn) return;
+  const chars = ['设','计','网','站','美','创','林','做','艺','设'];
+
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const href = btn.getAttribute('href');
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top  + rect.height/2;
+
+    chars.forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      Object.assign(span.style, {
+        position:'fixed', left:cx+'px', top:cy+'px',
+        fontFamily:'var(--fd)',
+        fontSize: (18+Math.random()*28)+'px',
+        color:'var(--gold)',
+        pointerEvents:'none',
+        zIndex:'9999',
+        transform:'translate(-50%,-50%)',
+        opacity:'1'
+      });
+      document.body.appendChild(span);
+
+      const angle = (i/chars.length)*Math.PI*2 + (Math.random()-.5)*.9;
+      const dist  = 70 + Math.random()*140;
+
+      gsap.to(span, {
+        x: Math.cos(angle)*dist,
+        y: Math.sin(angle)*dist - 55,
+        opacity:0,
+        rotate:(Math.random()-.5)*400,
+        scale:.2,
+        duration:.75+Math.random()*.4,
+        ease:'power2.out',
+        delay: i*.04,
+        onComplete:()=>span.remove()
+      });
+    });
+
+    setTimeout(()=>{
+      const t = document.querySelector(href);
+      if(t) lenis.scrollTo(t, { duration:1.2, easing:t=>t<.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1 });
+    }, 180);
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   CHINESE DESIGN TECHNIQUES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. MOUSE PARALLAX — 3 depth layers move independently ──── */
+(function() {
+  const bgText  = document.getElementById('bgText');
+  const hHead   = document.getElementById('hHead');
+  const hSub    = document.getElementById('hSub');
+  const hEye    = document.getElementById('hEye');
+  if (!bgText) return;
+
+  let tx = 0, ty = 0;
+  document.addEventListener('mousemove', e => {
+    const cx = (e.clientX / window.innerWidth  - 0.5);
+    const cy = (e.clientY / window.innerHeight - 0.5);
+
+    // Layer 1 — bg text moves most (opposite direction = depth illusion)
+    gsap.to(bgText, { x: cx * -60, y: cy * -40, duration: 1.2, ease: 'power2.out' });
+    // Layer 2 — headline moves subtly
+    gsap.to(hHead,  { x: cx *  14, y: cy *  10, duration: 0.9, ease: 'power2.out' });
+    // Layer 3 — eyebrow & sub barely move
+    gsap.to([hEye, hSub], { x: cx * 6, y: cy * 4, duration: 0.7, ease: 'power2.out' });
+  });
+})();
+
+/* ── 2. ANTI-SCROLL — bg text floats UP as page scrolls down ── */
+gsap.to('#bgText', {
+  y: '-40vh',
+  ease: 'none',
+  scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 0.8 }
+});
+
+/* ── 3. SCROLL VELOCITY SKEW — inertia physics feel ─────────── */
+(function() {
+  let lastScroll = 0, skewTween;
+  lenis.on('scroll', ({ scroll, velocity }) => {
+    const skew = Math.max(-6, Math.min(6, velocity * 0.003));
+    if (Math.abs(skew) > 0.1) {
+      gsap.to('section, .mq, .demo-card', {
+        skewY: skew, ease: 'power1.out', duration: 0.4, overwrite: true
+      });
+    } else {
+      gsap.to('section, .mq, .demo-card', {
+        skewY: 0, ease: 'power3.out', duration: 0.8, overwrite: true
+      });
+    }
+  });
+})();
+
+/* ── 4. 3D CARD TILT — demo cards tilt in 3D on hover ───────── */
+document.querySelectorAll('.demo-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width  - 0.5;
+    const y = (e.clientY - r.top)  / r.height - 0.5;
+    gsap.to(card, {
+      rotateY:  x * 12,
+      rotateX: -y * 8,
+      scale: 1.02,
+      duration: 0.4,
+      ease: 'power2.out',
+      transformPerspective: 800,
+      overwrite: true
+    });
+  });
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, {
+      rotateY: 0, rotateX: 0, scale: 1,
+      duration: 0.7, ease: 'elastic.out(1, 0.6)', overwrite: true
+    });
+  });
+});
+
+/* ── 5. CLIP-PATH SWEEP — replaced by word-split stagger (see v2 block below) */
+
+/* ── 6. CURSOR TRAIL — 5 ghost dots follow with delay ─────────  */
+(function() {
+  const numDots = 5;
+  const dots = [];
+  for (let i = 0; i < numDots; i++) {
+    const d = document.createElement('div');
+    d.style.cssText = `
+      position:fixed; width:${5 - i * 0.6}px; height:${5 - i * 0.6}px;
+      background:var(--gold); border-radius:50%;
+      pointer-events:none; z-index:9990;
+      transform:translate(-50%,-50%);
+      opacity:${0.35 - i * 0.06};
+      transition:opacity .2s;
+    `;
+    document.body.appendChild(d);
+    dots.push({ el: d, x: 0, y: 0 });
+  }
+
+  let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  // Lerp each dot toward the next
+  function frame() {
+    let px = mx, py = my;
+    dots.forEach((dot, i) => {
+      const lag = 0.12 + i * 0.06;
+      dot.x += (px - dot.x) * lag;
+      dot.y += (py - dot.y) * lag;
+      dot.el.style.left = dot.x + 'px';
+      dot.el.style.top  = dot.y + 'px';
+      px = dot.x; py = dot.y;
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ── 7. DEMO CARDS — handled by horizontal reel v2 block */
+
+/* ── 8. SECTION COLOUR MORPHING — background shifts on scroll ── */
+(function() {
+  const palette = [
+    { bg: '#06080C', border: 'rgba(0,217,190,0.14)' },  // hero — base
+    { bg: '#060A0F', border: 'rgba(0,217,190,0.10)' },  // demos — slightly blue
+    { bg: '#07080C', border: 'rgba(255,85,51,0.10)' },  // numbers — warm hint
+    { bg: '#05080E', border: 'rgba(0,217,190,0.12)' },  // processo
+    { bg: '#060C0A', border: 'rgba(0,217,190,0.18)' },  // servicos — teal push
+    { bg: '#08070C', border: 'rgba(255,85,51,0.12)' },  // sobre — purple-black
+    { bg: '#06080C', border: 'rgba(0,217,190,0.14)' },  // contacto — back to base
+  ];
+  const sectionIds = ['hero','demos','numbers','processo','servicos','sobre','contacto'];
+  sectionIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el || !palette[i]) return;
+    ScrollTrigger.create({
+      trigger: el, start: 'top 55%', end: 'bottom 45%',
+      onEnter:     () => { gsap.to(document.documentElement, { '--bg': palette[i].bg, duration: 1.2, ease: 'power2.out' }); },
+      onEnterBack: () => { gsap.to(document.documentElement, { '--bg': palette[i].bg, duration: 1.2, ease: 'power2.out' }); },
+    });
+  });
+})();
 </script>
 </body>
 </html>
