@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FORMA — Digital Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ══════════════════════════════════════════════
+       RESET & ROOT
+    ══════════════════════════════════════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg:      #07070a;
+      --dark:    #0e0e14;
+      --mid:     #17171f;
+      --border:  rgba(255,255,255,0.07);
+      --white:   #f2f2f5;
+      --grey:    #6b6b7a;
+      --accent:  #a78bfa;   /* violet */
+      --accent2: #7c3aed;
+      --gold:    #f59e0b;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* ── CURSOR ────────────────────────────────── */
+    #cur {
+      position: fixed; z-index: 9999; pointer-events: none;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      transform: translate(-50%,-50%);
+      transition: transform 0.15s;
+      mix-blend-mode: screen;
+    }
+    #cur-ring {
+      position: fixed; z-index: 9998; pointer-events: none;
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 1px solid rgba(167,139,250,0.3);
+      transform: translate(-50%,-50%);
+      transition: width 0.3s, height 0.3s, border-color 0.3s;
+    }
+    #cur-ring.big { width: 50px; height: 50px; border-color: rgba(167,139,250,0.15); }
+
+    /* ── NAV ───────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+      height: 70px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+    nav.glass {
+      background: rgba(7,7,10,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem; font-weight: 800;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .nav-logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2.5s ease infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,0.4)}
+      50%{box-shadow:0 0 0 6px rgba(167,139,250,0)}
+    }
+    .nav-links {
+      display: flex; align-items: center;
+      list-style: none; gap: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    .nav-links a {
+      font-size: 0.78rem; font-weight: 400;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--grey); text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--bg) !important;
+      background: var(--accent);
+      padding: 0.6em 1.4em;
+      transition: background 0.3s, transform 0.2s !important;
+      border-radius: 2px;
+    }
+    .nav-cta:hover { background: var(--accent2) !important; }
+
+    /* ══════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════ */
+    #hero {
+      height: 100vh; min-height: 600px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center;
+    }
+
+    #morph-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    /* Gradient vignette over canvas */
+    .hero-vignette {
+      position: absolute; inset: 0; z-index: 1;
+      background:
+        radial-gradient(ellipse 70% 80% at 20% 50%, rgba(7,7,10,0.7) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 0% 50%, rgba(7,7,10,0.95) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 clamp(1.5rem, 8vw, 7rem);
+      max-width: 700px;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.68rem; letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem;
+      opacity: 0; transform: translateY(16px);
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 2rem; height: 1px; background: var(--accent);
+    }
+
+    .hero-h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3.5rem, 8vw, 8rem);
+      font-weight: 800; line-height: 0.92;
+      letter-spacing: -0.03em;
+      opacity: 0; transform: translateY(24px);
+    }
+    .hero-h1 .line2 {
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(255,255,255,0.2);
+    }
+    .hero-h1 .accent { color: var(--accent); }
+
+    .hero-sub {
+      font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+      color: var(--grey); line-height: 1.8;
+      margin-top: 2rem; max-width: 400px;
+      opacity: 0; transform: translateY(16px);
+    }
+
+    .hero-actions {
+      display: flex; align-items: center; gap: 1.5rem;
+      margin-top: 3rem;
+      opacity: 0; transform: translateY(16px);
+    }
+    .btn-primary {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--bg); background: var(--white);
+      padding: 1em 2.2em; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      transition: background 0.3s, transform 0.3s;
+      border-radius: 2px;
+    }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
+    .btn-ghost {
+      font-size: 0.78rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--grey);
+      text-decoration: none; padding-bottom: 2px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.4); }
+
+    /* Scroll indicator */
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column;
+      align-items: center; gap: 0.5rem;
+      opacity: 0;
+    }
+    .hero-scroll span {
+      font-size: 0.58rem; letter-spacing: 0.4em;
+      text-transform: uppercase; color: var(--grey);
+    }
+    .scroll-line {
+      width: 1px; height: 3rem;
+      background: rgba(255,255,255,0.06); overflow: hidden; position: relative;
+    }
+    .scroll-line::after {
+      content: ''; position: absolute;
+      top: -100%; left: 0; width: 100%; height: 100%;
+      background: var(--accent); animation: fall 2s ease infinite;
+    }
+    @keyframes fall{0%{top:-100%}100%{top:100%}}
+
+    /* Morph label */
+    #morph-label {
+      position: absolute; right: clamp(1.5rem, 5vw, 4rem);
+      bottom: clamp(3rem, 6vh, 5rem);
+      z-index: 2;
+      font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(167,139,250,0.35);
+      opacity: 0;
+    }
+
+    /* ══════════════════════════════════════════════
+       SECTIONS — common
+    ══════════════════════════════════════════════ */
+    section { padding: clamp(5rem, 10vh, 9rem) clamp(1.5rem, 8vw, 7rem); }
+
+    .sec-label {
+      font-size: 0.65rem; letter-spacing: 0.4em;
+      text-transform: uppercase; color: var(--accent);
+      display: flex; align-items: center; gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .sec-label::before { content:''; width:1.5rem; height:1px; background:var(--accent); }
+
+    .sec-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      font-weight: 700; line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(32px); }
+    .reveal.in { opacity: 1; transform: translateY(0); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+
+    /* ══════════════════════════════════════════════
+       WORK SECTION
+    ══════════════════════════════════════════════ */
+    #work { background: var(--bg); }
+
+    .work-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 2rem; margin-bottom: 3rem;
+    }
+
+    /* Search */
+    .search-wrap {
+      position: relative; width: min(340px, 100%);
+    }
+    .search-wrap svg {
+      position: absolute; left: 1rem; top: 50%;
+      transform: translateY(-50%);
+      color: var(--grey); pointer-events: none;
+    }
+    #search-input {
+      width: 100%; background: var(--dark);
+      border: 1px solid var(--border);
+      color: var(--white); font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.75em 1em 0.75em 2.8em;
+      outline: none; transition: border-color 0.3s;
+    }
+    #search-input:focus { border-color: var(--accent); }
+    #search-input::placeholder { color: var(--grey); }
+
+    /* Filter tabs */
+    .filters {
+      display: flex; gap: 0.4rem; flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .filter-btn {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--dark); border: 1px solid var(--border);
+      color: var(--grey); padding: 0.55em 1.2em;
+      cursor: pointer; transition: all 0.25s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--white); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+    /* Projects grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+      gap: 1px; background: var(--border);
+    }
+    .project-card {
+      background: var(--dark);
+      position: relative; overflow: hidden;
+      cursor: pointer; transition: background 0.3s;
+      aspect-ratio: 4/3;
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .project-card.hidden { display: none; }
+    .project-card:hover { background: var(--mid); }
+    .project-card:hover .proj-overlay { opacity: 1; }
+    .project-card:hover .proj-img { transform: scale(1.05); }
+
+    .proj-img {
+      position: absolute; inset: 0;
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .proj-overlay {
+      position: absolute; inset: 0;
+      background: rgba(7,7,10,0.5);
+      opacity: 0; transition: opacity 0.4s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .proj-view {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--white); border: 1px solid rgba(255,255,255,0.5);
+      padding: 0.7em 1.5em;
+    }
+    .proj-info {
+      position: relative; z-index: 2;
+      padding: 1.5rem;
+      background: linear-gradient(to top, rgba(7,7,10,0.98) 0%, rgba(7,7,10,0.3) 100%);
+    }
+    .proj-cat {
+      font-size: 0.58rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .proj-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .proj-tags {
+      display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem;
+    }
+    .proj-tag {
+      font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--grey); border: 1px solid var(--border);
+      padding: 0.25em 0.6em;
+    }
+    .no-results {
+      grid-column: 1/-1; padding: 4rem;
+      text-align: center; color: var(--grey);
+      font-style: italic; display: none;
+    }
+
+    /* ══════════════════════════════════════════════
+       SERVICES
+    ══════════════════════════════════════════════ */
+    #services { background: var(--dark); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px; background: var(--border); margin-top: 4rem;
+    }
+    .service-card {
+      background: var(--dark); padding: 2.5rem;
+      position: relative; overflow: hidden;
+      transition: background 0.4s;
+    }
+    .service-card:hover { background: var(--mid); }
+    .service-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--accent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 4rem; font-weight: 800;
+      color: rgba(255,255,255,0.03);
+      line-height: 1; margin-bottom: 1.5rem;
+    }
+    .service-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      letter-spacing: -0.01em; margin-bottom: 1rem;
+    }
+    .service-desc {
+      font-size: 0.88rem; color: var(--grey); line-height: 1.75;
+    }
+    .service-list {
+      list-style: none; margin-top: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .service-list li {
+      font-size: 0.8rem; color: var(--grey);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .service-list li::before {
+      content: ''; width: 1rem; height: 1px;
+      background: var(--accent); flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════════
+       ABOUT
+    ══════════════════════════════════════════════ */
+    #about { background: var(--bg); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(3rem, 8vw, 7rem);
+      align-items: center; margin-top: 4rem;
+    }
+    @media(max-width:700px){ .about-grid{grid-template-columns:1fr;} }
+
+    .about-text p {
+      font-size: 1rem; color: var(--grey); line-height: 1.85;
+      margin-bottom: 1.2rem;
+    }
+    .about-text p strong { color: var(--white); font-weight: 500; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+      background: var(--border);
+    }
+    .stat {
+      background: var(--dark); padding: 2rem 1.5rem;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem; font-weight: 800;
+      line-height: 1; color: var(--white);
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-label {
+      font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--grey);
+      margin-top: 0.5rem;
+    }
+
+    /* ══════════════════════════════════════════════
+       CONTACT
+    ══════════════════════════════════════════════ */
+    #contact { background: var(--dark); }
+
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: clamp(3rem, 8vw, 7rem); align-items: start;
+      margin-top: 4rem;
+    }
+    @media(max-width:800px){ .contact-grid{grid-template-columns:1fr;} }
+
+    .contact-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      letter-spacing: 0.05em; margin-bottom: 0.5rem;
+    }
+    .contact-info p { font-size: 0.88rem; color: var(--grey); line-height: 1.7; }
+    .contact-links { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.85rem; color: var(--white); text-decoration: none;
+      padding: 0.9rem 1.2rem; border: 1px solid var(--border);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .contact-link:hover { border-color: var(--accent); background: rgba(167,139,250,0.04); }
+    .contact-link-icon { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
+    .contact-link-label { font-size: 0.7rem; color: var(--grey); }
+
+    /* Form */
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media(max-width:500px){ .form-row{grid-template-columns:1fr;} }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label {
+      font-size: 0.68rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--grey);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--white); font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; padding: 0.8em 1em; outline: none;
+      transition: border-color 0.3s;
+      -webkit-appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
+    .form-group input.error,
+    .form-group textarea.error { border-color: #ef4444; }
+    .form-group select { cursor: pointer; background-image: none; }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    .form-submit {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--accent); color: var(--bg);
+      border: none; padding: 1em 2.5em;
+      cursor: pointer; transition: background 0.3s, transform 0.2s;
+      align-self: flex-start; position: relative; overflow: hidden;
+    }
+    .form-submit:hover { background: var(--accent2); transform: translateY(-2px); }
+    .form-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Form success */
+    .form-success {
+      display: none; text-align: center; padding: 3rem;
+      border: 1px solid var(--accent);
+      background: rgba(167,139,250,0.04);
+    }
+    .form-success h3 {
+      font-family: 'Syne', sans-serif; font-size: 1.4rem;
+      font-weight: 700; margin-bottom: 0.5rem;
+    }
+    .form-success p { color: var(--grey); font-size: 0.9rem; }
+
+    /* ══════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════ */
+    footer {
+      background: var(--bg); padding: 2rem clamp(1.5rem, 8vw, 7rem);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    footer p { font-size: 0.75rem; color: var(--grey); }
+    .footer-logo {
+      font-family: 'Syne', sans-serif; font-size: 1rem;
+      font-weight: 800; letter-spacing: 0.2em;
+      color: var(--white); text-decoration: none;
+    }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: 0.72rem; color: var(--grey);
+      text-decoration: none; letter-spacing: 0.1em;
+      text-transform: uppercase; transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ── Mobile nav ─────────────────────────────── */
+    @media(max-width: 768px) {
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    FORMA
+  </a>
+  <ul class="nav-links">
+    <li><a href="#work">Trabalho</a></li>
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="#contact" class="nav-cta">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════ -->
+<section id="hero">
+  <canvas id="morph-canvas"></canvas>
+  <div class="hero-vignette"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow" id="h-eyebrow">Digital Studio · Portugal</div>
+    <h1 class="hero-h1" id="h-title">
+      Damos<br>
+      <span class="line2">forma</span><br>
+      <span class="accent">às ideias.</span>
+    </h1>
+    <p class="hero-sub" id="h-sub">
+      Construímos experiências digitais que impressionam — do conceito ao código, sem compromissos.
+    </p>
+    <div class="hero-actions" id="h-actions">
+      <a href="#work" class="btn-primary">
+        Ver trabalho
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M8 3L13 8L8 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+      <a href="#contact" class="btn-ghost">Falar connosco</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll" id="h-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+
+  <div id="morph-label">Esfera · Forma 01</div>
+</section>
+
+<!-- ══ WORK ══════════════════════════════════════ -->
+<section id="work">
+  <div class="work-header reveal">
+    <div>
+      <div class="sec-label">Trabalho</div>
+      <h2 class="sec-title">Projetos<br>recentes.</h2>
+    </div>
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Pesquisar projetos...">
+    </div>
+  </div>
+
+  <div class="filters reveal">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="webdesign">Web Design</button>
+    <button class="filter-btn" data-filter="ecommerce">E-commerce</button>
+    <button class="filter-btn" data-filter="identidade">Identidade</button>
+    <button class="filter-btn" data-filter="motion">Motion</button>
+  </div>
+
+  <div class="projects-grid" id="projects-grid">
+
+    <div class="project-card reveal" data-cat="webdesign" data-name="APEX Ginásio" data-tags="wordpress motion premium">
+      <div class="proj-img" style="background:linear-gradient(135deg,#0a0a08,#111a08)">
+        <span style="font-family:Syne,sans-serif;font-size:5rem;font-weight:800;color:rgba(200,241,53,0.08);letter-spacing:-0.03em">APEX</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info">
+        <div class="proj-cat">Web Design</div>
+        <div class="proj-name">APEX Ginásio</div>
+        <div class="proj-tags">
+          <span class="proj-tag">WordPress</span>
+          <span class="proj-tag">Motion</span>
+          <span class="proj-tag">Premium</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="ecommerce" data-name="BRUMA Boutique" data-tags="woocommerce moda ecommerce loja">
+      <div class="proj-img" style="background:linear-gradient(160deg,#f5f2ed,#ede8e0)">
+        <span style="font-family:Syne,sans-serif;font-size:3.5rem;font-weight:800;color:rgba(60,50,40,0.1);letter-spacing:-0.02em">BRUMA</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info" style="background:linear-gradient(to top,rgba(20,18,14,0.95),rgba(20,18,14,0.2) 100%)">
+        <div class="proj-cat" style="color:#5c9e6e">E-commerce</div>
+        <div class="proj-name" style="color:#1a1814">BRUMA Boutique</div>
+        <div class="proj-tags">
+          <span class="proj-tag" style="border-color:rgba(20,18,14,0.2);color:rgba(20,18,14,0.5)">WooCommerce</span>
+          <span class="proj-tag" style="border-color:rgba(20,18,14,0.2);color:rgba(20,18,14,0.5)">Moda</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="webdesign" data-name="FOGO Restaurante" data-tags="restaurante wordpress motion loading">
+      <div class="proj-img" style="background:linear-gradient(160deg,#080604,#1a1208)">
+        <span style="font-family:Syne,sans-serif;font-size:5rem;font-weight:800;color:rgba(200,144,58,0.1);letter-spacing:-0.02em">FOGO</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info">
+        <div class="proj-cat">Web Design</div>
+        <div class="proj-name">FOGO Restaurante</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Restaurante</span>
+          <span class="proj-tag">Loading Screen</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="identidade" data-name="VALOR Imobiliária" data-tags="imobiliaria identidade visual branding">
+      <div class="proj-img" style="background:linear-gradient(160deg,#05080f,#0a1020)">
+        <span style="font-family:Syne,sans-serif;font-size:4rem;font-weight:800;color:rgba(201,165,90,0.1)">VALOR</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info">
+        <div class="proj-cat">Identidade Visual</div>
+        <div class="proj-name">VALOR Imobiliária</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Branding</span>
+          <span class="proj-tag">Web</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="motion" data-name="ORIGEM Experiência" data-tags="motion webgl three.js 3d interativo">
+      <div class="proj-img" style="background:radial-gradient(ellipse at 40% 50%, #2d1a0a, #07040a)">
+        <span style="font-family:Syne,sans-serif;font-size:3rem;font-weight:800;color:rgba(251,191,36,0.12);font-style:italic">Origem</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info">
+        <div class="proj-cat" style="color:#f59e0b">Motion / 3D</div>
+        <div class="proj-name">ORIGEM Experiência</div>
+        <div class="proj-tags">
+          <span class="proj-tag">WebGL</span>
+          <span class="proj-tag">Three.js</span>
+          <span class="proj-tag">Interativo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="webdesign" data-name="AURORA Estética" data-tags="estetica clinica wordpress premium">
+      <div class="proj-img" style="background:linear-gradient(160deg,#f7f5f0,#eae7e0)">
+        <span style="font-family:Syne,sans-serif;font-size:3rem;font-weight:800;color:rgba(74,124,89,0.12)">AURORA</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info" style="background:linear-gradient(to top,rgba(20,18,14,0.95),rgba(20,18,14,0.15) 100%)">
+        <div class="proj-cat" style="color:#5c9e6e">Web Design</div>
+        <div class="proj-name" style="color:#f7f5f0">AURORA Estética</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Clínica</span>
+          <span class="proj-tag">Tema Claro</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="identidade" data-name="NAVALHA Barbearia" data-tags="barbearia identidade branding premium">
+      <div class="proj-img" style="background:linear-gradient(160deg,#0d0a05,#1a1409)">
+        <span style="font-family:Syne,sans-serif;font-size:2.5rem;font-weight:800;color:rgba(201,165,90,0.1)">NAVALHA</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info">
+        <div class="proj-cat">Identidade</div>
+        <div class="proj-name">NAVALHA Barbearia</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Branding</span>
+          <span class="proj-tag">Premium</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal" data-cat="ecommerce" data-name="MONTE Quinta" data-tags="quinta vinho ecommerce woocommerce alentejo">
+      <div class="proj-img" style="background:radial-gradient(ellipse at 30% 60%, #1a0d02, #07040a)">
+        <span style="font-family:Syne,sans-serif;font-size:4rem;font-weight:800;font-style:italic;color:rgba(180,83,9,0.15)">Monte</span>
+      </div>
+      <div class="proj-overlay"><div class="proj-view">Ver Projeto ↗</div></div>
+      <div class="proj-info">
+        <div class="proj-cat">E-commerce</div>
+        <div class="proj-name">MONTE Quinta</div>
+        <div class="proj-tags">
+          <span class="proj-tag">Vinho</span>
+          <span class="proj-tag">WooCommerce</span>
+          <span class="proj-tag">Alentejo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" id="no-results">
+      Nenhum projeto encontrado para "<span id="search-term"></span>"
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══════════════════════════════════ -->
+<section id="services">
+  <div class="reveal">
+    <div class="sec-label">Serviços</div>
+    <h2 class="sec-title">O que<br>construímos.</h2>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-num">01</div>
+      <div class="service-title">Web Design & Desenvolvimento</div>
+      <p class="service-desc">Sites rápidos, bonitos e que funcionam — do wireframe ao deploy em WordPress ou código custom.</p>
+      <ul class="service-list">
+        <li>WordPress / WooCommerce</li>
+        <li>Design responsivo (mobile-first)</li>
+        <li>SEO e velocidade optimizados</li>
+        <li>Entrega em 5–21 dias</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">02</div>
+      <div class="service-title">Motion & Experiências 3D</div>
+      <p class="service-desc">Animações e experiências WebGL que transformam um site numa memória — cursos vivos, geometrias que reagem.</p>
+      <ul class="service-list">
+        <li>Three.js / WebGL</li>
+        <li>GSAP ScrollTrigger</li>
+        <li>Scroll storytelling</li>
+        <li>Demos interativos para vendas</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-num">03</div>
+      <div class="service-title">Identidade Visual Digital</div>
+      <p class="service-desc">Logótipo, paleta, tipografia e sistema visual que escala — do cartão de visita ao site sem incoerências.</p>
+      <ul class="service-list">
+        <li>Logótipo e variantes</li>
+        <li>Sistema de cores e tipografia</li>
+        <li>Templates para redes sociais</li>
+        <li>Brand guidelines</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ══════════════════════════════════════ -->
+<section id="about">
+  <div class="sec-label reveal">Sobre</div>
+  <h2 class="sec-title reveal">Mais do que<br>um site.</h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>A <strong>FORMA</strong> nasceu da convicção de que a maioria dos sites falha antes de carregar — não por questões técnicas, mas por falta de intenção criativa.</p>
+      <p>Construímos com <strong>código a sério</strong>: sem construtores visuais que limitam o que é possível. Isso significa que cada animação, cada interação e cada milissegundo de performance é deliberado.</p>
+      <p>Trabalhamos com <strong>negócios locais em Portugal</strong> que querem um site à altura do que fazem — e com preços que fazem sentido para quem está a crescer.</p>
+    </div>
+    <div class="stats-grid reveal">
+      <div class="stat">
+        <div class="stat-num"><span class="count-up" data-target="7">0</span><span>+</span></div>
+        <div class="stat-label">Projetos entregues</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="count-up" data-target="5">0</span><span>–21</span></div>
+        <div class="stat-label">Dias de entrega</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span style="color:var(--accent)">€</span><span class="count-up" data-target="299">0</span></div>
+        <div class="stat-label">Preço inicial</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="count-up" data-target="100">0</span><span style="color:var(--accent)">%</span></div>
+        <div class="stat-label">Código personalizado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ════════════════════════════════════ -->
+<section id="contact">
+  <div class="reveal">
+    <div class="sec-label">Contacto</div>
+    <h2 class="sec-title">Vamos<br>trabalhar<br>juntos?</h2>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <h3>Fala connosco</h3>
+      <p>Conta-nos sobre o teu projeto. Respondemos com uma proposta em menos de 24 horas — gratuita e sem compromisso.</p>
+      <div class="contact-links">
+        <a href="https://wa.me/351926188888" class="contact-link">
+          <span class="contact-link-icon">💬</span>
+          <div>
+            <div>+351 926 188 888</div>
+            <div class="contact-link-label">WhatsApp · resposta imediata</div>
+          </div>
+        </a>
+        <a href="mailto:wangdinis@gmail.com" class="contact-link">
+          <span class="contact-link-icon">✉️</span>
+          <div>
+            <div>wangdinis@gmail.com</div>
+            <div class="contact-link-label">Email · propostas formais</div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="reveal">
+      <form class="contact-form" id="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome *</label>
+            <input type="text" id="f-name" placeholder="O teu nome">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="f-email" placeholder="email@exemplo.pt">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tipo de projeto</label>
+          <select id="f-service">
+            <option value="">Escolhe um serviço...</option>
+            <option value="web">Website / WordPress</option>
+            <option value="ecommerce">Loja Online (WooCommerce)</option>
+            <option value="motion">Motion / Experiência 3D</option>
+            <option value="identidade">Identidade Visual</option>
+            <option value="outro">Outro / Não sei ainda</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mensagem *</label>
+          <textarea id="f-message" placeholder="Descreve o teu projeto, prazo e orçamento disponível..."></textarea>
+        </div>
+        <button type="submit" class="form-submit" id="form-btn">Enviar mensagem →</button>
+      </form>
+      <div class="form-success" id="form-success">
+        <h3>Mensagem enviada ✓</h3>
+        <p>Recebemos o teu pedido. Respondemos em menos de 24 horas com uma proposta personalizada.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#hero" class="footer-logo">FORMA</a>
+  <p>© 2024 FORMA Digital Studio · Vale de Cambra, Portugal</p>
+  <div class="footer-links">
+    <a href="#work">Trabalho</a>
+    <a href="#services">Serviços</a>
+    <a href="#contact">Contacto</a>
+  </div>
+</footer>
+
+<!-- ══ SCRIPTS ════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+
+// ════════════════════════════════════════════════
+// CURSOR
+// ════════════════════════════════════════════════
+const cDot  = document.getElementById('cur');
+const cRing = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+document.querySelectorAll('a,button,input,select,textarea,.project-card').forEach(el => {
+  el.addEventListener('mouseenter', () => cRing.classList.add('big'));
+  el.addEventListener('mouseleave', () => cRing.classList.remove('big'));
+});
+
+(function cursorLoop(){
+  rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+  cDot.style.left  = mx+'px'; cDot.style.top  = my+'px';
+  cRing.style.left = rx+'px'; cRing.style.top = ry+'px';
+  requestAnimationFrame(cursorLoop);
+})();
+
+// ════════════════════════════════════════════════
+// MORPHING 3D OBJECT — Three.js
+// ════════════════════════════════════════════════
+const VS_MORPH = `
+  precision highp float;
+  uniform float uMorph;   // 0..4 drives shape
+  uniform float uTime;
+  uniform float uRotSpeed;
+  varying vec3 vNormal;
+  varying vec3 vPos;
+  varying float vNoise;
+
+  float hash(vec3 p){
+    p=fract(p*vec3(443.9,441.4,437.2));
+    p+=dot(p,p.yzx+19.2);
+    return fract((p.x+p.y)*p.z);
+  }
+  float noise(vec3 p){
+    vec3 i=floor(p); vec3 f=fract(p);
+    f=f*f*(3.0-2.0*f);
+    return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),
+                   mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),
+               mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),
+                   mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);
+  }
+
+  void main(){
+    vec3 n   = normalize(normal);
+    vec3 pos = position;
+    float r  = length(pos);
+
+    // ── Shape 0: Smooth sphere ──────────────────
+    vec3 s0 = n * 3.0;
+
+    // ── Shape 1: Crystalline / faceted ──────────
+    float n1 = noise(n * 5.0 + 2.0) * 1.2;
+    vec3 s1  = n * (3.0 + n1);
+
+    // ── Shape 2: Organic blob ───────────────────
+    float n2 = noise(n * 2.5 + vec3(uTime*0.15)) * 1.4;
+    float n2b= noise(n * 4.0 + vec3(0.0, uTime*0.12, 0.0)) * 0.5;
+    vec3 s2  = n * (2.8 + n2 + n2b);
+
+    // ── Shape 3: Elongated / twisted ────────────
+    vec3 elon = pos;
+    elon.y *= 1.6; elon.xz *= 0.7;
+    float twist = sin(elon.y * 0.8 + uTime * 0.1) * 0.4;
+    elon.x = elon.x*cos(twist) - elon.z*sin(twist);
+    elon.z = elon.x*sin(twist) + elon.z*cos(twist);
+    vec3 s3 = normalize(elon) * 3.0;
+
+    // ── Shape 4: Torus-like ripple ──────────────
+    float ripple = sin(n.y * 6.0 + uTime * 0.3) * 0.6
+                 + cos(n.x * 4.0 + uTime * 0.2) * 0.4;
+    vec3 s4 = n * (2.5 + ripple);
+
+    // ── Blend based on uMorph ───────────────────
+    vec3 finalPos;
+    float m = mod(uMorph, 4.0);
+    float t = fract(m);
+
+    if(m < 1.0)       finalPos = mix(s0, s1, t);
+    else if(m < 2.0)  finalPos = mix(s1, s2, t);
+    else if(m < 3.0)  finalPos = mix(s2, s3, t);
+    else              finalPos = mix(s3, s4, t);
+
+    // Subtle always-on breathing
+    finalPos *= 1.0 + sin(uTime * 0.4) * 0.02;
+
+    vNormal = normalize(finalPos);
+    vPos    = finalPos;
+    vNoise  = noise(n * 3.0);
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
+  }
+`;
+
+const FS_MORPH = `
+  precision highp float;
+  uniform float uMorph;
+  uniform float uTime;
+  uniform vec3  uColorA;
+  uniform vec3  uColorB;
+  varying vec3  vNormal;
+  varying vec3  vPos;
+  varying float vNoise;
+
+  void main(){
+    // Fresnel rim
+    vec3 viewDir = normalize(cameraPosition - vPos);
+    float fresnel = 1.0 - max(dot(vNormal, viewDir), 0.0);
+    fresnel = pow(fresnel, 2.5);
+
+    // Base lighting
+    vec3 light = normalize(vec3(1.0, 1.5, 2.0));
+    float diff = max(dot(vNormal, light), 0.0) * 0.6 + 0.4;
+
+    // Color based on morph state
+    vec3 col = mix(uColorA, uColorB, vNoise * 0.5 + 0.5);
+    col = mix(col * diff, col * 1.5, fresnel * 0.6);
+
+    // Subtle emissive on rim
+    col += uColorA * fresnel * 0.4;
+
+    gl_FragColor = vec4(col, 0.9 + fresnel * 0.1);
+  }
+`;
+
+// ── Scene ─────────────────────────────────────
+const canvas3D = document.getElementById('morph-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000, 0);
+
+const scene3D = new THREE.Scene();
+const cam3D   = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+cam3D.position.set(0, 0, 12);
+
+// Morph uniforms
+const morphUniforms = {
+  uMorph:   { value: 0 },
+  uTime:    { value: 0 },
+  uColorA:  { value: new THREE.Color(0.65, 0.55, 0.98) }, // violet
+  uColorB:  { value: new THREE.Color(0.30, 0.15, 0.65) }, // deep purple
+  uRotSpeed:{ value: 1 },
+  cameraPosition: { value: cam3D.position },
+};
+
+const morphGeo = new THREE.SphereGeometry(1, 96, 96);
+const morphMat = new THREE.ShaderMaterial({
+  uniforms: morphUniforms,
+  vertexShader: VS_MORPH, fragmentShader: FS_MORPH,
+  transparent: true, side: THREE.FrontSide,
+});
+const morphMesh = new THREE.Mesh(morphGeo, morphMat);
+scene3D.add(morphMesh);
+
+// Wireframe overlay
+const wireMat = new THREE.MeshBasicMaterial({
+  color: 0xa78bfa, wireframe: true,
+  transparent: true, opacity: 0.04,
+});
+const wireMesh = new THREE.Mesh(morphGeo.clone(), wireMat);
+scene3D.add(wireMesh);
+
+// ── Scroll → morph state ───────────────────────
+const morphLabels = ['Esfera · Forma 01', 'Cristal · Forma 02', 'Orgânico · Forma 03', 'Espiral · Forma 04', 'Fluxo · Forma 05'];
+const colorPairs  = [
+  [new THREE.Color(0.65,0.55,0.98), new THREE.Color(0.30,0.15,0.65)], // violet
+  [new THREE.Color(0.20,0.70,0.90), new THREE.Color(0.05,0.30,0.60)], // cyan-blue
+  [new THREE.Color(0.95,0.55,0.10), new THREE.Color(0.50,0.15,0.02)], // amber
+  [new THREE.Color(0.20,0.85,0.45), new THREE.Color(0.05,0.35,0.15)], // green
+];
+
+const morphLabel = document.getElementById('morph-label');
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Calculate max scroll to determine morph range
+ScrollTrigger.create({
+  trigger: document.body,
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate: self => {
+    const prog = self.progress;
+    // Map 0→4 shapes over full page scroll
+    const target = prog * 4;
+    morphUniforms.uMorph.value += (target - morphUniforms.uMorph.value) * 0.04;
+
+    // Update colors
+    const shapeIdx = Math.floor(morphUniforms.uMorph.value) % colorPairs.length;
+    const pair = colorPairs[shapeIdx];
+    morphUniforms.uColorA.value.lerp(pair[0], 0.04);
+    morphUniforms.uColorB.value.lerp(pair[1], 0.04);
+
+    // Update label
+    const labelIdx = Math.min(Math.floor(prog * 5), morphLabels.length - 1);
+    if(morphLabel.textContent !== morphLabels[labelIdx]) {
+      morphLabel.style.opacity = '0';
+      setTimeout(() => { morphLabel.textContent = morphLabels[labelIdx]; morphLabel.style.opacity = '1'; }, 300);
+    }
+
+    // Move object position: left in hero, right when in sections
+    const x = prog < 0.15 ? 3 : 3 + prog * 2;
+    morphMesh.position.x = x;
+    wireMesh.position.x  = x;
+  }
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  cam3D.aspect = window.innerWidth / window.innerHeight;
+  cam3D.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ════════════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════════════
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('glass', window.scrollY > 60);
+}, { passive: true });
+
+// ════════════════════════════════════════════════
+// GSAP INTRO
+// ════════════════════════════════════════════════
+const heroTl = gsap.timeline({ delay: 0.2 });
+heroTl
+  .to('#h-eyebrow',  { opacity:1, y:0, duration:0.7, ease:'power2.out' })
+  .to('#h-title',    { opacity:1, y:0, duration:0.9, ease:'power2.out' }, '-=0.3')
+  .to('#h-sub',      { opacity:1, y:0, duration:0.7, ease:'power2.out' }, '-=0.4')
+  .to('#h-actions',  { opacity:1, y:0, duration:0.7, ease:'power2.out' }, '-=0.3')
+  .to('#h-scroll',   { opacity:1, duration:0.8 }, '-=0.2')
+  .to('#morph-label',{ opacity:1, duration:0.8 }, '-=0.5');
+
+// ════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      e.target.classList.add('in');
+      // Stagger siblings
+      const siblings = e.target.parentElement.querySelectorAll('.reveal');
+      let delay = 0;
+      siblings.forEach(s => {
+        if(s === e.target) return;
+        s.style.transitionDelay = (delay += 0.1) + 's';
+      });
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+revealEls.forEach(el => revealObs.observe(el));
+
+// ════════════════════════════════════════════════
+// COUNT-UP ANIMATION
+// ════════════════════════════════════════════════
+const countObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(!e.isIntersecting) return;
+    const el = e.target;
+    const target = parseInt(el.dataset.target);
+    const duration = 1500;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      el.textContent = Math.floor(p * target);
+      if(p < 1) requestAnimationFrame(tick);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(tick);
+    countObs.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.count-up').forEach(el => countObs.observe(el));
+
+// ════════════════════════════════════════════════
+// SEARCH + FILTER
+// ════════════════════════════════════════════════
+const searchInput = document.getElementById('search-input');
+const filterBtns  = document.querySelectorAll('.filter-btn');
+const cards       = document.querySelectorAll('.project-card');
+const noResults   = document.getElementById('no-results');
+const searchTerm  = document.getElementById('search-term');
+let currentFilter = 'all';
+let currentSearch = '';
+
+function applyFilters() {
+  let visible = 0;
+  cards.forEach(card => {
+    const cat   = card.dataset.cat;
+    const name  = (card.dataset.name + ' ' + card.dataset.tags).toLowerCase();
+    const matchF = currentFilter === 'all' || cat === currentFilter;
+    const matchS = currentSearch === '' || name.includes(currentSearch.toLowerCase());
+    const show   = matchF && matchS;
+    card.classList.toggle('hidden', !show);
+    if(show) visible++;
+  });
+  noResults.style.display = visible === 0 ? 'block' : 'none';
+  searchTerm.textContent  = currentSearch;
+}
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+searchInput.addEventListener('input', e => {
+  currentSearch = e.target.value.trim();
+  applyFilters();
+});
+
+// ════════════════════════════════════════════════
+// CONTACT FORM
+// ════════════════════════════════════════════════
+document.getElementById('contact-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const name  = document.getElementById('f-name');
+  const email = document.getElementById('f-email');
+  const msg   = document.getElementById('f-message');
+  let valid   = true;
+
+  [name, email, msg].forEach(el => el.classList.remove('error'));
+
+  if(!name.value.trim())  { name.style.borderColor  = '#ef4444'; valid = false; }
+  if(!email.value.includes('@')) { email.style.borderColor = '#ef4444'; valid = false; }
+  if(!msg.value.trim())   { msg.style.borderColor   = '#ef4444'; valid = false; }
+
+  if(!valid) return;
+
+  const btn = document.getElementById('form-btn');
+  btn.textContent = 'A enviar...';
+  btn.disabled = true;
+
+  // Simulate sending
+  setTimeout(() => {
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }, 1200);
+});
+
+// Clear error on input
+['f-name','f-email','f-message'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function() {
+    this.style.borderColor = '';
+  });
+});
+
+// ════════════════════════════════════════════════
+// RENDER LOOP
+// ════════════════════════════════════════════════
+function animate() {
+  requestAnimationFrame(animate);
+  const t = performance.now() * 0.001;
+  morphUniforms.uTime.value = t;
+  morphUniforms.cameraPosition.value.copy(cam3D.position);
+
+  morphMesh.rotation.y = t * 0.12;
+  morphMesh.rotation.x = t * 0.05;
+  wireMesh.rotation.copy(morphMesh.rotation);
+
+  renderer.render(scene3D, cam3D);
+}
+animate();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORIGEM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #07040a;
+      overflow: hidden;
+      cursor: none;
+    }
+
+    canvas { display: block; position: fixed; inset: 0; }
+
+    /* ── CURSOR ── */
+    #cur {
+      position: fixed; z-index: 999; pointer-events: none;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(251,191,36,0.9);
+      transform: translate(-50%,-50%);
+      mix-blend-mode: screen;
+    }
+    #cur-ring {
+      position: fixed; z-index: 998; pointer-events: none;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(251,191,36,0.25);
+      transform: translate(-50%,-50%);
+    }
+
+    /* ── OVERLAY ── */
+    #ui {
+      position: fixed; inset: 0; z-index: 10;
+      pointer-events: none;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+    }
+
+    #title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(5rem, 14vw, 12rem);
+      font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.08em;
+      color: rgba(253,230,138,0.9);
+      line-height: 1;
+      text-align: center;
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    #sub {
+      font-family: 'EB Garamond', serif;
+      font-size: clamp(0.7rem, 1.5vw, 1rem);
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(180,83,9,0.7);
+      margin-top: 1.5rem;
+      opacity: 0;
+    }
+
+    #hint {
+      position: fixed; bottom: 3rem; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'EB Garamond', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(251,191,36,0.2);
+      opacity: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Corner info */
+    .corner {
+      position: fixed; z-index: 10; pointer-events: none;
+      font-family: 'EB Garamond', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(180,83,9,0.35);
+      opacity: 0;
+    }
+    #c-tl { top: 2.5rem; left: 3rem; }
+    #c-tr { top: 2.5rem; right: 3rem; text-align: right; }
+    #c-bl { bottom: 2.5rem; left: 3rem; }
+    #c-br { bottom: 2.5rem; right: 3rem; text-align: right; }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<div id="ui">
+  <div id="title">Origem</div>
+  <div id="sub">matéria em movimento</div>
+</div>
+
+<div id="hint">move o cursor · toda a matéria responde</div>
+
+<div class="corner" id="c-tl">ORIGEM<br>2024</div>
+<div class="corner" id="c-tr">WebGL · Three.js<br>Partículas: 15.000</div>
+<div class="corner" id="c-bl">Campo de ruído<br>Fractal Brownian Motion</div>
+<div class="corner" id="c-br" id="fps-display">60 fps</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+// ════════════════════════════════════════════════════════
+// VERTEX SHADER — Fractal Brownian Motion flow field
+// ════════════════════════════════════════════════════════
+const VS = `
+  precision highp float;
+
+  uniform float uTime;
+  uniform vec3  uMouse;
+  uniform float uMouse3D;
+
+  attribute float aScale;
+  attribute vec3  aColorBase;
+  attribute float aSpeed;
+  attribute float aLayer;    // 0 = glow layer, 1 = core layer
+
+  varying vec3  vColor;
+  varying float vAlpha;
+  varying float vLayer;
+
+  // ── Value noise ──────────────────────────────────────
+  vec3 hash33(vec3 p) {
+    p = fract(p * vec3(443.897, 441.423, 437.195));
+    p += dot(p, p.yzx + 19.19);
+    return fract((p.xxy + p.yzz) * p.zyx);
+  }
+
+  float noise31(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = fract(p);
+    f = f*f*(3.0-2.0*f);
+    float n = dot(i, vec3(1.0, 57.0, 113.0));
+    return mix(mix(mix(fract(sin(n)*43758.5),
+                       fract(sin(n+1.0)*43758.5),f.x),
+                   mix(fract(sin(n+57.0)*43758.5),
+                       fract(sin(n+58.0)*43758.5),f.x),f.y),
+               mix(mix(fract(sin(n+113.0)*43758.5),
+                       fract(sin(n+114.0)*43758.5),f.x),
+                   mix(fract(sin(n+170.0)*43758.5),
+                       fract(sin(n+171.0)*43758.5),f.x),f.y),f.z);
+  }
+
+  // ── FBM (4 octaves) ──────────────────────────────────
+  float fbm(vec3 p) {
+    float v = 0.0, a = 0.5;
+    for(int i=0;i<4;i++){
+      v += a * noise31(p);
+      p  = p * 2.1 + vec3(5.2, 1.3, 7.8);
+      a *= 0.5;
+    }
+    return v;
+  }
+
+  void main() {
+    vec3 pos = position;
+    float t = uTime * aSpeed;
+
+    // ── Flow field displacement ──────────────────────
+    float n1 = fbm(pos * 0.35 + vec3(t * 0.08, 0.0, 0.0));
+    float n2 = fbm(pos * 0.35 + vec3(0.0, t * 0.06, 1.7));
+    float n3 = fbm(pos * 0.35 + vec3(2.3, 0.0, t * 0.07));
+
+    // curl-like effect
+    vec3 disp = vec3(
+      fbm(pos * 0.4 + vec3(n2, 0.0, n3)) - 0.5,
+      fbm(pos * 0.4 + vec3(0.0, n3, n1)) - 0.5,
+      fbm(pos * 0.4 + vec3(n1, n2, 0.0)) - 0.5
+    );
+
+    pos += disp * 3.2;
+
+    // ── "Breathing" — slow global pulse ─────────────
+    float breath = sin(uTime * 0.18) * 0.12 + 1.0;
+    pos *= breath;
+
+    // ── Mouse repulsion / attraction ─────────────────
+    vec3 diff = pos - uMouse;
+    float dist = length(diff);
+    float repulse = smoothstep(4.0, 0.0, dist);
+    pos += normalize(diff) * repulse * 2.2;
+
+    // ── Color ────────────────────────────────────────
+    // Shift warm: speed of noise → brighter amber
+    float warmth = clamp(length(disp) * 1.5, 0.0, 1.0);
+    vColor = mix(aColorBase, vec3(1.0, 0.82, 0.2), warmth * 0.5);
+    vAlpha = (0.5 + n1 * 0.5) * (aLayer < 0.5 ? 0.06 : 0.75);
+
+    vLayer = aLayer;
+
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    float pSize = aScale * (aLayer < 0.5 ? 280.0 : 160.0) / -mv.z;
+    gl_PointSize = clamp(pSize, aLayer < 0.5 ? 4.0 : 1.0, aLayer < 0.5 ? 40.0 : 6.0);
+    gl_Position  = projectionMatrix * mv;
+  }
+`;
+
+// ════════════════════════════════════════════════════════
+// FRAGMENT SHADER
+// ════════════════════════════════════════════════════════
+const FS = `
+  precision highp float;
+  varying vec3  vColor;
+  varying float vAlpha;
+  varying float vLayer;
+
+  void main() {
+    vec2  uv   = gl_PointCoord - 0.5;
+    float dist = length(uv);
+    if(dist > 0.5) discard;
+
+    float alpha;
+    if(vLayer < 0.5) {
+      // Glow layer — very soft gaussian
+      alpha = exp(-dist * dist * 8.0) * vAlpha;
+    } else {
+      // Core layer — sharp center, soft edge
+      alpha = (1.0 - smoothstep(0.0, 0.5, dist)) * vAlpha;
+      // Bright spark at very center
+      alpha += exp(-dist * dist * 80.0) * 0.6;
+    }
+
+    gl_FragColor = vec4(vColor, clamp(alpha, 0.0, 1.0));
+  }
+`;
+
+// ════════════════════════════════════════════════════════
+// SCENE SETUP
+// ════════════════════════════════════════════════════════
+const canvas   = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x07040a, 1);
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
+camera.position.set(0, 0, 18);
+
+// ── Warm color palette ──────────────────────────────────
+const PALETTE = [
+  new THREE.Color(0.95, 0.55, 0.05),  // deep amber
+  new THREE.Color(0.98, 0.72, 0.10),  // gold
+  new THREE.Color(0.80, 0.35, 0.03),  // copper
+  new THREE.Color(0.99, 0.88, 0.45),  // pale gold
+  new THREE.Color(0.75, 0.22, 0.02),  // dark copper
+  new THREE.Color(0.95, 0.65, 0.25),  // warm amber
+];
+
+function randomColor() {
+  return PALETTE[Math.floor(Math.random() * PALETTE.length)].clone()
+    .lerp(PALETTE[Math.floor(Math.random() * PALETTE.length)], Math.random());
+}
+
+// ── Build particle geometry ──────────────────────────────
+function buildParticles(count, isGlow) {
+  const geo = new THREE.BufferGeometry();
+  const pos    = new Float32Array(count * 3);
+  const scales = new Float32Array(count);
+  const colors = new Float32Array(count * 3);
+  const speeds = new Float32Array(count);
+  const layers = new Float32Array(count);
+
+  for(let i = 0; i < count; i++) {
+    // Spherical distribution with density towards center
+    const r     = Math.cbrt(Math.random()) * 9;
+    const theta = Math.random() * Math.PI * 2;
+    const phi   = Math.acos(2 * Math.random() - 1);
+    pos[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+    pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    pos[i*3+2] = r * Math.cos(phi);
+
+    const c = randomColor();
+    colors[i*3]   = c.r;
+    colors[i*3+1] = c.g;
+    colors[i*3+2] = c.b;
+
+    scales[i] = 0.4 + Math.random() * 0.8;
+    speeds[i] = 0.6 + Math.random() * 0.8;
+    layers[i] = isGlow ? 0 : 1;
+  }
+
+  geo.setAttribute('position',  new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('aScale',    new THREE.BufferAttribute(scales, 1));
+  geo.setAttribute('aColorBase',new THREE.BufferAttribute(colors, 3));
+  geo.setAttribute('aSpeed',    new THREE.BufferAttribute(speeds, 1));
+  geo.setAttribute('aLayer',    new THREE.BufferAttribute(layers, 1));
+
+  return geo;
+}
+
+// Uniforms shared
+const uniforms = {
+  uTime:    { value: 0 },
+  uMouse:   { value: new THREE.Vector3(0, 0, 0) },
+  uMouse3D: { value: 0 },
+};
+
+// Glow layer — large soft particles
+const matGlow = new THREE.ShaderMaterial({
+  uniforms, vertexShader: VS, fragmentShader: FS,
+  blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+});
+const geoGlow  = buildParticles(8000, true);
+const ptGlow   = new THREE.Points(geoGlow, matGlow);
+scene.add(ptGlow);
+
+// Core layer — sharp bright particles
+const matCore = new THREE.ShaderMaterial({
+  uniforms, vertexShader: VS, fragmentShader: FS,
+  blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+});
+const geoCore  = buildParticles(7000, false);
+const ptCore   = new THREE.Points(geoCore, matCore);
+scene.add(ptCore);
+
+// ════════════════════════════════════════════════════════
+// MOUSE
+// ════════════════════════════════════════════════════════
+const cur     = document.getElementById('cur');
+const curRing = document.getElementById('cur-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+const raycaster = new THREE.Raycaster();
+const plane3D   = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+const mouse3D   = new THREE.Vector3();
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  // Project to 3D plane
+  const ndc = new THREE.Vector2(
+    (e.clientX / window.innerWidth)  * 2 - 1,
+   -(e.clientY / window.innerHeight) * 2 + 1
+  );
+  raycaster.setFromCamera(ndc, camera);
+  raycaster.ray.intersectPlane(plane3D, mouse3D);
+  uniforms.uMouse.value.copy(mouse3D);
+});
+
+// ════════════════════════════════════════════════════════
+// CAMERA — slow orbital drift
+// ════════════════════════════════════════════════════════
+let camTheta = 0, camPhi = Math.PI * 0.45;
+const TARGET = new THREE.Vector3(0, 0, 0);
+
+// ════════════════════════════════════════════════════════
+// RESIZE
+// ════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ════════════════════════════════════════════════════════
+// GSAP — text intro
+// ════════════════════════════════════════════════════════
+const tl = gsap.timeline();
+tl.to('#title', { opacity: 1, duration: 2.5, ease: 'power2.out', delay: 0.5 })
+  .to('#sub',   { opacity: 1, duration: 1.5, ease: 'power2.out' }, '-=1')
+  .to('.corner',{ opacity: 1, duration: 1,   ease: 'power2.out', stagger: 0.15 }, '-=0.5')
+  .to('#hint',  { opacity: 1, duration: 1,   ease: 'power2.out' }, '-=0.5')
+  // Title fades to ghost
+  .to('#title', { opacity: 0.08, duration: 3, ease: 'power2.inOut', delay: 2 })
+  .to('#sub',   { opacity: 0.05, duration: 2, ease: 'power2.inOut' }, '<');
+
+// ════════════════════════════════════════════════════════
+// RENDER LOOP
+// ════════════════════════════════════════════════════════
+let frame = 0, lastFps = performance.now(), fps = 60;
+const fpsEl = document.getElementById('c-br');
+
+function animate() {
+  requestAnimationFrame(animate);
+  frame++;
+
+  const t = performance.now() * 0.001;
+  uniforms.uTime.value = t;
+
+  // Camera orbit
+  camTheta += 0.0006;
+  camPhi    = Math.PI * 0.42 + Math.sin(t * 0.07) * 0.08;
+  const r   = 18 + Math.sin(t * 0.05) * 1.5;
+  camera.position.set(
+    r * Math.sin(camPhi) * Math.cos(camTheta),
+    r * Math.cos(camPhi),
+    r * Math.sin(camPhi) * Math.sin(camTheta)
+  );
+  camera.lookAt(TARGET);
+
+  // Cursor lag
+  rx += (mx - rx) * 0.1;
+  ry += (my - ry) * 0.1;
+  cur.style.left     = mx + 'px';
+  cur.style.top      = my + 'px';
+  curRing.style.left = rx + 'px';
+  curRing.style.top  = ry + 'px';
+
+  // FPS counter
+  if(frame % 60 === 0) {
+    const now = performance.now();
+    fps = Math.round(60000 / (now - lastFps));
+    lastFps = now;
+    if(fpsEl) fpsEl.textContent = `WebGL · Three.js\n${fps} fps`;
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

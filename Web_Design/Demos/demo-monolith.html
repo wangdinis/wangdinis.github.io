@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MONOLITH — Architecture & Space</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <style>
+  /* ══════════════════════════════════════════════════════
+     BASE
+  ══════════════════════════════════════════════════════ */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --bg:    #09080a;
+    --dark:  #141218;
+    --mid:   #1e1c22;
+    --cream: #f0ebe0;
+    --gold:  #c9a96e;
+    --grey:  #6b6775;
+    --bdr:   rgba(255,255,255,0.06);
+  }
+
+  html { scroll-behavior: auto; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* ── CUSTOM CURSOR ──────────────────────────────────── */
+  #cur-outer {
+    position: fixed; z-index: 9998; pointer-events: none;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid rgba(201,169,110,0.4);
+    transform: translate(-50%,-50%);
+    transition: width 0.4s, height 0.4s, border-color 0.4s, background 0.4s;
+    mix-blend-mode: difference;
+  }
+  #cur-dot {
+    position: fixed; z-index: 9999; pointer-events: none;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--gold);
+    transform: translate(-50%,-50%);
+  }
+  #cur-label {
+    position: fixed; z-index: 9997; pointer-events: none;
+    font-family: 'Syne', sans-serif; font-size: 0.55rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); transform: translate(-50%, -200%);
+    opacity: 0; transition: opacity 0.3s; white-space: nowrap;
+  }
+  .cursor-big #cur-outer  { width: 80px; height: 80px; background: rgba(201,169,110,0.06); border-color: rgba(201,169,110,0.2); }
+
+  /* ══════════════════════════════════════════════════════
+     PRELOADER
+  ══════════════════════════════════════════════════════ */
+  #preloader {
+    position: fixed; inset: 0; z-index: 9000;
+    overflow: hidden;
+  }
+
+  /* Top and bottom panels for split reveal */
+  .pre-panel {
+    position: absolute; left: 0; right: 0;
+    background: var(--bg);
+    z-index: 2;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    will-change: transform;
+  }
+  #pre-top { top: 0; height: 50vh; }
+  #pre-bot { bottom: 0; height: 50.5vh; }
+
+  /* Seam line */
+  .pre-seam {
+    position: absolute; left: 0; right: 0; top: 50%;
+    height: 1px; background: var(--bdr); z-index: 1;
+  }
+
+  /* Counter */
+  .pre-counter {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(4rem, 14vw, 12rem);
+    font-weight: 800; line-height: 1;
+    color: var(--cream); letter-spacing: -0.04em;
+    user-select: none; position: relative;
+  }
+  .pre-counter-pct {
+    font-size: 0.22em; letter-spacing: 0;
+    color: var(--gold); vertical-align: super;
+    font-weight: 400; margin-left: 0.1em;
+  }
+  .pre-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
+    font-weight: 800; letter-spacing: 0.6em;
+    text-transform: uppercase; color: rgba(240,235,224,0.4);
+    position: absolute; bottom: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  /* Progress bar */
+  .pre-bar {
+    position: absolute; bottom: 1.8rem; left: 15%; right: 15%;
+    height: 1px; background: var(--bdr);
+  }
+  .pre-bar-fill {
+    height: 100%; width: 0%; background: var(--gold);
+    transition: none;
+  }
+
+  /* Tagline in bottom panel */
+  .pre-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    font-style: italic; letter-spacing: 0.2em;
+    color: rgba(240,235,224,0.3);
+    position: absolute; top: 2.5rem; left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     NAV
+  ══════════════════════════════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 500; padding: 0 clamp(1.5rem, 5vw, 4rem);
+    height: 72px; display: flex; align-items: center;
+    justify-content: space-between;
+    transition: background 0.4s, backdrop-filter 0.4s;
+  }
+  nav.glass {
+    background: rgba(9,8,10,0.88);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--bdr);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif; font-size: 0.9rem;
+    font-weight: 800; letter-spacing: 0.45em; text-transform: uppercase;
+    color: var(--cream); text-decoration: none;
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.7rem; font-weight: 400; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--grey);
+    text-decoration: none; transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-cta {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem;
+    font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--bg) !important;
+    background: var(--gold); padding: 0.65em 1.5em;
+    transition: background 0.3s !important;
+  }
+  .nav-cta:hover { background: var(--cream) !important; }
+
+  /* ── Hamburger (mobile) ───────────────────────────── */
+  .burger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; padding: 4px; background: none; border: none;
+  }
+  .burger span { display: block; width: 24px; height: 1px; background: var(--cream); transition: all 0.3s; }
+  @media(max-width:768px) {
+    .nav-links { display: none; }
+    .burger { display: flex; }
+    .nav-cta { display: none; }
+  }
+
+  /* ── Mobile menu overlay ──────────────────────────── */
+  #mob-menu {
+    position: fixed; inset: 0; z-index: 600;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center; gap: 2.5rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  #mob-menu.open { opacity: 1; pointer-events: all; }
+  #mob-menu a {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 8vw, 4rem); font-style: italic;
+    color: var(--cream); text-decoration: none;
+    transition: color 0.3s;
+  }
+  #mob-menu a:hover { color: var(--gold); }
+
+  /* ══════════════════════════════════════════════════════
+     HERO
+  ══════════════════════════════════════════════════════ */
+  #hero {
+    height: 100vh; min-height: 600px;
+    position: relative; display: flex;
+    align-items: flex-end;
+    padding: 0 clamp(1.5rem, 7vw, 6rem) clamp(4rem, 8vh, 6rem);
+    overflow: hidden;
+  }
+
+  /* Background gradient */
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 30%, rgba(201,169,110,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 70% at 90% 80%, rgba(201,169,110,0.03) 0%, transparent 40%),
+      var(--bg);
+    pointer-events: none;
+  }
+
+  /* Large ghost title */
+  .hero-ghost {
+    position: absolute; right: -0.05em; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(12rem, 28vw, 28rem);
+    font-weight: 800; letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240,235,224,0.03);
+    pointer-events: none; user-select: none; line-height: 0.9;
+    will-change: transform;
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  /* Eyebrow */
+  .hero-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.5rem; opacity: 0;
+  }
+  .hero-eyebrow::before { content:''; width:2rem; height:1px; background:var(--gold); }
+
+  .hero-h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 9vw, 10rem);
+    font-weight: 300; font-style: italic; line-height: 0.92;
+    letter-spacing: -0.02em; opacity: 0;
+  }
+  .hero-h1 strong {
+    font-weight: 600; font-style: normal;
+    display: block;
+    color: transparent; -webkit-text-stroke: 1px rgba(240,235,224,0.25);
+  }
+
+  .hero-bottom {
+    display: flex; align-items: flex-end;
+    justify-content: space-between; flex-wrap: wrap; gap: 2rem;
+    margin-top: 3rem; opacity: 0;
+  }
+  .hero-desc {
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    color: var(--grey); line-height: 1.85; max-width: 380px;
+  }
+  .hero-actions { display: flex; align-items: center; gap: 2rem; }
+  .btn-primary {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem;
+    font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--bg); background: var(--gold);
+    padding: 1em 2.4em; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .btn-primary:hover { background: var(--cream); transform: translateY(-2px); }
+  .btn-ghost {
+    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--grey); text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 2px; transition: color 0.3s, border-color 0.3s;
+  }
+  .btn-ghost:hover { color: var(--cream); border-color: rgba(255,255,255,0.4); }
+
+  /* Scroll hint */
+  .hero-scroll {
+    position: absolute; right: clamp(1.5rem, 5vw, 4rem); bottom: clamp(4rem, 8vh, 6rem);
+    writing-mode: vertical-rl; text-orientation: mixed;
+    display: flex; align-items: center; gap: 1rem;
+    font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--grey); opacity: 0;
+  }
+  .scroll-v-line {
+    width: 1px; height: 3rem;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: grow 2s ease infinite;
+  }
+  @keyframes grow{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* ══════════════════════════════════════════════════════
+     MARQUEE
+  ══════════════════════════════════════════════════════ */
+  .marquee { overflow: hidden; border-top: 1px solid var(--bdr); border-bottom: 1px solid var(--bdr); padding: 1rem 0; }
+  .marquee-inner { display: flex; white-space: nowrap; animation: mq 25s linear infinite; }
+  .marquee:hover .marquee-inner { animation-play-state: paused; }
+  .mq-item {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 300;
+    color: var(--grey); padding: 0 2.5rem; flex-shrink: 0;
+    display: flex; align-items: center; gap: 2.5rem;
+  }
+  .mq-dot { color: var(--gold); font-size: 0.4em; }
+  @keyframes mq { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* ══════════════════════════════════════════════════════
+     SECTIONS — common
+  ══════════════════════════════════════════════════════ */
+  .sec-tag {
+    font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--gold); display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  .sec-tag::before { content:''; width:1.5rem; height:1px; background: var(--gold); }
+
+  .sec-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 6vw, 6rem);
+    font-weight: 300; font-style: italic; line-height: 1.0;
+    letter-spacing: -0.02em;
+  }
+
+  .reveal { opacity: 0; transform: translateY(28px); }
+  .reveal.in { opacity: 1; transform: translateY(0); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+
+  /* ══════════════════════════════════════════════════════
+     HORIZONTAL SCROLL — PROJECTS
+  ══════════════════════════════════════════════════════ */
+  #projects { overflow: hidden; position: relative; }
+
+  .projects-header {
+    padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 7vw, 6rem) 3rem;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+
+  .proj-count {
+    font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--grey);
+  }
+
+  .h-scroll-section {
+    /* Height will be set by JS based on track width */
+  }
+
+  .h-scroll-wrap {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+
+  .h-scroll-track {
+    display: flex; gap: 2px;
+    will-change: transform;
+    padding: 0 clamp(1.5rem, 7vw, 6rem);
+  }
+
+  .proj-card {
+    flex-shrink: 0;
+    width: clamp(280px, 65vw, 750px);
+    height: 70vh; max-height: 600px;
+    position: relative; overflow: hidden;
+    background: var(--dark);
+    cursor: pointer;
+  }
+  .proj-card-first { width: clamp(320px, 75vw, 850px); }
+
+  .proj-card-bg {
+    position: absolute; inset: 0;
+    transition: transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .proj-card:hover .proj-card-bg { transform: scale(1.04); }
+
+  .proj-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(9,8,10,0.92) 0%, rgba(9,8,10,0.1) 50%, transparent 100%);
+  }
+
+  .proj-card-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: clamp(1.5rem, 4vh, 2.5rem);
+  }
+  .proj-num {
+    font-family: 'Syne', sans-serif; font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.4em; color: var(--gold); margin-bottom: 0.6rem;
+  }
+  .proj-title {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 300;
+    line-height: 1.1; margin-bottom: 0.8rem;
+  }
+  .proj-meta {
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    font-size: 0.65rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--grey);
+  }
+  .proj-link {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    width: 48px; height: 48px;
+    background: rgba(201,169,110,0.15); border: 1px solid rgba(201,169,110,0.3);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; color: var(--gold);
+    font-size: 1.1rem; opacity: 0;
+    transition: opacity 0.3s, background 0.3s;
+  }
+  .proj-card:hover .proj-link { opacity: 1; }
+  .proj-link:hover { background: var(--gold); color: var(--bg); }
+
+  /* Scroll progress indicator */
+  .h-scroll-progress {
+    position: absolute; bottom: 3rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1rem;
+    font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--grey); z-index: 10;
+  }
+  .h-progress-bar {
+    width: 100px; height: 1px; background: rgba(255,255,255,0.1);
+    position: relative; overflow: hidden;
+  }
+  .h-progress-fill {
+    position: absolute; top: 0; left: 0;
+    height: 100%; width: 0%; background: var(--gold);
+    transition: width 0.1s;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     ABOUT / ATELIER
+  ══════════════════════════════════════════════════════ */
+  #about {
+    padding: clamp(5rem, 10vh, 9rem) clamp(1.5rem, 7vw, 6rem);
+    background: var(--dark);
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 8vw, 8rem); align-items: center;
+  }
+  @media(max-width:768px){ #about{grid-template-columns:1fr;} }
+
+  .about-left p {
+    font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+    color: var(--grey); line-height: 1.9; margin-bottom: 1.2rem;
+  }
+  .about-left p strong { color: var(--cream); font-weight: 400; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--bdr); margin-top: 3rem; }
+  .stat { background: var(--dark); padding: 1.8rem; }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+    line-height: 1; color: var(--cream);
+  }
+  .stat-num sup { font-size: 0.35em; color: var(--gold); vertical-align: super; }
+  .stat-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey); margin-top: 0.4rem; }
+
+  /* About visual */
+  .about-right { position: relative; }
+  .about-img-wrap {
+    aspect-ratio: 3/4; background: var(--mid);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-img-ghost {
+    font-family: 'Syne', sans-serif; font-size: 8rem; font-weight: 800;
+    color: rgba(255,255,255,0.03); letter-spacing: -0.04em; user-select: none;
+  }
+  .about-img-label {
+    position: absolute; bottom: 2rem; left: 2rem;
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 0.85rem; color: rgba(240,235,224,0.4);
+    letter-spacing: 0.15em;
+  }
+  .about-year {
+    position: absolute; top: -1.5rem; right: -1rem;
+    font-family: 'Syne', sans-serif; font-size: 5rem;
+    font-weight: 800; color: transparent;
+    -webkit-text-stroke: 1px rgba(240,235,224,0.06);
+    line-height: 1; user-select: none;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     PROCESS
+  ══════════════════════════════════════════════════════ */
+  #process {
+    padding: clamp(5rem, 10vh, 9rem) clamp(1.5rem, 7vw, 6rem);
+    background: var(--bg);
+  }
+  .process-header { margin-bottom: 4rem; }
+
+  .process-steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: grid; grid-template-columns: 5rem 1fr auto;
+    gap: 2rem; align-items: start;
+    padding: 2.5rem 0; border-bottom: 1px solid var(--bdr);
+    transition: padding 0.4s;
+  }
+  .step:last-child { border-bottom: none; }
+  .step:hover { padding-left: 1rem; }
+
+  .step-num {
+    font-family: 'Syne', sans-serif; font-size: 0.65rem;
+    font-weight: 800; letter-spacing: 0.3em; color: var(--gold);
+    padding-top: 0.2rem;
+  }
+  .step-content h3 {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(1.3rem, 2.5vw, 2rem); font-weight: 300;
+    margin-bottom: 0.7rem;
+  }
+  .step-content p { font-size: 0.88rem; color: var(--grey); line-height: 1.8; max-width: 520px; }
+  .step-duration {
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--grey); padding-top: 0.2rem; white-space: nowrap;
+  }
+  @media(max-width:600px){ .step{grid-template-columns:3rem 1fr;} .step-duration{display:none;} }
+
+  /* ══════════════════════════════════════════════════════
+     CONTACT
+  ══════════════════════════════════════════════════════ */
+  #contact {
+    padding: clamp(5rem, 10vh, 9rem) clamp(1.5rem, 7vw, 6rem);
+    background: var(--dark);
+    display: grid; grid-template-columns: 1fr 1.2fr;
+    gap: clamp(3rem, 8vw, 8rem); align-items: start;
+  }
+  @media(max-width:768px){ #contact{grid-template-columns:1fr;} }
+
+  .contact-left .big-cta {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 6vw, 6rem);
+    font-weight: 300; font-style: italic; line-height: 1;
+    margin-top: 1.5rem; margin-bottom: 2rem;
+  }
+  .contact-left .big-cta em { color: var(--gold); font-style: normal; }
+
+  .contact-details { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2.5rem; }
+  .contact-detail {
+    display: flex; align-items: flex-start; gap: 1.2rem;
+    padding: 1rem 1.2rem; border: 1px solid var(--bdr);
+    text-decoration: none; color: var(--cream);
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .contact-detail:hover { border-color: var(--gold); background: rgba(201,169,110,0.04); }
+  .cd-icon { color: var(--gold); font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+  .cd-title { font-weight: 500; font-size: 0.9rem; }
+  .cd-sub { font-size: 0.72rem; color: var(--grey); margin-top: 2px; }
+
+  /* Form */
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:500px){ .form-row{grid-template-columns:1fr;} }
+  .fg { display: flex; flex-direction: column; gap: 0.4rem; }
+  .fg label { font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grey); }
+  .fg input, .fg select, .fg textarea {
+    background: var(--bg); border: 1px solid var(--bdr);
+    color: var(--cream); font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; padding: 0.85em 1em; outline: none;
+    transition: border-color 0.3s; -webkit-appearance: none;
+  }
+  .fg input:focus,.fg select:focus,.fg textarea:focus { border-color: var(--gold); }
+  .fg textarea { resize: vertical; min-height: 120px; }
+  .fg select { cursor: pointer; }
+  .form-btn {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem;
+    font-weight: 800; letter-spacing: 0.25em; text-transform: uppercase;
+    background: var(--gold); color: var(--bg); border: none;
+    padding: 1.1em 2.5em; cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    align-self: flex-start;
+  }
+  .form-btn:hover { background: var(--cream); transform: translateY(-2px); }
+  .form-success-msg {
+    display: none; padding: 2rem;
+    border: 1px solid var(--gold); background: rgba(201,169,110,0.05);
+    text-align: center;
+  }
+  .form-success-msg h3 { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .form-success-msg p { font-size: 0.85rem; color: var(--grey); }
+
+  /* ══════════════════════════════════════════════════════
+     FOOTER
+  ══════════════════════════════════════════════════════ */
+  footer {
+    background: var(--bg); padding: 2rem clamp(1.5rem, 7vw, 6rem);
+    border-top: 1px solid var(--bdr);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:800; letter-spacing:0.5em; text-transform:uppercase; color:var(--cream); text-decoration:none; }
+  footer p { font-size:0.7rem; color:var(--grey); }
+  .footer-links { display:flex; gap:1.5rem; }
+  .footer-links a { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--grey); text-decoration:none; transition:color 0.3s; }
+  .footer-links a:hover { color:var(--cream); }
+  </style>
+</head>
+<body>
+
+<!-- ══ PRELOADER ══════════════════════════════════════ -->
+<div id="preloader">
+  <div class="pre-seam"></div>
+  <div class="pre-panel" id="pre-top">
+    <div class="pre-counter">
+      <span id="counter-num">0</span><span class="pre-counter-pct">%</span>
+    </div>
+    <div class="pre-logo">MONOLITH</div>
+    <div class="pre-bar"><div class="pre-bar-fill" id="pre-bar"></div></div>
+  </div>
+  <div class="pre-panel" id="pre-bot">
+    <div class="pre-sub">Architecture &amp; Space · Est. 2024</div>
+  </div>
+</div>
+
+<!-- ══ CURSOR ════════════════════════════════════════ -->
+<div id="cur-outer"></div>
+<div id="cur-dot"></div>
+<div id="cur-label"></div>
+
+<!-- ══ MOBILE MENU ═══════════════════════════════════ -->
+<div id="mob-menu">
+  <a href="#projects" onclick="closeMob()">Projetos</a>
+  <a href="#about" onclick="closeMob()">Atelier</a>
+  <a href="#process" onclick="closeMob()">Processo</a>
+  <a href="#contact" onclick="closeMob()">Contacto</a>
+</div>
+
+<!-- ══ NAV ═══════════════════════════════════════════ -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">Monolith</a>
+  <ul class="nav-links">
+    <li><a href="#projects">Projetos</a></li>
+    <li><a href="#about">Atelier</a></li>
+    <li><a href="#process">Processo</a></li>
+    <li><a href="#contact" class="nav-cta magnetic">Contacto</a></li>
+  </ul>
+  <button class="burger" id="burger" onclick="toggleMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ghost" id="hero-ghost">M</div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow" id="h-eye">Arquitectura de Espaço · Portugal</div>
+    <h1 class="hero-h1" id="h-title">
+      Espaços que<br>
+      <strong>ficam na</strong><br>
+      memória.
+    </h1>
+    <div class="hero-bottom" id="h-bot">
+      <p class="hero-desc">
+        Concebemos espaços que transformam — habitação de luxo, escritórios de autor e instalações culturais com uma linguagem visual inconfundível.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary magnetic">
+          Ver projetos
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8H13M8 3L13 8L8 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </a>
+        <a href="#contact" class="btn-ghost">Iniciar projeto</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll" id="h-scroll">
+    <div class="scroll-v-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ════════════════════════════════════════ -->
+<div class="marquee">
+  <div class="marquee-inner">
+    <span class="mq-item">Habitação de Luxo <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Escritórios Corporativos <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Instalações Culturais <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Espaços Comerciais <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Interiores de Autor <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Habitação de Luxo <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Escritórios Corporativos <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Instalações Culturais <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Espaços Comerciais <span class="mq-dot">◆</span></span>
+    <span class="mq-item">Interiores de Autor <span class="mq-dot">◆</span></span>
+  </div>
+</div>
+
+<!-- ══ PROJECTS — HORIZONTAL SCROLL ══════════════════ -->
+<section id="projects">
+  <div class="projects-header reveal">
+    <div>
+      <div class="sec-tag">Projetos</div>
+      <h2 class="sec-title">Obra<br>selecionada.</h2>
+    </div>
+    <div class="proj-count">— 04 projetos</div>
+  </div>
+
+  <!-- Sticky horizontal scroll wrapper -->
+  <div class="h-scroll-section" id="h-scroll-section">
+    <div class="h-scroll-wrap" id="h-scroll-wrap">
+      <div class="h-scroll-track" id="h-track">
+
+        <!-- Project 01 -->
+        <div class="proj-card proj-card-first" data-cursor="Casa Alentejana">
+          <div class="proj-card-bg" style="background:linear-gradient(160deg,#1a1510,#0d0b08);display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Syne,sans-serif;font-size:7rem;font-weight:800;color:rgba(201,169,110,0.07);letter-spacing:-0.04em">01</span>
+          </div>
+          <div class="proj-card-overlay"></div>
+          <a href="#contact" class="proj-link">↗</a>
+          <div class="proj-card-info">
+            <div class="proj-num">01 · 2024</div>
+            <div class="proj-title">Casa<br>Alentejana</div>
+            <div class="proj-meta"><span>Habitação</span><span>Évora</span><span>480m²</span></div>
+          </div>
+        </div>
+
+        <!-- Project 02 -->
+        <div class="proj-card" data-cursor="Torre Lisboa">
+          <div class="proj-card-bg" style="background:linear-gradient(180deg,#0a0d14,#06080f);display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Syne,sans-serif;font-size:7rem;font-weight:800;color:rgba(100,130,200,0.07);letter-spacing:-0.04em">02</span>
+          </div>
+          <div class="proj-card-overlay"></div>
+          <a href="#contact" class="proj-link">↗</a>
+          <div class="proj-card-info">
+            <div class="proj-num">02 · 2023</div>
+            <div class="proj-title">Torre<br>Lisboa</div>
+            <div class="proj-meta"><span>Corporativo</span><span>Lisboa</span><span>2.400m²</span></div>
+          </div>
+        </div>
+
+        <!-- Project 03 -->
+        <div class="proj-card" data-cursor="Museu do Douro">
+          <div class="proj-card-bg" style="background:linear-gradient(135deg,#100806,#1e1008);display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Syne,sans-serif;font-size:7rem;font-weight:800;color:rgba(180,80,30,0.07);letter-spacing:-0.04em">03</span>
+          </div>
+          <div class="proj-card-overlay"></div>
+          <a href="#contact" class="proj-link">↗</a>
+          <div class="proj-card-info">
+            <div class="proj-num">03 · 2023</div>
+            <div class="proj-title">Museu<br>do Douro</div>
+            <div class="proj-meta"><span>Cultural</span><span>Porto</span><span>1.800m²</span></div>
+          </div>
+        </div>
+
+        <!-- Project 04 -->
+        <div class="proj-card" data-cursor="Vila Sintra" style="margin-right:clamp(1.5rem,7vw,6rem)">
+          <div class="proj-card-bg" style="background:linear-gradient(160deg,#0b1008,#0a0f06);display:flex;align-items:center;justify-content:center;">
+            <span style="font-family:Syne,sans-serif;font-size:7rem;font-weight:800;color:rgba(80,140,60,0.07);letter-spacing:-0.04em">04</span>
+          </div>
+          <div class="proj-card-overlay"></div>
+          <a href="#contact" class="proj-link">↗</a>
+          <div class="proj-card-info">
+            <div class="proj-num">04 · 2022</div>
+            <div class="proj-title">Vila<br>Sintra</div>
+            <div class="proj-meta"><span>Habitação</span><span>Sintra</span><span>620m²</span></div>
+          </div>
+        </div>
+
+      </div><!-- /track -->
+
+      <!-- Scroll progress -->
+      <div class="h-scroll-progress">
+        <span>Arrastar</span>
+        <div class="h-progress-bar"><div class="h-progress-fill" id="h-prog"></div></div>
+        <span id="h-prog-label">01 / 04</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ABOUT ══════════════════════════════════════════ -->
+<section id="about">
+  <div class="about-left reveal">
+    <div class="sec-tag">Atelier</div>
+    <h2 class="sec-title">Criamos<br>com propósito.</h2>
+    <div style="margin-top:2rem;">
+      <p>O <strong>Monolith</strong> é um atelier de arquitectura fundado em Lisboa com o propósito de criar espaços que transcendem a função — lugares com identidade, emoção e permanência.</p>
+      <p>Trabalhamos com um <strong>número limitado de clientes por ano</strong> para garantir atenção total a cada projeto. Cada espaço é único porque cada pessoa que o habita é única.</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num"><span class="cu" data-t="42">0</span><sup>+</sup></div>
+        <div class="stat-label">Projetos entregues</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="cu" data-t="12">0</span></div>
+        <div class="stat-label">Anos de experiência</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="cu" data-t="8">0</span></div>
+        <div class="stat-label">Prémios internacionais</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><span class="cu" data-t="3">0</span></div>
+        <div class="stat-label">Países</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-right reveal">
+    <div class="about-year">2024</div>
+    <div class="about-img-wrap">
+      <div class="about-img-ghost">M</div>
+      <div class="about-img-label">Lisboa, Portugal — Atelier principal</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROCESS ════════════════════════════════════════ -->
+<section id="process">
+  <div class="process-header">
+    <div class="sec-tag reveal">Processo</div>
+    <h2 class="sec-title reveal">Do conceito<br>à realidade.</h2>
+  </div>
+  <div class="process-steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h3>Descoberta & Briefing</h3>
+        <p>Começamos por ouvir. Uma conversa aprofundada sobre o que o espaço precisa de fazer, de sentir e de comunicar — antes de qualquer linha desenhada.</p>
+      </div>
+      <div class="step-duration">2–4 semanas</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h3>Conceito & Estratégia Espacial</h3>
+        <p>Traduzimos o briefing num conceito espacial — volumes, materiais, luz e circulação. Apresentamos três direções e refinamos até chegar à visão certa.</p>
+      </div>
+      <div class="step-duration">4–8 semanas</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h3>Desenvolvimento & Documentação</h3>
+        <p>Detalhamos cada elemento — do projeto de execução às especificações técnicas. Coordenamos com engenheiros e consultores para garantir que a visão sobrevive ao real.</p>
+      </div>
+      <div class="step-duration">8–16 semanas</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h3>Acompanhamento & Entrega</h3>
+        <p>Supervisionamos a construção. O espaço entregue é exatamente o espaço concebido — sem compromissos de última hora que diluam a ideia original.</p>
+      </div>
+      <div class="step-duration">Variável</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ════════════════════════════════════════ -->
+<section id="contact">
+  <div class="contact-left reveal">
+    <div class="sec-tag">Contacto</div>
+    <div class="big-cta">
+      Temos um projeto<br>para <em>si</em>?
+    </div>
+    <p style="font-size:0.9rem;color:var(--grey);line-height:1.8;max-width:340px;">
+      Aceitamos um número limitado de projetos por ano. Se tem algo em mente, o momento de falar é agora.
+    </p>
+    <div class="contact-details">
+      <a href="https://wa.me/351926188888" class="contact-detail">
+        <span class="cd-icon">💬</span>
+        <div><div class="cd-title">+351 926 188 888</div><div class="cd-sub">WhatsApp · resposta em horas</div></div>
+      </a>
+      <a href="mailto:wangdinis@gmail.com" class="contact-detail">
+        <span class="cd-icon">✉️</span>
+        <div><div class="cd-title">wangdinis@gmail.com</div><div class="cd-sub">Para propostas formais</div></div>
+      </a>
+      <div class="contact-detail">
+        <span class="cd-icon">📍</span>
+        <div><div class="cd-title">Lisboa, Portugal</div><div class="cd-sub">Visitas ao atelier por marcação</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="reveal">
+    <form class="contact-form" id="cform">
+      <div class="form-row">
+        <div class="fg"><label>Nome *</label><input type="text" id="fn" placeholder="O seu nome"></div>
+        <div class="fg"><label>Email *</label><input type="email" id="fe" placeholder="email@exemplo.pt"></div>
+      </div>
+      <div class="fg">
+        <label>Tipo de projeto</label>
+        <select id="ft">
+          <option value="">Selecione...</option>
+          <option>Habitação de Luxo</option>
+          <option>Escritórios / Corporativo</option>
+          <option>Espaço Cultural</option>
+          <option>Comercial / Hotelaria</option>
+          <option>Consultoria / Outro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Mensagem *</label><textarea id="fm" placeholder="Descreva o projeto, localização e orçamento indicativo..."></textarea></div>
+      <button type="submit" class="form-btn magnetic">Enviar →</button>
+    </form>
+    <div class="form-success-msg" id="fsuccess">
+      <h3>Mensagem recebida.</h3>
+      <p>Respondemos em menos de 48 horas com uma proposta inicial.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#hero" class="footer-logo">Monolith</a>
+  <p>© 2024 Monolith Architecture · Lisboa, Portugal</p>
+  <div class="footer-links">
+    <a href="#projects">Projetos</a>
+    <a href="#about">Atelier</a>
+    <a href="#contact">Contacto</a>
+  </div>
+</footer>
+
+<!-- ══ SCRIPTS ════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ════════════════════════════════════════════════
+// CURSOR
+// ════════════════════════════════════════════════
+const cOuter = document.getElementById('cur-outer');
+const cDot   = document.getElementById('cur-dot');
+const cLabel = document.getElementById('cur-label');
+let mx=0,my=0,ox=0,oy=0;
+
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+
+(function cl(){
+  ox+=(mx-ox)*0.11; oy+=(my-oy)*0.11;
+  cDot.style.left   = mx+'px'; cDot.style.top   = my+'px';
+  cOuter.style.left = ox+'px'; cOuter.style.top = oy+'px';
+  cLabel.style.left = ox+'px'; cLabel.style.top = (oy-24)+'px';
+  requestAnimationFrame(cl);
+})();
+
+// Data-cursor labels
+document.querySelectorAll('[data-cursor]').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cLabel.textContent = el.dataset.cursor;
+    cLabel.style.opacity = '1';
+    document.body.classList.add('cursor-big');
+  });
+  el.addEventListener('mouseleave', () => {
+    cLabel.style.opacity = '0';
+    document.body.classList.remove('cursor-big');
+  });
+});
+
+document.querySelectorAll('a,button,.proj-card').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-big'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-big'));
+});
+
+// ════════════════════════════════════════════════
+// PRELOADER
+// ════════════════════════════════════════════════
+const counterEl = document.getElementById('counter-num');
+const barEl     = document.getElementById('pre-bar');
+const preTop    = document.getElementById('pre-top');
+const preBot    = document.getElementById('pre-bot');
+
+let count = 0;
+const totalDuration = 2200; // ms
+const startTime = performance.now();
+
+// Eased counter (slow start, fast end)
+function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+function updateCounter() {
+  const elapsed = performance.now() - startTime;
+  const progress = Math.min(elapsed / totalDuration, 1);
+  count = Math.floor(easeInOut(progress) * 100);
+  counterEl.textContent = count;
+  barEl.style.width = count + '%';
+
+  if(progress < 1) {
+    requestAnimationFrame(updateCounter);
+  } else {
+    // Counter done → brief pause → split reveal
+    setTimeout(splitReveal, 350);
+  }
+}
+
+function splitReveal() {
+  const tl = gsap.timeline({ onComplete: startSite });
+  tl.to(preTop, { y: '-100%', duration: 1.0, ease: 'power3.inOut' })
+    .to(preBot, { y: '100%',  duration: 1.0, ease: 'power3.inOut' }, '<')
+    .set('#preloader', { display: 'none' });
+}
+
+function startSite() {
+  // Animate hero in
+  const heroTl = gsap.timeline();
+  heroTl
+    .to('#h-eye',   { opacity:1, y:0, duration:0.7, ease:'power2.out' }, 0.1)
+    .to('#h-title', { opacity:1, y:0, duration:0.9, ease:'power2.out' }, 0.3)
+    .to('#h-bot',   { opacity:1, y:0, duration:0.7, ease:'power2.out' }, 0.6)
+    .to('#h-scroll',{ opacity:1, duration:0.8 }, 1.0);
+
+  // Init scroll triggers
+  initScrollTriggers();
+}
+
+requestAnimationFrame(updateCounter);
+
+// ════════════════════════════════════════════════
+// SCROLL TRIGGERS
+// ════════════════════════════════════════════════
+function initScrollTriggers() {
+
+  // Nav glass
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('glass', window.scrollY > 60);
+  }, { passive: true });
+
+  // Hero ghost parallax
+  ScrollTrigger.create({
+    trigger: '#hero', start: 'top top', end: 'bottom top',
+    onUpdate: self => {
+      document.getElementById('hero-ghost').style.transform =
+        `translateY(calc(-50% + ${self.progress * 80}px))`;
+    }
+  });
+
+  // Scroll reveals
+  document.querySelectorAll('.reveal').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%',
+      onEnter: () => el.classList.add('in'),
+    });
+  });
+
+  // ── HORIZONTAL SCROLL (GSAP pinned) ─────────────
+  const track   = document.getElementById('h-track');
+  const section = document.getElementById('h-scroll-section');
+  const wrap    = document.getElementById('h-scroll-wrap');
+  const progFill= document.getElementById('h-prog');
+  const progLbl = document.getElementById('h-prog-label');
+
+  // Total scroll distance = track width - viewport width
+  const getScrollAmt = () => track.scrollWidth - wrap.offsetWidth;
+
+  // Set section height to create scroll distance
+  function setHeight() {
+    section.style.height = (getScrollAmt() + window.innerHeight) + 'px';
+  }
+  setHeight();
+  window.addEventListener('resize', () => { setHeight(); ScrollTrigger.refresh(); });
+
+  ScrollTrigger.create({
+    trigger: section,
+    pin: wrap,
+    start: 'top top',
+    end: () => '+=' + getScrollAmt(),
+    scrub: 1,
+    onUpdate: self => {
+      const p = self.progress;
+      track.style.transform = `translateX(-${p * getScrollAmt()}px)`;
+      progFill.style.width  = (p * 100) + '%';
+      progLbl.textContent   = `0${Math.min(Math.floor(p*4)+1,4)} / 04`;
+    }
+  });
+
+  // ── Count-up ─────────────────────────────────────
+  document.querySelectorAll('.cu').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%',
+      onEnter: () => {
+        const target = parseInt(el.dataset.t);
+        gsap.fromTo(el, { textContent: 0 }, {
+          textContent: target, duration: 1.6, ease: 'power2.out',
+          snap: { textContent: 1 },
+          onUpdate() { el.textContent = Math.round(el.textContent); }
+        });
+      }
+    });
+  });
+}
+
+// ════════════════════════════════════════════════
+// MAGNETIC ELEMENTS
+// ════════════════════════════════════════════════
+document.querySelectorAll('.magnetic').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    gsap.to(el, {
+      x: (e.clientX - r.left - r.width/2) * 0.35,
+      y: (e.clientY - r.top  - r.height/2)* 0.35,
+      duration: 0.4, ease: 'power2.out'
+    });
+  });
+  el.addEventListener('mouseleave', () => {
+    gsap.to(el, { x:0, y:0, duration:0.7, ease:'elastic.out(1, 0.55)' });
+  });
+});
+
+// ════════════════════════════════════════════════
+// MOBILE MENU
+// ════════════════════════════════════════════════
+function toggleMob() {
+  const menu = document.getElementById('mob-menu');
+  menu.classList.toggle('open');
+}
+function closeMob() {
+  document.getElementById('mob-menu').classList.remove('open');
+}
+
+// ════════════════════════════════════════════════
+// CONTACT FORM
+// ════════════════════════════════════════════════
+document.getElementById('cform').addEventListener('submit', e => {
+  e.preventDefault();
+  const n = document.getElementById('fn');
+  const em= document.getElementById('fe');
+  const m = document.getElementById('fm');
+  let ok = true;
+  [n, em, m].forEach(el => el.style.borderColor = '');
+  if(!n.value.trim())       { n.style.borderColor  = '#ef4444'; ok = false; }
+  if(!em.value.includes('@')){ em.style.borderColor = '#ef4444'; ok = false; }
+  if(!m.value.trim())       { m.style.borderColor  = '#ef4444'; ok = false; }
+  if(!ok) return;
+
+  const btn = document.querySelector('.form-btn');
+  btn.textContent = 'A enviar...'; btn.disabled = true;
+  setTimeout(() => {
+    document.getElementById('cform').style.display = 'none';
+    document.getElementById('fsuccess').style.display = 'block';
+  }, 1200);
+});
+['fn','fe','fm'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function(){ this.style.borderColor=''; });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SISTEMA</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #010208; overflow: hidden; cursor: none; }
+    canvas { display: block; position: fixed; inset: 0; }
+
+    /* ── CURSOR ── */
+    #cur {
+      position: fixed; z-index: 999; pointer-events: none;
+      width: 4px; height: 4px; border-radius: 50%;
+      background: #00d4ff;
+      transform: translate(-50%,-50%);
+      box-shadow: 0 0 8px #00d4ff, 0 0 20px rgba(0,212,255,0.4);
+    }
+    #cur-cross {
+      position: fixed; z-index: 998; pointer-events: none;
+      transform: translate(-50%,-50%);
+    }
+    #cur-cross::before, #cur-cross::after {
+      content: '';
+      position: absolute;
+      background: rgba(0,212,255,0.5);
+    }
+    #cur-cross::before { width: 1px; height: 20px; top: -10px; left: 0; }
+    #cur-cross::after  { width: 20px; height: 1px; left: -10px; top: 0; }
+
+    /* ── HUD OVERLAY ── */
+    #hud {
+      position: fixed; inset: 0; z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Title */
+    #title {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(0,212,255,0.06);
+      user-select: none;
+      white-space: nowrap;
+      opacity: 0;
+    }
+
+    #title-main {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.8rem, 1.8vw, 1.4rem);
+      font-weight: 400;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(0,212,255,0.8);
+      text-align: center;
+      opacity: 0;
+    }
+    #title-main span {
+      display: block;
+      font-size: 0.6em;
+      letter-spacing: 0.8em;
+      color: rgba(0,212,255,0.3);
+      margin-top: 0.8em;
+    }
+
+    /* ── SCAN LINE ── */
+    #scanline {
+      position: fixed; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right,
+        transparent 0%,
+        rgba(0,212,255,0.0) 10%,
+        rgba(0,212,255,0.6) 40%,
+        rgba(0,212,255,0.8) 50%,
+        rgba(0,212,255,0.6) 60%,
+        rgba(0,212,255,0.0) 90%,
+        transparent 100%
+      );
+      z-index: 20;
+      pointer-events: none;
+      box-shadow: 0 0 10px rgba(0,212,255,0.3), 0 0 30px rgba(0,212,255,0.1);
+    }
+    /* Scan glow area */
+    #scanline::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 120px;
+      top: -60px;
+      background: linear-gradient(to bottom,
+        transparent,
+        rgba(0,212,255,0.015),
+        rgba(0,212,255,0.025),
+        rgba(0,212,255,0.015),
+        transparent
+      );
+    }
+
+    /* ── CORNERS ── */
+    .corner {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
+      line-height: 1.8;
+      color: rgba(0,212,255,0.3);
+      opacity: 0;
+    }
+    #c-tl { top: 2.5rem; left: 3rem; }
+    #c-tr { top: 2.5rem; right: 3rem; text-align: right; }
+    #c-bl { bottom: 2.5rem; left: 3rem; }
+    #c-br { bottom: 2.5rem; right: 3rem; text-align: right; }
+
+    /* ── BRACKETS — corner decoration ── */
+    .bracket {
+      position: absolute;
+      width: 20px; height: 20px;
+      opacity: 0;
+    }
+    .bracket.tl { top: 1.2rem; left: 1.2rem; border-top: 1px solid rgba(0,212,255,0.25); border-left: 1px solid rgba(0,212,255,0.25); }
+    .bracket.tr { top: 1.2rem; right: 1.2rem; border-top: 1px solid rgba(0,212,255,0.25); border-right: 1px solid rgba(0,212,255,0.25); }
+    .bracket.bl { bottom: 1.2rem; left: 1.2rem; border-bottom: 1px solid rgba(0,212,255,0.25); border-left: 1px solid rgba(0,212,255,0.25); }
+    .bracket.br { bottom: 1.2rem; right: 1.2rem; border-bottom: 1px solid rgba(0,212,255,0.25); border-right: 1px solid rgba(0,212,255,0.25); }
+
+    /* ── DATA STREAM (right side) ── */
+    #datastream {
+      position: fixed; right: 3rem; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.5rem;
+      color: rgba(0,212,255,0.15);
+      line-height: 1.6;
+      text-align: right;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* ── CENTER RETICLE ── */
+    #reticle {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 180px; height: 180px;
+      z-index: 5; pointer-events: none;
+      opacity: 0;
+    }
+    #reticle svg { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<!-- Scan line -->
+<div id="scanline"></div>
+
+<!-- Cursor -->
+<div id="cur"></div>
+<div id="cur-cross"></div>
+
+<!-- HUD -->
+<div id="hud">
+  <div id="title">SISTEMA</div>
+  <div id="title-main">
+    SISTEMA
+    <span>núcleo · v2.4.1</span>
+  </div>
+
+  <div class="corner" id="c-tl">
+    SISTEMA · NÚCLEO<br>
+    STATUS: ACTIVO<br>
+    NÓS: <span id="node-count">0</span>
+  </div>
+  <div class="corner" id="c-tr">
+    PARTÍCULAS: 12.000<br>
+    GEOMETRIA: ICOSAEDRO<br>
+    FREQ: <span id="freq">0.000</span> Hz
+  </div>
+  <div class="corner" id="c-bl">
+    <span id="coord-x">X: 0.000</span><br>
+    <span id="coord-y">Y: 0.000</span><br>
+    <span id="coord-z">Z: 0.000</span>
+  </div>
+  <div class="corner" id="c-br">
+    <span id="fps-el">60</span> FPS<br>
+    WebGL r128<br>
+    Three.js
+  </div>
+
+  <div class="bracket tl"></div>
+  <div class="bracket tr"></div>
+  <div class="bracket bl"></div>
+  <div class="bracket br"></div>
+
+  <div id="datastream"></div>
+</div>
+
+<!-- Reticle -->
+<div id="reticle">
+  <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="90" cy="90" r="60" stroke="rgba(0,212,255,0.08)" stroke-width="1"/>
+    <circle cx="90" cy="90" r="40" stroke="rgba(0,212,255,0.12)" stroke-width="0.5" stroke-dasharray="4 4"/>
+    <!-- Corner ticks -->
+    <line x1="30" y1="90" x2="40" y2="90" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
+    <line x1="150" y1="90" x2="140" y2="90" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
+    <line x1="90" y1="30" x2="90" y2="40" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
+    <line x1="90" y1="150" x2="90" y2="140" stroke="rgba(0,212,255,0.4)" stroke-width="1"/>
+    <!-- Diagonal ticks -->
+    <line x1="47" y1="47" x2="53" y2="53" stroke="rgba(0,212,255,0.2)" stroke-width="0.5"/>
+    <line x1="133" y1="47" x2="127" y2="53" stroke="rgba(0,212,255,0.2)" stroke-width="0.5"/>
+    <line x1="47" y1="133" x2="53" y2="127" stroke="rgba(0,212,255,0.2)" stroke-width="0.5"/>
+    <line x1="133" y1="133" x2="127" y2="127" stroke="rgba(0,212,255,0.2)" stroke-width="0.5"/>
+    <!-- Center dot -->
+    <circle cx="90" cy="90" r="2" fill="rgba(0,212,255,0.3)"/>
+  </svg>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+
+// ════════════════════════════════════════════════════════
+// VERTEX SHADER — particles orbit + stream
+// ════════════════════════════════════════════════════════
+const VS_PARTICLE = `
+  precision highp float;
+
+  uniform float uTime;
+  uniform vec3  uMouse;
+  uniform float uPulse;
+
+  attribute float aOrbitRadius;
+  attribute float aOrbitSpeed;
+  attribute float aOrbitOffset;
+  attribute float aOrbitAxis;   // 0=XY, 1=XZ, 2=YZ, 3=free
+  attribute float aScale;
+  attribute vec3  aColor;
+  attribute float aType;        // 0=orbit, 1=stream, 2=noise
+
+  varying vec3  vColor;
+  varying float vAlpha;
+  varying float vType;
+
+  float hash(float n){ return fract(sin(n)*43758.5453); }
+
+  void main() {
+    vec3 pos;
+    float t = uTime * aOrbitSpeed + aOrbitOffset;
+
+    if(aType < 0.5) {
+      // ── Orbital particles ──
+      float r = aOrbitRadius * (1.0 + uPulse * 0.15);
+      if(aOrbitAxis < 0.5) {
+        pos = vec3(cos(t)*r, sin(t)*r, sin(t*1.3)*r*0.2);
+      } else if(aOrbitAxis < 1.5) {
+        pos = vec3(cos(t)*r, sin(t*0.7)*r*0.3, sin(t)*r);
+      } else if(aOrbitAxis < 2.5) {
+        pos = vec3(sin(t*0.8)*r*0.2, cos(t)*r, sin(t)*r);
+      } else {
+        // Lissajous-like free orbit
+        pos = vec3(
+          cos(t * 1.0) * r,
+          sin(t * 1.3) * r * 0.7,
+          cos(t * 0.7 + 1.2) * r * 0.5
+        );
+      }
+    } else if(aType < 1.5) {
+      // ── Stream particles — flow along edges ──
+      float flow = fract(t * 0.2);
+      // Map position to a flowing path
+      float angle = aOrbitOffset * 6.283;
+      float r = aOrbitRadius;
+      pos = vec3(
+        cos(angle) * r * (0.5 + flow * 0.5),
+        sin(angle + flow * 3.14) * r * 0.6,
+        cos(angle * 1.7) * r * 0.4 * flow
+      );
+      pos *= 1.0 + uPulse * 0.1;
+    } else {
+      // ── Noise field particles ──
+      float n1 = fract(sin(aOrbitOffset * 127.1 + uTime * 0.08) * 43758.5);
+      float n2 = fract(sin(aOrbitOffset * 269.5 + uTime * 0.06) * 43758.5);
+      float n3 = fract(sin(aOrbitOffset * 113.5 + uTime * 0.07) * 43758.5);
+      pos = position + vec3(n1-0.5, n2-0.5, n3-0.5) * 2.0;
+    }
+
+    // ── Mouse attraction ──
+    vec3 diff = pos - uMouse;
+    float dist = length(diff);
+    float attract = smoothstep(5.0, 0.0, dist) * 0.4;
+    pos -= normalize(diff) * attract;
+
+    vColor = aColor;
+    vType  = aType;
+
+    // Alpha: brighter closer to camera
+    float distToOrig = length(pos);
+    vAlpha = 0.6 + (1.0 - clamp(distToOrig/10.0, 0.0, 1.0)) * 0.4;
+
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    float pSize = aScale * 150.0 / -mv.z;
+    gl_PointSize = clamp(pSize, 1.0, 8.0);
+    gl_Position  = projectionMatrix * mv;
+  }
+`;
+
+const FS_PARTICLE = `
+  precision highp float;
+  varying vec3  vColor;
+  varying float vAlpha;
+  varying float vType;
+
+  void main() {
+    vec2  uv   = gl_PointCoord - 0.5;
+    float dist = length(uv);
+    if(dist > 0.5) discard;
+
+    float alpha;
+    if(vType < 1.5) {
+      // Sharp + glow for orbit/stream
+      alpha  = (1.0 - smoothstep(0.1, 0.5, dist)) * vAlpha;
+      alpha += exp(-dist * dist * 60.0) * 0.8;
+    } else {
+      alpha = exp(-dist * dist * 10.0) * vAlpha * 0.4;
+    }
+
+    gl_FragColor = vec4(vColor, clamp(alpha, 0.0, 1.0));
+  }
+`;
+
+// ── Wireframe shader ─────────────────────────────────────
+const VS_WIRE = `
+  precision highp float;
+  uniform float uTime;
+  uniform float uPulse;
+  varying float vZ;
+  void main() {
+    vec3 pos = position * (1.0 + uPulse * 0.08);
+    vZ = pos.z;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  }
+`;
+
+const FS_WIRE = `
+  precision highp float;
+  uniform float uTime;
+  varying float vZ;
+  void main() {
+    float pulse = sin(uTime * 2.0 + vZ * 1.5) * 0.5 + 0.5;
+    vec3 col = mix(vec3(0.0, 0.53, 0.80), vec3(0.0, 0.83, 1.0), pulse);
+    gl_FragColor = vec4(col, 0.55 + pulse * 0.3);
+  }
+`;
+
+// ════════════════════════════════════════════════════════
+// SETUP
+// ════════════════════════════════════════════════════════
+const canvas   = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x010208, 1);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.sortObjects = true;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
+camera.position.set(0, 3, 20);
+
+// ── UNIFORMS ─────────────────────────────────────────────
+const unif = {
+  uTime:  { value: 0 },
+  uMouse: { value: new THREE.Vector3() },
+  uPulse: { value: 0 },
+};
+
+// ════════════════════════════════════════════════════════
+// CENTRAL WIREFRAME ICOSAHEDRON
+// ════════════════════════════════════════════════════════
+const WIRE_UNIF = { uTime: unif.uTime, uPulse: unif.uPulse };
+
+function makeWireframe(geo, opacity) {
+  const edges = new THREE.EdgesGeometry(geo);
+  const mat   = new THREE.ShaderMaterial({
+    uniforms: WIRE_UNIF,
+    vertexShader: VS_WIRE, fragmentShader: FS_WIRE,
+    transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  return new THREE.LineSegments(edges, mat);
+}
+
+// Outer shell
+const outerGeo = new THREE.IcosahedronGeometry(6, 2);
+const outer    = makeWireframe(outerGeo);
+scene.add(outer);
+
+// Inner core
+const innerGeo = new THREE.IcosahedronGeometry(3, 1);
+const inner    = makeWireframe(innerGeo);
+scene.add(inner);
+
+// Octahedron accent
+const octaGeo = new THREE.OctahedronGeometry(4.5, 0);
+const octa    = makeWireframe(octaGeo);
+scene.add(octa);
+
+// ── Grid plane ───────────────────────────────────────────
+const grid = new THREE.GridHelper(40, 40, 0x001833, 0x001833);
+grid.position.y = -8;
+grid.material.transparent = true;
+grid.material.opacity = 0.4;
+scene.add(grid);
+
+// ════════════════════════════════════════════════════════
+// PARTICLE SYSTEM
+// ════════════════════════════════════════════════════════
+const COLORS = {
+  bright: new THREE.Color(0.0,  0.83, 1.0),   // cyan
+  mid:    new THREE.Color(0.0,  0.53, 0.80),  // blue
+  dim:    new THREE.Color(0.05, 0.25, 0.55),  // deep blue
+  white:  new THREE.Color(0.85, 0.95, 1.0),   // near-white
+};
+
+function pickColor() {
+  const r = Math.random();
+  if(r < 0.3) return COLORS.bright.clone();
+  if(r < 0.6) return COLORS.mid.clone();
+  if(r < 0.85) return COLORS.dim.clone();
+  return COLORS.white.clone();
+}
+
+function buildParticles(count) {
+  const geo    = new THREE.BufferGeometry();
+  const pos    = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const radii  = new Float32Array(count);
+  const speeds = new Float32Array(count);
+  const offsets= new Float32Array(count);
+  const axes   = new Float32Array(count);
+  const scales = new Float32Array(count);
+  const types  = new Float32Array(count);
+
+  for(let i = 0; i < count; i++) {
+    const type = i < count * 0.5 ? 0 :
+                 i < count * 0.75 ? 1 : 2;
+    types[i] = type;
+
+    const r = type === 0 ? 2 + Math.random() * 8 :
+              type === 1 ? 3 + Math.random() * 5 :
+                           Math.random() * 12 - 6;
+
+    radii[i]   = r;
+    speeds[i]  = (0.15 + Math.random() * 0.25) * (Math.random() < 0.5 ? 1 : -1);
+    offsets[i] = Math.random() * Math.PI * 2;
+    axes[i]    = Math.floor(Math.random() * 4);
+    scales[i]  = 0.3 + Math.random() * 0.7;
+
+    // Initial positions (overwritten in shader, but needed for noise type)
+    pos[i*3]   = (Math.random() - 0.5) * 12;
+    pos[i*3+1] = (Math.random() - 0.5) * 12;
+    pos[i*3+2] = (Math.random() - 0.5) * 12;
+
+    const c = pickColor();
+    colors[i*3]   = c.r;
+    colors[i*3+1] = c.g;
+    colors[i*3+2] = c.b;
+  }
+
+  geo.setAttribute('position',      new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('aColor',        new THREE.BufferAttribute(colors, 3));
+  geo.setAttribute('aOrbitRadius',  new THREE.BufferAttribute(radii, 1));
+  geo.setAttribute('aOrbitSpeed',   new THREE.BufferAttribute(speeds, 1));
+  geo.setAttribute('aOrbitOffset',  new THREE.BufferAttribute(offsets, 1));
+  geo.setAttribute('aOrbitAxis',    new THREE.BufferAttribute(axes, 1));
+  geo.setAttribute('aScale',        new THREE.BufferAttribute(scales, 1));
+  geo.setAttribute('aType',         new THREE.BufferAttribute(types, 1));
+
+  const mat = new THREE.ShaderMaterial({
+    uniforms: unif,
+    vertexShader: VS_PARTICLE, fragmentShader: FS_PARTICLE,
+    blending: THREE.AdditiveBlending, depthWrite: false, transparent: true,
+  });
+
+  return new THREE.Points(geo, mat);
+}
+
+const particles = buildParticles(12000);
+scene.add(particles);
+
+// ════════════════════════════════════════════════════════
+// MOUSE
+// ════════════════════════════════════════════════════════
+const cur     = document.getElementById('cur');
+const curCross= document.getElementById('cur-cross');
+let mx = 0, my = 0, rcx = 0, rcy = 0;
+const raycaster = new THREE.Raycaster();
+const plane3D   = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+const mouse3D   = new THREE.Vector3();
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  const ndc = new THREE.Vector2(
+    (e.clientX / window.innerWidth)  * 2 - 1,
+   -(e.clientY / window.innerHeight) * 2 + 1
+  );
+  raycaster.setFromCamera(ndc, camera);
+  raycaster.ray.intersectPlane(plane3D, mouse3D);
+  unif.uMouse.value.copy(mouse3D);
+
+  // Update coord readout
+  document.getElementById('coord-x').textContent = `X: ${mouse3D.x.toFixed(3)}`;
+  document.getElementById('coord-y').textContent = `Y: ${mouse3D.y.toFixed(3)}`;
+  document.getElementById('coord-z').textContent = `Z: ${mouse3D.z.toFixed(3)}`;
+});
+
+// Click pulse
+document.addEventListener('click', () => {
+  gsap.to(unif.uPulse, { value: 1, duration: 0.15, ease: 'power2.out',
+    onComplete: () => gsap.to(unif.uPulse, { value: 0, duration: 1.2, ease: 'power3.out' })
+  });
+});
+
+// ════════════════════════════════════════════════════════
+// SCANLINE ANIMATION
+// ════════════════════════════════════════════════════════
+const scanline = document.getElementById('scanline');
+let scanDir = 1, scanY = 0;
+
+// ════════════════════════════════════════════════════════
+// DATA STREAM
+// ════════════════════════════════════════════════════════
+const dsEl = document.getElementById('datastream');
+const dsLines = [];
+function generateDataLine() {
+  const hex = () => Math.floor(Math.random()*0xFFFF).toString(16).toUpperCase().padStart(4,'0');
+  return `${hex()} ${hex()} ${hex()}`;
+}
+for(let i = 0; i < 20; i++) dsLines.push(generateDataLine());
+
+function updateDataStream() {
+  if(Math.random() < 0.3) {
+    dsLines[Math.floor(Math.random()*dsLines.length)] = generateDataLine();
+  }
+  dsEl.innerHTML = dsLines.map((l, i) => `<div style="opacity:${0.05 + (i/20)*0.2}">${l}</div>`).join('');
+}
+
+setInterval(updateDataStream, 120);
+setInterval(() => {
+  document.getElementById('freq').textContent = (0.5 + Math.random() * 0.5).toFixed(3);
+  document.getElementById('node-count').textContent = Math.floor(800 + Math.random()*200);
+}, 800);
+
+// ════════════════════════════════════════════════════════
+// RESIZE
+// ════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ════════════════════════════════════════════════════════
+// GSAP INTRO
+// ════════════════════════════════════════════════════════
+const tl = gsap.timeline();
+tl.to('.bracket',    { opacity: 1, duration: 0.4, stagger: 0.1, delay: 0.3 })
+  .to('#title',      { opacity: 1, duration: 1.5, ease: 'power2.out' }, 0.5)
+  .to('#title-main', { opacity: 1, duration: 1,   ease: 'power2.out' }, 1.2)
+  .to('.corner',     { opacity: 1, duration: 0.8, stagger: 0.12 }, 1.5)
+  .to('#datastream', { opacity: 1, duration: 1 }, 2.0)
+  .to('#reticle',    { opacity: 1, duration: 1 }, 2.2);
+
+// ════════════════════════════════════════════════════════
+// RENDER LOOP
+// ════════════════════════════════════════════════════════
+let frame = 0, lastT = performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+  frame++;
+  const t = performance.now() * 0.001;
+  unif.uTime.value = t;
+
+  // ── Rotate wireframes ──────────────────────────────
+  outer.rotation.y = t * 0.07;
+  outer.rotation.x = t * 0.04;
+  inner.rotation.y = -t * 0.11;
+  inner.rotation.z = t * 0.06;
+  octa.rotation.x  = t * 0.08;
+  octa.rotation.y  = t * 0.05;
+
+  // ── Camera gentle drift ────────────────────────────
+  camera.position.x = Math.sin(t * 0.04) * 2;
+  camera.position.y = 3 + Math.sin(t * 0.06) * 1;
+  camera.position.z = 20 + Math.sin(t * 0.03) * 1.5;
+  camera.lookAt(0, 0, 0);
+
+  // ── Cursor ────────────────────────────────────────
+  rcx += (mx - rcx) * 0.15;
+  rcy += (my - rcy) * 0.15;
+  cur.style.left      = mx + 'px';
+  cur.style.top       = my + 'px';
+  curCross.style.left = rcx + 'px';
+  curCross.style.top  = rcy + 'px';
+
+  // ── Scanline ──────────────────────────────────────
+  scanY += scanDir * 0.6;
+  if(scanY > window.innerHeight) { scanDir = -1; }
+  if(scanY < 0) { scanDir = 1; }
+  scanline.style.top = scanY + 'px';
+
+  // ── FPS ───────────────────────────────────────────
+  if(frame % 60 === 0) {
+    const now = performance.now();
+    const fps = Math.round(60000 / (now - lastT));
+    lastT = now;
+    document.getElementById('fps-el').textContent = fps;
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>
