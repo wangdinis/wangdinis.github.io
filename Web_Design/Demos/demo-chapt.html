@@ -1,0 +1,3235 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHAPT — Intérprete Industrial Chinês-Português | Dinis Wang Lin</title>
+
+<!-- SEO -->
+<meta name="description" content="Intérprete industrial chinês-português de referência em Portugal. Especializado em fábricas, negociações técnicas e relações sino-portuguesas. Disponível em todo o território nacional.">
+<meta name="keywords" content="intérprete chinês português, interpretação industrial Portugal, tradutor mandarim português, interpretação técnica, negociação China Portugal">
+<meta name="author" content="Dinis Wang Lin">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://wangdinis.github.io">
+
+<!-- Open Graph (LinkedIn, Facebook, WhatsApp previews) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wangdinis.github.io">
+<meta property="og:title" content="CHAPT — Intérprete Industrial Chinês↔Português">
+<meta property="og:description" content="O intérprete industrial de referência entre China e Portugal. Nativo em mandarim e português europeu. Especializado em fábricas, negociações e suporte técnico.">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'%3E%3Crect width='1200' height='630' fill='%2307080A'/%3E%3Ctext x='600' y='270' text-anchor='middle' font-family='serif' font-size='120' font-weight='700' fill='%23F0EBE1' letter-spacing='20'%3ECHAPT%3C/text%3E%3Ctext x='600' y='340' text-anchor='middle' font-family='sans-serif' font-size='28' fill='%23C4993A' letter-spacing='8'%3E%E4%B8%AD%E6%96%87 %E2%86%94 PORTUGU%C3%8AS%3C/text%3E%3Ctext x='600' y='400' text-anchor='middle' font-family='sans-serif' font-size='20' fill='%23888070' letter-spacing='4'%3EINT%C3%89RPRETE INDUSTRIAL%3C/text%3E%3C/svg%3E">
+<meta property="og:locale" content="pt_PT">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CHAPT — Intérprete Industrial Chinês↔Português">
+<meta name="twitter:description" content="O intérprete industrial de referência entre China e Portugal. Nativo em mandarim e português europeu.">
+
+<!-- Performance: preload critical font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Lenis -->
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+<style>
+/* ─── RESET ─────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: auto; }
+
+/* ─── TOKENS ─────────────────────────────────────────────────── */
+:root {
+  --bg:     #07080A;
+  --bg2:    #0E1014;
+  --red:    #C8102E;
+  --red2:   #A50E26;
+  --gold:   #C4993A;
+  --gold2:  #E8C26A;
+  --white:  #F0EBE1;
+  --dim:    #888070;
+  --nav-bg: rgba(7,8,10,0.92);
+  --border: rgba(196,153,58,0.18);
+  --font-display: 'Noto Serif SC', serif;
+  --font-body:    'Inter', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+body.loading { overflow: hidden; }
+body.loading .cursor { opacity: 0; }
+
+/* ─── CUSTOM CURSOR ──────────────────────────────────────────── */
+.cursor {
+  position: fixed; top: 0; left: 0;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 8001;
+  transform: translate(-50%, -50%);
+  transition: width .2s, height .2s, background .2s;
+  mix-blend-mode: difference;
+}
+.cursor.hover { width: 40px; height: 40px; background: var(--red); opacity: .5; }
+
+/* ─── NAV ────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 28px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background .4s, padding .4s;
+}
+nav.scrolled {
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  padding: 18px 60px;
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--white);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--red); }
+.nav-tag {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim);
+}
+.nav-tag strong { color: var(--gold); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+
+/* Language toggle */
+.lang-toggle {
+  display: inline-flex; align-items: center; gap: 0;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.lang-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 9px 14px;
+  cursor: none;
+  transition: background .2s, color .2s;
+  position: relative;
+}
+.lang-toggle button.active {
+  background: var(--red);
+  color: var(--white);
+}
+.lang-toggle button:not(.active):hover { color: var(--white); }
+.lang-toggle .divider {
+  width: 1px; height: 100%;
+  background: var(--border);
+  pointer-events: none;
+}
+
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  text-decoration: none;
+  transition: background .25s, color .25s;
+}
+.nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+/* ─── HERO ───────────────────────────────────────────────────── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: 160px 60px 100px;
+  overflow: hidden;
+}
+
+/* Ghost watermark */
+.hero-ghost {
+  position: absolute; right: -60px; top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: clamp(200px, 28vw, 420px);
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(196,153,58,0.06);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* Red vertical accent line */
+#hero::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, transparent, var(--red) 30%, var(--red) 70%, transparent);
+}
+
+.hero-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 32px;
+  display: flex; align-items: center; gap: 16px;
+  opacity: 0;
+}
+.hero-label::before {
+  content: '';
+  display: block;
+  width: 40px; height: 1px;
+  background: var(--red);
+}
+
+/* Translation showcase — the signature interaction */
+.translate-pair {
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.translate-pair .zh {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 108px);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--white);
+  display: block;
+  opacity: 0;
+  transform: translateY(60px);
+}
+.translate-pair .zh em {
+  color: var(--gold);
+  font-style: normal;
+}
+.translate-pair .pt {
+  font-family: var(--font-display);
+  font-size: clamp(14px, 1.6vw, 20px);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  display: block;
+  opacity: 0;
+  transform: translateY(20px);
+  margin-top: 4px;
+}
+
+.hero-divider {
+  width: 60px; height: 1px;
+  background: var(--gold);
+  margin: 40px 0;
+  opacity: 0;
+}
+
+.hero-sub {
+  max-width: 520px;
+  font-size: clamp(15px, 1.5vw, 18px);
+  font-weight: 300;
+  color: var(--dim);
+  line-height: 1.75;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.hero-sub strong { color: var(--white); font-weight: 500; }
+
+.hero-actions {
+  margin-top: 52px;
+  display: flex; gap: 20px; align-items: center;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 36px;
+  background: var(--red);
+  color: var(--white);
+  font-size: 13px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  text-decoration: none;
+  transition: background .25s, transform .25s;
+}
+.btn-primary:hover { background: var(--red2); transform: translateY(-2px); }
+.btn-primary .arrow { font-size: 18px; transition: transform .25s; }
+.btn-primary:hover .arrow { transform: translateX(4px); }
+
+.btn-ghost {
+  font-size: 13px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--dim);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color .25s, border-color .25s;
+  padding-bottom: 2px;
+}
+.btn-ghost:hover { color: var(--white); border-color: var(--white); }
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 40px; right: 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  opacity: 0;
+}
+.scroll-hint span {
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--dim);
+  writing-mode: vertical-rl;
+}
+.scroll-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: .3; transform: scaleY(1); }
+  50%       { opacity: 1;  transform: scaleY(1.2); }
+}
+
+/* ─── MARQUEE ────────────────────────────────────────────────── */
+.marquee-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 22px 0;
+  overflow: hidden;
+  background: var(--bg2);
+}
+.marquee-track {
+  display: flex;
+  white-space: nowrap;
+  gap: 0;
+  will-change: transform;
+}
+.marquee-inner {
+  display: flex;
+  gap: 0;
+  animation: marqueeScroll 28s linear infinite;
+}
+.marquee-inner span {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 400;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--dim);
+  padding: 0 32px;
+  transition: color .25s;
+}
+.marquee-inner span:hover { color: var(--gold); }
+.marquee-inner .dot { color: var(--red); font-size: 18px; vertical-align: middle; }
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ─── SECÇÕES COMUNS ─────────────────────────────────────────── */
+section { padding: 120px 60px; }
+.section-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.section-label::before {
+  content: '';
+  display: block; width: 30px; height: 1px;
+  background: var(--red);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 600;
+  line-height: 1.15;
+  margin-bottom: 24px;
+  color: var(--white);
+}
+.section-title em {
+  color: var(--gold);
+  font-style: normal;
+}
+.section-body {
+  font-size: 17px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.8;
+  max-width: 540px;
+}
+
+/* ─── SOBRE ──────────────────────────────────────────────────── */
+#sobre {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.sobre-text { }
+.sobre-text p { color: var(--dim); font-size: 17px; font-weight: 300; line-height: 1.85; margin-bottom: 24px; }
+.sobre-text p strong { color: var(--white); font-weight: 500; }
+.sobre-char {
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.sobre-char-big {
+  font-family: var(--font-display);
+  font-size: clamp(160px, 18vw, 280px);
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--gold);
+  opacity: 0.22;
+  line-height: 1;
+  user-select: none;
+}
+.sobre-char-label {
+  position: absolute;
+  bottom: -10px; right: 20px;
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+}
+.sobre-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 32px;
+  margin-right: 12px;
+}
+
+/* ─── SERVIÇOS ───────────────────────────────────────────────── */
+#servicos {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+.servicos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+}
+.servico-card {
+  background: var(--bg2);
+  padding: 52px 40px;
+  position: relative;
+  overflow: hidden;
+  transition: background .3s;
+  clip-path: inset(0 0 0 0);
+}
+.servico-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s ease;
+}
+.servico-card:hover::before { transform: scaleX(1); }
+.servico-card:hover { background: #111318; }
+.servico-zh {
+  font-family: var(--font-display);
+  font-size: 42px; font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(196,153,58,0.3);
+  margin-bottom: 24px;
+  line-height: 1;
+  transition: -webkit-text-stroke .3s, color .3s;
+}
+.servico-card:hover .servico-zh {
+  color: var(--gold);
+  -webkit-text-stroke: 1px var(--gold);
+  opacity: 0.5;
+}
+.servico-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+.servico-desc {
+  font-size: 14px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.75;
+  margin-bottom: 32px;
+}
+.servico-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.servico-tag {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim);
+  border: 1px solid rgba(136,128,112,0.25);
+  padding: 5px 12px;
+  transition: border-color .25s, color .25s;
+}
+.servico-card:hover .servico-tag { border-color: var(--gold); color: var(--gold); }
+
+/* ─── NÚMEROS ────────────────────────────────────────────────── */
+#numeros {
+  background: var(--red);
+  padding: 80px 60px;
+  border-top: 1px solid rgba(200,16,46,0.3);
+}
+.numeros-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+.numero-item { }
+.numero-val {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  display: block;
+}
+.numero-suffix {
+  font-size: 32px;
+  color: rgba(255,255,255,0.6);
+}
+.numero-label {
+  font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-top: 12px;
+  display: block;
+}
+.numero-zh {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 4px;
+  display: block;
+}
+
+/* ─── PROCESSO ───────────────────────────────────────────────── */
+#processo {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.processo-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 64px;
+  position: relative;
+}
+.processo-steps::before {
+  content: '';
+  position: absolute; top: 32px; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), var(--border), transparent);
+}
+.passo {
+  padding: 0 32px;
+  text-align: center;
+  position: relative;
+}
+.passo-num {
+  width: 64px; height: 64px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 600;
+  color: var(--gold);
+  background: var(--bg2);
+  margin: 0 auto 28px;
+  position: relative; z-index: 1;
+  transition: background .3s, border-color .3s;
+}
+.passo:hover .passo-num { background: var(--red); border-color: var(--red); color: var(--white); }
+.passo-zh {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  color: var(--gold);
+  opacity: 0.3;
+  margin-bottom: 12px;
+}
+.passo-name {
+  font-size: 14px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.passo-desc {
+  font-size: 13px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.7;
+}
+
+/* ─── SECTORES ───────────────────────────────────────────────── */
+#sectores {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+.sectores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+}
+.sector-item {
+  background: var(--bg2);
+  padding: 36px 40px;
+  display: flex; align-items: flex-start; gap: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: background .3s;
+  cursor: default;
+}
+.sector-item:hover { background: #111318; }
+.sector-zh {
+  font-family: var(--font-display);
+  font-size: 36px; font-weight: 700;
+  color: var(--red);
+  opacity: 0.35;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: opacity .3s;
+}
+.sector-item:hover .sector-zh { opacity: 0.65; }
+.sector-info { }
+.sector-name {
+  font-size: 15px; font-weight: 600;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.sector-sub {
+  font-size: 12px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+/* ─── TESTEMUNHOS ────────────────────────────────────────────── */
+#testemunhos {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.testemunhos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 64px;
+}
+.testemunho {
+  background: var(--bg);
+  padding: 52px 48px;
+  position: relative;
+}
+.testemunho::before {
+  content: '"';
+  font-family: var(--font-display);
+  font-size: 80px;
+  color: var(--red);
+  opacity: 0.3;
+  position: absolute; top: 28px; left: 44px;
+  line-height: 1;
+}
+.testemunho blockquote {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 300;
+  color: var(--white);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  font-style: italic;
+  padding-top: 40px;
+}
+.testemunho-autor { display: flex; flex-direction: column; gap: 4px; }
+.testemunho-nome {
+  font-size: 14px; font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+.testemunho-cargo {
+  font-size: 12px; font-weight: 300;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+}
+
+/* ─── CONTACTO ───────────────────────────────────────────────── */
+#contacto {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.contacto-info { }
+.contacto-big {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 600;
+  line-height: 1.15;
+  margin-bottom: 32px;
+  color: var(--white);
+}
+.contacto-big em { color: var(--gold); font-style: normal; }
+.contacto-line {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px; color: var(--dim);
+}
+.contacto-line strong { color: var(--white); font-size: 15px; }
+.contacto-line .icon {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: var(--gold);
+}
+.contacto-form { padding-top: 8px; }
+.form-row { margin-bottom: 20px; }
+.form-row label {
+  display: block;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+.form-row input,
+.form-row textarea,
+.form-row select {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--white);
+  padding: 14px 18px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .25s;
+  -webkit-appearance: none;
+}
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus { border-color: var(--gold); }
+.form-row textarea { resize: vertical; min-height: 120px; }
+.form-row select option { background: var(--bg2); }
+.form-submit {
+  width: 100%;
+  padding: 18px;
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 12px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background .25s, transform .2s;
+  margin-top: 8px;
+}
+.form-submit:hover { background: var(--red2); transform: translateY(-2px); }
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 48px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-logo {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--white);
+}
+.footer-logo span { color: var(--red); }
+.footer-copy {
+  font-size: 12px; font-weight: 300;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+}
+.footer-langs {
+  display: flex; gap: 20px;
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--dim);
+}
+.footer-langs span { color: var(--gold); }
+
+/* ─── SCROLL PROGRESS BAR ────────────────────────────────────── */
+#scroll-progress {
+  position: fixed; top: 0; left: 0;
+  height: 2px; width: 0%;
+  background: linear-gradient(to right, var(--red), var(--gold));
+  z-index: 8000;
+  pointer-events: none;
+  transform-origin: left;
+  transition: opacity .3s;
+}
+body.loading #scroll-progress { opacity: 0; pointer-events: none; }
+
+/* ─── MOBILE MENU ────────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  gap: 5px;
+  width: 36px; height: 36px;
+  background: transparent; border: 1px solid var(--border);
+  cursor: none; flex-shrink: 0;
+}
+.hamburger span {
+  display: block; width: 18px; height: 1.5px;
+  background: var(--white);
+  transition: transform .3s, opacity .3s;
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+#mobileMenu {
+  position: fixed; inset: 0;
+  z-index: 400;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center; gap: 8px;
+  transform: translateX(100%);
+  transition: transform .45s cubic-bezier(.77,0,.18,1);
+}
+#mobileMenu.open { transform: translateX(0); }
+.mob-nav-link {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 7vw, 48px);
+  font-weight: 600;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  padding: 12px 0;
+  position: relative;
+  transition: color .25s;
+  opacity: 0;
+  transform: translateX(30px);
+}
+.mob-nav-link::after {
+  content: '';
+  position: absolute; bottom: 8px; left: 0;
+  width: 0; height: 2px;
+  background: var(--red);
+  transition: width .3s ease;
+}
+.mob-nav-link:hover { color: var(--gold); }
+.mob-nav-link:hover::after { width: 100%; }
+.mob-lang-row {
+  display: flex; gap: 16px; margin-top: 24px;
+  opacity: 0; transform: translateX(30px);
+}
+.mob-lang-btn {
+  padding: 10px 24px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--dim);
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 500; letter-spacing: 0.1em;
+  cursor: none; transition: background .25s, color .25s, border-color .25s;
+}
+.mob-lang-btn.active { background: var(--red); color: var(--white); border-color: var(--red); }
+.mob-wa-link {
+  margin-top: 16px;
+  font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #25D366; text-decoration: none;
+  opacity: 0; transform: translateX(30px);
+}
+#mobileMenu .mob-close {
+  position: absolute; top: 28px; right: 28px;
+  background: transparent; border: none;
+  color: var(--dim); font-size: 28px;
+  cursor: none; padding: 8px; line-height: 1;
+}
+
+/* Nav desktop links */
+.nav-links {
+  display: flex; gap: 28px; align-items: center;
+}
+.nav-link {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim); text-decoration: none;
+  transition: color .25s;
+}
+.nav-link:hover { color: var(--white); }
+
+/* ─── FORM STATES ────────────────────────────────────────────── */
+.form-submit.loading {
+  opacity: .7; pointer-events: none;
+}
+.form-submit.loading::after {
+  content: ' ◌'; animation: spin .8s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 48px 24px;
+  border: 1px solid rgba(92,184,92,0.3);
+  background: rgba(50,160,50,0.06);
+}
+.form-success.visible { display: block; }
+.form-success-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+.form-success-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+  color: var(--white); margin-bottom: 12px;
+}
+.form-success-sub { font-size: 14px; color: var(--dim); line-height: 1.75; }
+
+/* ─── CURSOR: hide on touch devices ──────────────────────────── */
+@media (hover: none), (pointer: coarse) {
+  body { cursor: auto !important; }
+  .cursor { display: none !important; }
+}
+
+/* ─── LOADING SCREEN ─────────────────────────────────────────── */
+#loader {
+  position: fixed; inset: 0;
+  z-index: 9500;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 24px;
+}
+#loader-logo {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 10vw, 100px);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--white);
+  opacity: 0;
+}
+#loader-logo span { -webkit-text-stroke-color: var(--red); }
+#loader-tag {
+  font-size: 12px; font-weight: 400;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--dim);
+  opacity: 0;
+}
+#loader-bar-wrap {
+  width: 120px; height: 1px;
+  background: rgba(196,153,58,0.15);
+  overflow: hidden;
+  opacity: 0;
+}
+#loader-bar {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+}
+
+/* ─── DARK / LIGHT MODE ──────────────────────────────────────── */
+body.light {
+  --bg:     #F5F1EC;
+  --bg2:    #EDE9E3;
+  --white:  #1A1410;
+  --dim:    #7A6E65;
+  --border: rgba(100,60,10,0.14);
+  --nav-bg: rgba(245,241,236,0.95);
+}
+body.light .hero-ghost {
+  -webkit-text-stroke: 1px rgba(100,60,10,0.04);
+}
+body.light .sobre-char-big {
+  -webkit-text-stroke: 1.5px rgba(196,153,58,0.15);
+}
+body.light .cursor { mix-blend-mode: multiply; }
+
+.mode-toggle {
+  background: transparent; border: 1px solid var(--border);
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none;
+  color: var(--dim);
+  font-size: 16px;
+  transition: border-color .25s, color .25s, background .25s;
+  flex-shrink: 0;
+}
+.mode-toggle:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ─── MAP SECTION ────────────────────────────────────────────── */
+#mapa {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  padding: 80px 60px;
+  overflow: hidden;
+  position: relative;
+}
+.mapa-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--dim);
+  text-align: center;
+  margin-bottom: 48px;
+}
+.mapa-svg-wrap {
+  position: relative;
+  max-width: 900px; margin: 0 auto;
+}
+.mapa-svg-wrap svg { width: 100%; height: auto; overflow: visible; }
+.map-dot-label {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  fill: var(--white);
+}
+.map-city {
+  font-size: 10px; font-weight: 400;
+  letter-spacing: 0.1em;
+  fill: var(--dim);
+}
+.map-path {
+  fill: none;
+  stroke: url(#mapGrad);
+  stroke-width: 1.5;
+  stroke-dasharray: 900;
+  stroke-dashoffset: 900;
+}
+.map-dot-pulse {
+  animation: mapPulse 2.4s ease-in-out infinite;
+}
+@keyframes mapPulse {
+  0%,100% { opacity: .3; r: 6; }
+  50%      { opacity: 1;  r: 9; }
+}
+.mapa-stats {
+  display: flex; justify-content: center; gap: 80px;
+  margin-top: 48px;
+}
+.mapa-stat {
+  text-align: center;
+}
+.mapa-stat-val {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 700;
+  color: var(--gold);
+  display: block; line-height: 1;
+}
+.mapa-stat-label {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim);
+  margin-top: 8px;
+  display: block;
+}
+
+/* ─── PHOTO / VIDEO PLACEHOLDERS ─────────────────────────────── */
+#media {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 0;
+}
+.media-half {
+  padding: 80px 60px;
+  display: flex; flex-direction: column;
+  gap: 28px;
+}
+.media-half:first-child {
+  border-right: 1px solid var(--border);
+}
+.media-frame {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border: 1.5px dashed rgba(196,153,58,0.3);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  transition: border-color .3s;
+}
+.media-frame:hover { border-color: var(--gold); }
+.media-frame-icon {
+  font-size: 40px; opacity: .25;
+}
+.media-frame-text {
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--dim); text-align: center; max-width: 180px; line-height: 1.8;
+}
+.video-frame {
+  aspect-ratio: 16/9;
+}
+.play-btn {
+  width: 64px; height: 64px;
+  border: 1.5px solid rgba(196,153,58,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); font-size: 22px;
+  transition: background .25s, border-color .25s;
+}
+.media-frame:hover .play-btn { background: var(--red); border-color: var(--red); color: #fff; }
+.media-tip {
+  font-size: 13px; font-weight: 300;
+  color: var(--dim); line-height: 1.75;
+}
+.media-tip strong { color: var(--gold); font-weight: 500; }
+
+/* ─── CLIENT LOGOS ───────────────────────────────────────────── */
+.logos-section {
+  padding: 48px 60px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.logos-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--dim);
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logos-grid {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 48px;
+}
+.logo-item {
+  opacity: 0.25;
+  transition: opacity .3s;
+  filter: grayscale(1);
+}
+.logo-item:hover { opacity: 0.65; filter: grayscale(0); }
+.logo-item svg { height: 28px; width: auto; fill: var(--white); }
+
+/* ─── CERTIFICATIONS ──────────────────────────────────────────── */
+.certs-row {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  margin-top: 28px;
+}
+.cert-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold);
+}
+.cert-badge .cert-dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── AVAILABILITY BADGE ──────────────────────────────────────── */
+.avail-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  border: 1px solid rgba(100,200,100,0.3);
+  background: rgba(50,160,50,0.08);
+  margin-top: 32px;
+  font-size: 12px; letter-spacing: 0.08em;
+  color: #7ecf7e;
+}
+.avail-dot {
+  width: 7px; height: 7px;
+  background: #5cb85c;
+  border-radius: 50%;
+  animation: pulse-green 2s ease-in-out infinite;
+}
+@keyframes pulse-green {
+  0%,100% { box-shadow: 0 0 0 0 rgba(92,184,92,0.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(92,184,92,0); }
+}
+
+/* ─── CASE STUDIES ────────────────────────────────────────────── */
+#casos {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 120px 0;
+  overflow: hidden;
+}
+#casos .casos-header {
+  padding: 0 60px 64px;
+}
+.casos-track-wrap {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+.casos-track-wrap::-webkit-scrollbar { display: none; }
+.casos-track-wrap:active { cursor: grabbing; }
+.casos-track {
+  display: flex;
+  gap: 2px;
+  padding: 0 60px;
+  width: max-content;
+}
+.caso-card {
+  background: var(--bg);
+  width: 420px;
+  flex-shrink: 0;
+  padding: 48px 44px;
+  position: relative;
+  overflow: hidden;
+  transition: background .3s;
+}
+.caso-card:hover { background: #111318; }
+.caso-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--red), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .4s ease;
+}
+.caso-card:hover::after { transform: scaleX(1); }
+.caso-sector {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.caso-sector::before {
+  content: '';
+  display: block; width: 20px; height: 1px;
+  background: var(--red);
+}
+.caso-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: 20px;
+}
+.caso-body {
+  font-size: 14px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+.caso-meta {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.caso-tag {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dim);
+  border: 1px solid rgba(136,128,112,0.22);
+  padding: 4px 12px;
+}
+.caso-result {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 13px; font-weight: 300;
+  color: var(--white);
+  line-height: 1.6;
+}
+.caso-result strong { color: var(--gold); }
+.casos-hint {
+  padding: 24px 60px 0;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--dim);
+}
+.casos-hint::after {
+  content: '→';
+  color: var(--gold);
+  font-size: 16px;
+  animation: slideRight 1.5s ease-in-out infinite;
+}
+@keyframes slideRight {
+  0%,100% { transform: translateX(0); }
+  50%      { transform: translateX(6px); }
+}
+
+/* ─── PRICING ─────────────────────────────────────────────────── */
+#pricing {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+}
+.price-card {
+  background: var(--bg2);
+  padding: 52px 40px;
+  position: relative;
+  transition: background .3s;
+}
+.price-card.featured {
+  background: var(--red);
+}
+.price-card.featured .price-label,
+.price-card.featured .price-val,
+.price-card.featured .price-unit,
+.price-card.featured .price-desc,
+.price-card.featured .price-note,
+.price-card.featured .price-includes li { color: var(--white); }
+.price-card.featured .price-includes li::before { background: rgba(255,255,255,0.6); }
+.price-label {
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 24px;
+  display: block;
+}
+.price-card.featured .price-label { color: rgba(255,255,255,0.7); }
+.price-val {
+  font-family: var(--font-display);
+  font-size: 56px; font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  display: block;
+}
+.price-unit {
+  font-size: 14px; font-weight: 300;
+  color: var(--dim);
+  margin-bottom: 24px;
+  display: block;
+}
+.price-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+.price-card.featured .price-divider { background: rgba(255,255,255,0.2); }
+.price-desc {
+  font-size: 14px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+.price-includes {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.price-includes li {
+  font-size: 13px; font-weight: 300;
+  color: var(--dim);
+  display: flex; align-items: flex-start; gap: 10px;
+  line-height: 1.5;
+}
+.price-includes li::before {
+  content: '';
+  display: block;
+  width: 5px; height: 5px;
+  background: var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.price-note {
+  font-size: 11px; font-weight: 400;
+  color: var(--dim);
+  margin-top: 24px;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+/* ─── CULTURAL BRIDGE ─────────────────────────────────────────── */
+#cultura {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.cultura-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  margin-top: 64px;
+}
+.cultura-intro {
+  font-size: 17px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.85;
+}
+.cultura-intro strong { color: var(--white); font-weight: 500; }
+.cultura-cards { display: flex; flex-direction: column; gap: 2px; }
+.cultura-item {
+  background: var(--bg);
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 20px;
+  align-items: start;
+  transition: background .3s;
+}
+.cultura-item:hover { background: #111318; }
+.cultura-zh {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 700;
+  color: var(--red);
+  opacity: 0.5;
+  line-height: 1;
+}
+.cultura-concept {
+  font-size: 13px; font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.cultura-text {
+  font-size: 13px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.7;
+}
+
+/* ─── FAQ ─────────────────────────────────────────────────────── */
+#faq {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+.faq-list {
+  margin-top: 64px;
+  max-width: 800px;
+}
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-q {
+  width: 100%;
+  background: transparent;
+  border: none;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 0;
+  cursor: none;
+  text-align: left;
+}
+.faq-q-text {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 400;
+  color: var(--white);
+  line-height: 1.4;
+  flex: 1;
+  padding-right: 24px;
+}
+.faq-icon {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--gold);
+  font-size: 18px;
+  transition: transform .3s, background .3s;
+  line-height: 1;
+}
+.faq-item.open .faq-icon { transform: rotate(45deg); background: var(--red); border-color: var(--red); color: var(--white); }
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease, padding .4s ease;
+}
+.faq-item.open .faq-a { max-height: 300px; padding-bottom: 24px; }
+.faq-a-text {
+  font-size: 14px; font-weight: 300;
+  color: var(--dim);
+  line-height: 1.8;
+  padding-right: 52px;
+}
+.faq-a-text strong { color: var(--white); font-weight: 500; }
+
+/* ─── WHATSAPP / WECHAT FLOAT ─────────────────────────────────── */
+.float-contact {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  z-index: 200;
+  display: flex; flex-direction: column; gap: 10px;
+  align-items: flex-end;
+}
+.float-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: transform .25s, opacity .25s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.float-btn:hover { transform: translateY(-3px); }
+.float-wa { background: #25D366; color: #fff; }
+.float-wc { background: #07C160; color: #fff; }
+.float-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+.float-wechat-qr {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 16px;
+  display: none;
+  flex-direction: column; align-items: center; gap: 10px;
+}
+.float-wechat-qr.visible { display: flex; }
+.float-wechat-qr svg { width: 100px; height: 100px; }
+.float-wechat-qr span {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ─── GRAIN TEXTURE ──────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  z-index: 8100;
+  pointer-events: none;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+body.light::before { opacity: 0.022; }
+
+/* ─── HERO AMBIENT GLOW ──────────────────────────────────────── */
+#hero::after {
+  content: '';
+  position: absolute;
+  top: 15%; right: -5%;
+  width: 55vw; height: 55vw;
+  max-width: 700px; max-height: 700px;
+  background: radial-gradient(circle at center, rgba(200,16,46,0.07) 0%, transparent 68%);
+  pointer-events: none;
+  border-radius: 50%;
+  animation: glowPulse 7s ease-in-out infinite;
+  z-index: 0;
+}
+#hero > * { position: relative; z-index: 1; }
+@keyframes glowPulse {
+  0%,100% { opacity: .6; transform: scale(1); }
+  50%      { opacity: 1;  transform: scale(1.18); }
+}
+
+/* ─── SECTION COUNTER ────────────────────────────────────────── */
+#section-counter {
+  position: fixed;
+  right: 20px; top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s;
+}
+#section-counter.visible { opacity: 1; }
+#sc-current {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  line-height: 1;
+  font-family: var(--font-body);
+}
+.sc-line {
+  width: 1px; height: 36px;
+  background: linear-gradient(to bottom, var(--gold), rgba(196,153,58,0.1));
+}
+#sc-total {
+  font-size: 10px; letter-spacing: 0.1em;
+  color: var(--dim);
+  line-height: 1;
+  font-family: var(--font-body);
+}
+
+/* ─── WORD SPLIT REVEAL ──────────────────────────────────────── */
+.word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.2;
+}
+.word-inner {
+  display: inline-block;
+  transform: translateY(110%);
+}
+
+/* ─── MAGNETIC BUTTON ────────────────────────────────────────── */
+.magnetic { display: inline-block; }
+
+/* ─── SCROLL MARGIN (clear fixed nav on anchor nav) ─────────────*/
+section, #mapa, #casos, .logos-section {
+  scroll-margin-top: 80px;
+}
+
+/* ─── REVEAL UTILITY ──────────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(40px); }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  nav { padding: 24px 24px; }
+  nav.scrolled { padding: 16px 24px; }
+  .nav-tag { display: none; }
+  section { padding: 80px 24px; }
+  #hero { padding: 140px 24px 80px; }
+  #sobre { grid-template-columns: 1fr; gap: 40px; }
+  .sobre-char { display: none; }
+  .servicos-grid { grid-template-columns: 1fr; gap: 2px; }
+  .numeros-grid { grid-template-columns: repeat(2, 1fr); }
+  .processo-steps { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+  .processo-steps::before { display: none; }
+  .sectores-grid { grid-template-columns: 1fr; }
+  .testemunhos-grid { grid-template-columns: 1fr; }
+  #contacto { grid-template-columns: 1fr; gap: 60px; }
+  footer { flex-direction: column; gap: 24px; text-align: center; }
+  .scroll-hint { display: none; }
+  .hero-ghost { font-size: 120px; right: -20px; }
+  .hamburger { display: flex; }
+  .nav-links { display: none; }
+  .nav-right .nav-cta { display: none; }
+  .nav-right .mode-toggle { display: none; }
+  .nav-right .lang-toggle { display: none; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .cultura-grid { grid-template-columns: 1fr; gap: 40px; }
+  .logos-section { padding: 40px 24px; }
+  .logos-grid { gap: 28px; }
+  #casos .casos-header { padding: 0 24px 48px; }
+  .casos-track { padding: 0 24px; }
+  .caso-card { width: 320px; padding: 36px 28px; }
+  .casos-hint { padding: 20px 24px 0; }
+  .float-contact { bottom: 20px; right: 16px; }
+  #section-counter { display: none; }
+  #mapa { padding: 60px 24px; }
+  .mapa-stats { gap: 40px; }
+  #media { grid-template-columns: 1fr; }
+  .media-half { padding: 60px 24px; }
+  .media-half:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress" role="progressbar" aria-hidden="true"></div>
+
+<!-- SECTION COUNTER -->
+<div id="section-counter" aria-hidden="true">
+  <span id="sc-current">01</span>
+  <span class="sc-line"></span>
+  <span id="sc-total">13</span>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div id="loader-logo">CH<span>A</span>PT</div>
+  <div id="loader-tag">中文 ↔ Português</div>
+  <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+</div>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">CH<span>A</span>PT</a>
+  <div class="nav-links" role="navigation" aria-label="Navegação principal">
+    <a href="#servicos" class="nav-link" data-i18n="nl_serv">Serviços</a>
+    <a href="#pricing"  class="nav-link" data-i18n="nl_price">Preços</a>
+    <a href="#casos"    class="nav-link" data-i18n="nl_cases">Missões</a>
+    <a href="#cultura"  class="nav-link" data-i18n="nl_cult">Cultura</a>
+    <a href="#faq"      class="nav-link" data-i18n="nl_faq">FAQ</a>
+    <a href="#contacto" class="nav-link" data-i18n="nl_contact">Contacto</a>
+  </div>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button id="btnPT" class="active" onclick="setLang('pt')">PT</button>
+      <div class="divider"></div>
+      <button id="btnZH" onclick="setLang('zh')">中文</button>
+    </div>
+    <button class="mode-toggle" id="modeToggle" onclick="toggleMode()" title="Alternar modo claro/escuro">☾</button>
+    <a href="#contacto" class="nav-cta" data-i18n="nav_cta">Solicitar Orçamento</a>
+    <button class="hamburger" id="hamburger" onclick="openMobileMenu()" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU OVERLAY -->
+<div id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+  <button class="mob-close" onclick="closeMobileMenu()" aria-label="Fechar menu">✕</button>
+  <a href="#servicos"  class="mob-nav-link" onclick="closeMobileMenu()" data-i18n="nl_serv">Serviços</a>
+  <a href="#pricing"   class="mob-nav-link" onclick="closeMobileMenu()" data-i18n="nl_price">Preços</a>
+  <a href="#casos"     class="mob-nav-link" onclick="closeMobileMenu()" data-i18n="nl_cases">Missões</a>
+  <a href="#cultura"   class="mob-nav-link" onclick="closeMobileMenu()" data-i18n="nl_cult">Cultura</a>
+  <a href="#faq"       class="mob-nav-link" onclick="closeMobileMenu()" data-i18n="nl_faq">FAQ</a>
+  <a href="#contacto"  class="mob-nav-link" onclick="closeMobileMenu()" data-i18n="nl_contact">Contacto</a>
+  <div class="mob-lang-row">
+    <button class="mob-lang-btn active" id="mobBtnPT" onclick="setLang('pt'); document.getElementById('mobBtnPT').classList.add('active'); document.getElementById('mobBtnZH').classList.remove('active');">PT</button>
+    <button class="mob-lang-btn" id="mobBtnZH" onclick="setLang('zh'); document.getElementById('mobBtnZH').classList.add('active'); document.getElementById('mobBtnPT').classList.remove('active');">中文</button>
+  </div>
+  <a class="mob-wa-link" href="https://wa.me/351926188888?text=Olá%20Dinis%2C%20encontrei%20o%20vosso%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20interpretação." target="_blank" rel="noopener" id="mobWaLink">
+    ↗ WhatsApp
+  </a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-ghost" aria-hidden="true">信</div>
+
+  <p class="hero-label" id="heroLabel" data-i18n="hero_label">Intérprete Industrial</p>
+
+  <div class="translate-pair">
+    <span class="zh" id="zh1"><em>信</em>任 · <em>精</em>確</span>
+    <span class="pt" id="pt1" data-i18n="hero_pair1">Confiança · Precisão</span>
+  </div>
+  <div class="translate-pair">
+    <span class="zh" id="zh2"><em>橋</em>梁 · <em>專</em>業</span>
+    <span class="pt" id="pt2" data-i18n="hero_pair2">Ponte · Especialização</span>
+  </div>
+
+  <div class="hero-divider" id="heroDivider"></div>
+
+  <p class="hero-sub" id="heroSub" data-i18n="hero_sub">
+    O intérprete <strong>chinês-português</strong> de referência em Portugal.
+    Especializado em contextos industriais, negociações técnicas e relações
+    sino-portuguesas — presencial em todo o território nacional.
+  </p>
+
+  <div class="hero-actions" id="heroActions">
+    <a href="#contacto" class="btn-primary" data-i18n="hero_cta1">
+      Agendar Missão <span class="arrow">→</span>
+    </a>
+    <a href="#servicos" class="btn-ghost" data-i18n="hero_cta2">Ver Serviços</a>
+  </div>
+
+  <div class="scroll-hint" id="scrollHint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-inner">
+      <span>Indústria Automóvel</span><span class="dot">·</span>
+      <span>汽车工业</span><span class="dot">·</span>
+      <span>Têxtil &amp; Moda</span><span class="dot">·</span>
+      <span>纺织业</span><span class="dot">·</span>
+      <span>Logística</span><span class="dot">·</span>
+      <span>物流</span><span class="dot">·</span>
+      <span>Energia Solar</span><span class="dot">·</span>
+      <span>太阳能</span><span class="dot">·</span>
+      <span>Metalurgia</span><span class="dot">·</span>
+      <span>冶金</span><span class="dot">·</span>
+      <span>Negociações B2B</span><span class="dot">·</span>
+      <span>商业谈判</span><span class="dot">·</span>
+      <span>Indústria Automóvel</span><span class="dot">·</span>
+      <span>汽车工业</span><span class="dot">·</span>
+      <span>Têxtil &amp; Moda</span><span class="dot">·</span>
+      <span>纺织业</span><span class="dot">·</span>
+      <span>Logística</span><span class="dot">·</span>
+      <span>物流</span><span class="dot">·</span>
+      <span>Energia Solar</span><span class="dot">·</span>
+      <span>太阳能</span><span class="dot">·</span>
+      <span>Metalurgia</span><span class="dot">·</span>
+      <span>冶金</span><span class="dot">·</span>
+      <span>Negociações B2B</span><span class="dot">·</span>
+      <span>商业谈判</span><span class="dot">·</span>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT LOGOS -->
+<div class="logos-section reveal">
+  <p class="logos-label" data-i18n="logos_label">Empresas que já confiaram</p>
+  <div class="logos-grid">
+    <!-- EFACEC -->
+    <div class="logo-item">
+      <svg viewBox="0 0 120 32" xmlns="http://www.w3.org/2000/svg"><text x="0" y="24" font-family="'Inter',sans-serif" font-size="22" font-weight="700" letter-spacing="2">EFACEC</text></svg>
+    </div>
+    <!-- YAZAKI -->
+    <div class="logo-item">
+      <svg viewBox="0 0 110 32" xmlns="http://www.w3.org/2000/svg"><text x="0" y="24" font-family="'Inter',sans-serif" font-size="22" font-weight="700" letter-spacing="2">YAZAKI</text></svg>
+    </div>
+    <!-- BOSCH -->
+    <div class="logo-item">
+      <svg viewBox="0 0 90 32" xmlns="http://www.w3.org/2000/svg"><text x="0" y="24" font-family="'Inter',sans-serif" font-size="22" font-weight="700" letter-spacing="2">BOSCH</text></svg>
+    </div>
+    <!-- AICEP -->
+    <div class="logo-item">
+      <svg viewBox="0 0 90 32" xmlns="http://www.w3.org/2000/svg"><text x="0" y="24" font-family="'Inter',sans-serif" font-size="22" font-weight="700" letter-spacing="2">AICEP</text></svg>
+    </div>
+    <!-- CONTINENTAL -->
+    <div class="logo-item">
+      <svg viewBox="0 0 170 32" xmlns="http://www.w3.org/2000/svg"><text x="0" y="24" font-family="'Inter',sans-serif" font-size="22" font-weight="600" letter-spacing="1">CONTINENTAL</text></svg>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO / VIDEO PLACEHOLDERS -->
+<section id="media">
+  <div class="media-half">
+    <p class="section-label" data-i18n="photo_label">Foto Profissional</p>
+    <h3 class="section-title" style="font-size:clamp(24px,3vw,36px)" data-i18n="photo_title">O rosto<br>por detrás do <em>serviço</em></h3>
+    <div class="media-frame">
+      <div class="media-frame-icon">👤</div>
+      <p class="media-frame-text" data-i18n="photo_placeholder">Adiciona aqui a tua fotografia profissional</p>
+    </div>
+    <p class="media-tip" data-i18n="photo_tip">Uma boa foto aumenta a confiança do cliente. <strong>Luz natural, fundo neutro, expressão directa.</strong> Não precisa de fotógrafo profissional — um telemóvel com boa luz chega.</p>
+  </div>
+  <div class="media-half">
+    <p class="section-label" data-i18n="video_label">Apresentação em Vídeo</p>
+    <h3 class="section-title" style="font-size:clamp(24px,3vw,36px)" data-i18n="video_title">Ouve-me falar<br>nas <em>duas línguas</em></h3>
+    <div class="media-frame video-frame">
+      <div class="play-btn">▶</div>
+      <p class="media-frame-text" data-i18n="video_placeholder">30–60 segundos · começa em português, muda para mandarim</p>
+    </div>
+    <p class="media-tip" data-i18n="video_tip">Um vídeo de apresentação é o único elemento que nenhum concorrente tem. <strong>30 segundos a falar em português e mandarim</strong> convence mais do que qualquer texto.</p>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="sobre-text">
+    <p class="section-label" data-i18n="sobre_label">Sobre o Intérprete</p>
+    <h2 class="section-title" data-i18n="sobre_title">O par linguístico<br><em>mais raro</em> de Portugal</h2>
+    <p data-i18n="sobre_p1">
+      Sou Dinis Wang Lin, natural de Vale de Cambra. Cresci entre dois mundos:
+      <strong>mandarim nativo</strong> e <strong>português europeu</strong> — o par
+      linguístico técnico mais difícil de encontrar no mercado nacional.
+    </p>
+    <p data-i18n="sobre_p2">
+      Especializado em contextos industriais e fabris, onde a precisão de
+      vocabulário técnico não é opcional. Cada missão é preparada com
+      <strong>pesquisa prévia do sector</strong>, glossário técnico e briefing com
+      o cliente.
+    </p>
+    <div>
+      <span class="sobre-tag" data-i18n="tag1">🎓 ISEP — Engenharia</span>
+      <span class="sobre-tag" data-i18n="tag2">🗣 Mandarim Nativo</span>
+      <span class="sobre-tag" data-i18n="tag3">📍 Norte de Portugal</span>
+    </div>
+    <div class="certs-row">
+      <span class="cert-badge"><span class="cert-dot"></span>APTRAD Nº 214</span>
+      <span class="cert-badge"><span class="cert-dot"></span>APT Nº 1331</span>
+      <span class="cert-badge"><span class="cert-dot"></span> Emb. Alemã Lisboa</span>
+    </div>
+    <div class="avail-badge reveal">
+      <span class="avail-dot"></span>
+      <span data-i18n="avail_text">Disponível para missões a partir de Julho 2026</span>
+    </div>
+  </div>
+  <div class="sobre-char reveal" id="sobreChar">
+    <div>
+      <div class="sobre-char-big">信</div>
+      <div class="sobre-char-label" data-i18n="char_label">Confiança · 信任</div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section id="casos">
+  <div class="casos-header">
+    <p class="section-label" data-i18n="casos_label">Missões Realizadas</p>
+    <h2 class="section-title" data-i18n="casos_title">O trabalho<br><em>em campo</em></h2>
+  </div>
+  <div class="casos-track-wrap" id="casosTrack">
+    <div class="casos-track">
+
+      <div class="caso-card">
+        <div class="caso-sector" data-i18n="c1_sector">Indústria Automóvel</div>
+        <div class="caso-title" data-i18n="c1_title">Arranque de linha — fábrica de componentes, Braga</div>
+        <p class="caso-body" data-i18n="c1_body">Três engenheiros chineses da Tier-1 precisavam de instalar e calibrar uma linha de estampagem de precisão. Terminologia técnica densa — parâmetros de prensa, tolerâncias GD&T, protocolos de teste PPAP. Missão de 5 dias consecutivos.</p>
+        <div class="caso-meta">
+          <span class="caso-tag" data-i18n="c1_t1">5 dias</span>
+          <span class="caso-tag" data-i18n="c1_t2">Braga</span>
+          <span class="caso-tag" data-i18n="c1_t3">Técnico</span>
+        </div>
+        <div class="caso-result" data-i18n="c1_result">
+          <strong>Resultado:</strong> Linha operacional dentro do prazo. Cliente classificou a interpretação como "essencial para o sucesso da instalação".
+        </div>
+      </div>
+
+      <div class="caso-card">
+        <div class="caso-sector" data-i18n="c2_sector">Têxtil &amp; Moda</div>
+        <div class="caso-title" data-i18n="c2_title">Negociação de contrato anual — importadora, Guimarães</div>
+        <p class="caso-body" data-i18n="c2_body">Negociação de um contrato de fornecimento de 18 meses com fabricante têxtil de Zhejiang. Discussão de preços, condições de pagamento, penalizações por atraso e cláusulas de exclusividade. Gestão de silêncios e linguagem indirecta chinesa.</p>
+        <div class="caso-meta">
+          <span class="caso-tag" data-i18n="c2_t1">2 dias</span>
+          <span class="caso-tag" data-i18n="c2_t2">Guimarães</span>
+          <span class="caso-tag" data-i18n="c2_t3">Negociação</span>
+        </div>
+        <div class="caso-result" data-i18n="c2_result">
+          <strong>Resultado:</strong> Contrato assinado. Redução de 12% no preço unitário face à proposta inicial. Cliente mantém colaboração anual.
+        </div>
+      </div>
+
+      <div class="caso-card">
+        <div class="caso-sector" data-i18n="c3_sector">Energia Solar</div>
+        <div class="caso-title" data-i18n="c3_title">Auditoria de qualidade — painéis fotovoltaicos, Aveiro</div>
+        <p class="caso-body" data-i18n="c3_body">Equipa de auditores da empresa importadora realizou inspecção a 3.200 painéis em armazém. Identificação de não-conformidades, negociação de créditos de devolução com o fornecedor chinês via chamada remota simultânea.</p>
+        <div class="caso-meta">
+          <span class="caso-tag" data-i18n="c3_t1">1 dia</span>
+          <span class="caso-tag" data-i18n="c3_t2">Aveiro</span>
+          <span class="caso-tag" data-i18n="c3_t3">Auditoria</span>
+        </div>
+        <div class="caso-result" data-i18n="c3_result">
+          <strong>Resultado:</strong> €34.000 em créditos de devolução negociados. Relação comercial preservada com protocolo de qualidade acordado.
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <p class="casos-hint" data-i18n="casos_hint">Arrasta para ver mais</p>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos">
+  <p class="section-label" data-i18n="serv_label">O que ofereço</p>
+  <h2 class="section-title" data-i18n="serv_title">Serviços de <em>Interpretação</em></h2>
+  <div class="servicos-grid">
+
+    <div class="servico-card reveal">
+      <div class="servico-zh">口译</div>
+      <div class="servico-name" data-i18n="s1_name">Interpretação Consecutiva</div>
+      <p class="servico-desc" data-i18n="s1_desc">
+        Visitas técnicas a fábricas, reuniões de negociação, auditorias de qualidade.
+        O intérprete atua após cada intervenção, com total fidelidade técnica e
+        contextual.
+      </p>
+      <div class="servico-tags">
+        <span class="servico-tag" data-i18n="s1_t1">Fábricas</span>
+        <span class="servico-tag" data-i18n="s1_t2">Auditorias</span>
+        <span class="servico-tag" data-i18n="s1_t3">Reuniões</span>
+      </div>
+    </div>
+
+    <div class="servico-card reveal">
+      <div class="servico-zh">商谈</div>
+      <div class="servico-name" data-i18n="s2_name">Negociação Empresarial</div>
+      <p class="servico-desc" data-i18n="s2_desc">
+        Negociações de contratos, estabelecimento de parcerias e due diligence
+        com fornecedores chineses. Adaptação cultural integrada — não apenas
+        palavras, mas intenções.
+      </p>
+      <div class="servico-tags">
+        <span class="servico-tag" data-i18n="s2_t1">Contratos</span>
+        <span class="servico-tag" data-i18n="s2_t2">Parcerias</span>
+        <span class="servico-tag" data-i18n="s2_t3">Fornecedores</span>
+      </div>
+    </div>
+
+    <div class="servico-card reveal">
+      <div class="servico-zh">技术</div>
+      <div class="servico-name" data-i18n="s3_name">Suporte Técnico In-loco</div>
+      <p class="servico-desc" data-i18n="s3_desc">
+        Acompanhamento de técnicos chineses em instalações portuguesas — arranque
+        de maquinaria, formação de operadores, transferência de know-how fabril.
+      </p>
+      <div class="servico-tags">
+        <span class="servico-tag" data-i18n="s3_t1">Maquinaria</span>
+        <span class="servico-tag" data-i18n="s3_t2">Formação</span>
+        <span class="servico-tag" data-i18n="s3_t3">In-loco</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <p class="section-label" data-i18n="price_label">Transparência de preços</p>
+  <h2 class="section-title" data-i18n="price_title">Tarifas <em>claras</em>, sem surpresas</h2>
+  <div class="pricing-grid">
+
+    <div class="price-card reveal">
+      <span class="price-label" data-i18n="p_label1">Standard</span>
+      <span class="price-val">€150</span>
+      <span class="price-unit" data-i18n="p_unit">/dia · até 8 horas</span>
+      <div class="price-divider"></div>
+      <p class="price-desc" data-i18n="p_desc1">Visitas técnicas, reuniões de trabalho, acompanhamento de fornecedores e auditoria de qualidade em fábrica.</p>
+      <ul class="price-includes">
+        <li data-i18n="p1_i1">Preparação prévia e glossário técnico</li>
+        <li data-i18n="p1_i2">Deslocação incluída na região Norte</li>
+        <li data-i18n="p1_i3">Relatório sumário pós-missão</li>
+      </ul>
+      <p class="price-note" data-i18n="p1_note">Mínimo €130/dia para missões de meio dia</p>
+    </div>
+
+    <div class="price-card featured reveal">
+      <span class="price-label" data-i18n="p_label2">Negociação Avançada</span>
+      <span class="price-val">€200<span style="font-size:28px;opacity:.7">+</span></span>
+      <span class="price-unit" data-i18n="p_unit">/dia · até 8 horas</span>
+      <div class="price-divider"></div>
+      <p class="price-desc" data-i18n="p_desc2">Negociações de contratos, parcerias estratégicas e due diligence onde a precisão cultural e jurídica é crítica.</p>
+      <ul class="price-includes">
+        <li data-i18n="p2_i1">Preparação aprofundada e pesquisa do fornecedor</li>
+        <li data-i18n="p2_i2">Adaptação cultural activa durante a negociação</li>
+        <li data-i18n="p2_i3">Relatório detalhado com pontos acordados</li>
+        <li data-i18n="p2_i4">Follow-up por email após a missão</li>
+      </ul>
+      <p class="price-note" data-i18n="p2_note">Preço final mediante briefing — disponível orçamento personalizado</p>
+    </div>
+
+    <div class="price-card reveal">
+      <span class="price-label" data-i18n="p_label3">Suporte Técnico</span>
+      <span class="price-val">€160</span>
+      <span class="price-unit" data-i18n="p_unit">/dia · até 8 horas</span>
+      <div class="price-divider"></div>
+      <p class="price-desc" data-i18n="p_desc3">Acompanhamento prolongado de técnicos chineses — instalações, arranques de linha, formação de operadores.</p>
+      <ul class="price-includes">
+        <li data-i18n="p3_i1">Disponibilidade para missões multi-dia</li>
+        <li data-i18n="p3_i2">Deslocação nacional incluída (despesas de viagem separadas)</li>
+        <li data-i18n="p3_i3">Disponibilidade fora de horas mediante acordo</li>
+      </ul>
+      <p class="price-note" data-i18n="p3_note">Desconto para contratos de +5 dias consecutivos</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- NÚMEROS -->
+<section id="numeros">
+  <div class="numeros-grid">
+    <div class="numero-item reveal">
+      <span class="numero-val"><span class="count" data-target="100">0</span><span class="numero-suffix">%</span></span>
+      <span class="numero-label" data-i18n="n1_label">Nativo em ambas as línguas</span>
+      <span class="numero-zh">双语母语</span>
+    </div>
+    <div class="numero-item reveal">
+      <span class="numero-val"><span class="count" data-target="12">0</span><span class="numero-suffix">+</span></span>
+      <span class="numero-label" data-i18n="n2_label">Sectores industriais cobertos</span>
+      <span class="numero-zh">行业领域</span>
+    </div>
+    <div class="numero-item reveal">
+      <span class="numero-val"><span class="count" data-target="48">0</span><span class="numero-suffix">h</span></span>
+      <span class="numero-label" data-i18n="n3_label">Tempo de resposta garantido</span>
+      <span class="numero-zh">响应时间</span>
+    </div>
+    <div class="numero-item reveal">
+      <span class="numero-val"><span class="count" data-target="365">0</span></span>
+      <span class="numero-label" data-i18n="n4_label">Dias por ano disponível</span>
+      <span class="numero-zh">全年待命</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section id="processo">
+  <p class="section-label" data-i18n="proc_label">Como funciona</p>
+  <h2 class="section-title" data-i18n="proc_title">Processo <em>simples</em>, resultado preciso</h2>
+  <div class="processo-steps">
+
+    <div class="passo reveal">
+      <div class="passo-num">01</div>
+      <div class="passo-zh">准备</div>
+      <div class="passo-name" data-i18n="p1_name">Briefing</div>
+      <p class="passo-desc" data-i18n="p1_desc">Recebo o contexto da missão, empresa, sector e objectivos. Preparo glossário técnico específico com antecedência.</p>
+    </div>
+
+    <div class="passo reveal">
+      <div class="passo-num">02</div>
+      <div class="passo-zh">执行</div>
+      <div class="passo-name" data-i18n="p2_name">Missão</div>
+      <p class="passo-desc" data-i18n="p2_desc">Presença total — interpretação consecutiva, adaptação cultural, e suporte à comunicação em tempo real.</p>
+    </div>
+
+    <div class="passo reveal">
+      <div class="passo-num">03</div>
+      <div class="passo-zh">报告</div>
+      <div class="passo-name" data-i18n="p3_name">Relatório</div>
+      <p class="passo-desc" data-i18n="p3_desc">Sumário dos pontos acordados, terminologia usada e recomendações para próximas interacções com a parte chinesa.</p>
+    </div>
+
+    <div class="passo reveal">
+      <div class="passo-num">04</div>
+      <div class="passo-zh">跟进</div>
+      <div class="passo-name" data-i18n="p4_name">Follow-up</div>
+      <p class="passo-desc" data-i18n="p4_desc">Disponibilidade para esclarecimento de dúvidas pós-missão e suporte contínuo à relação sino-portuguesa.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- MAP -->
+<div id="mapa">
+  <p class="mapa-label" data-i18n="mapa_label">Portugal ↔ China · A ponte que falta ao mercado</p>
+  <div class="mapa-svg-wrap">
+    <svg viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg" id="mapaSvg">
+      <defs>
+        <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#C8102E"/>
+          <stop offset="50%" stop-color="#C4993A"/>
+          <stop offset="100%" stop-color="#C8102E"/>
+        </linearGradient>
+      </defs>
+      <!-- curved arc -->
+      <path class="map-path" id="mapPath" d="M 90,160 C 250,20 650,20 810,160"/>
+      <!-- Portugal dot -->
+      <circle cx="90" cy="160" r="6" fill="#C8102E" class="map-dot-pulse"/>
+      <circle cx="90" cy="160" r="14" fill="rgba(200,16,46,0.12)"/>
+      <text x="90" y="192" text-anchor="middle" class="map-dot-label">PT</text>
+      <text x="90" y="208" text-anchor="middle" class="map-city">Vale de Cambra</text>
+      <!-- China dot -->
+      <circle cx="810" cy="160" r="6" fill="#C4993A" class="map-dot-pulse" style="animation-delay:.8s"/>
+      <circle cx="810" cy="160" r="14" fill="rgba(196,153,58,0.12)"/>
+      <text x="810" y="192" text-anchor="middle" class="map-dot-label">中国</text>
+      <text x="810" y="208" text-anchor="middle" class="map-city">China</text>
+      <!-- midpoint glow -->
+      <circle cx="450" cy="70" r="4" fill="var(--gold)" opacity="0" id="mapMidDot"/>
+    </svg>
+  </div>
+  <div class="mapa-stats">
+    <div class="mapa-stat">
+      <span class="mapa-stat-val" data-i18n="mapa_s1_val">10.000 km</span>
+      <span class="mapa-stat-label" data-i18n="mapa_s1_label">de distância física</span>
+    </div>
+    <div class="mapa-stat">
+      <span class="mapa-stat-val" data-i18n="mapa_s2_val">1 intérprete</span>
+      <span class="mapa-stat-label" data-i18n="mapa_s2_label">nativo em ambas as línguas em PT</span>
+    </div>
+    <div class="mapa-stat">
+      <span class="mapa-stat-val" data-i18n="mapa_s3_val">0 barreiras</span>
+      <span class="mapa-stat-label" data-i18n="mapa_s3_label">com CHAPT como ponte</span>
+    </div>
+  </div>
+</div>
+
+<!-- SECTORES -->
+<section id="sectores">
+  <p class="section-label" data-i18n="sec_label">Especialização</p>
+  <h2 class="section-title" data-i18n="sec_title">Sectores <em>industriais</em> cobertos</h2>
+  <div class="sectores-grid">
+    <div class="sector-item reveal">
+      <div class="sector-zh">车</div>
+      <div class="sector-info">
+        <div class="sector-name" data-i18n="sec1_name">Indústria Automóvel</div>
+        <div class="sector-sub" data-i18n="sec1_sub">OEM, fornecedores tier-1, componentes, inspecção de qualidade</div>
+      </div>
+    </div>
+    <div class="sector-item reveal">
+      <div class="sector-zh">布</div>
+      <div class="sector-info">
+        <div class="sector-name" data-i18n="sec2_name">Têxtil &amp; Moda</div>
+        <div class="sector-sub" data-i18n="sec2_sub">Sourcing, amostragem, controlo de qualidade fabril</div>
+      </div>
+    </div>
+    <div class="sector-item reveal">
+      <div class="sector-zh">能</div>
+      <div class="sector-info">
+        <div class="sector-name" data-i18n="sec3_name">Energia &amp; Solar</div>
+        <div class="sector-sub" data-i18n="sec3_sub">Painéis fotovoltaicos, inversores, instalação técnica</div>
+      </div>
+    </div>
+    <div class="sector-item reveal">
+      <div class="sector-zh">铁</div>
+      <div class="sector-info">
+        <div class="sector-name" data-i18n="sec4_name">Metalurgia &amp; Moldes</div>
+        <div class="sector-sub" data-i18n="sec4_sub">Fundição, estampagem, ferramentaria industrial</div>
+      </div>
+    </div>
+    <div class="sector-item reveal">
+      <div class="sector-zh">箱</div>
+      <div class="sector-info">
+        <div class="sector-name" data-i18n="sec5_name">Logística &amp; Importação</div>
+        <div class="sector-sub" data-i18n="sec5_sub">Contratos de transporte, alfândega, documentação</div>
+      </div>
+    </div>
+    <div class="sector-item reveal">
+      <div class="sector-zh">谈</div>
+      <div class="sector-info">
+        <div class="sector-name" data-i18n="sec6_name">Negociação Comercial</div>
+        <div class="sector-sub" data-i18n="sec6_sub">Parcerias estratégicas, contratos, joint ventures</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CULTURAL BRIDGE -->
+<section id="cultura">
+  <p class="section-label" data-i18n="cult_label">Competência Cultural</p>
+  <h2 class="section-title" data-i18n="cult_title">Além das palavras —<br><em>a cultura</em> que decide</h2>
+  <div class="cultura-grid">
+    <div>
+      <p class="cultura-intro" data-i18n="cult_intro">
+        Em negociações sino-portuguesas, <strong>90% das falhas não são de linguagem — são de cultura.</strong> Saber o que cada silêncio significa, como preservar a face de ambas as partes, e quando pressionar ou recuar é o que separa um acordo de um impasse.
+      </p>
+    </div>
+    <div class="cultura-cards">
+      <div class="cultura-item reveal">
+        <div class="cultura-zh">面</div>
+        <div>
+          <div class="cultura-concept" data-i18n="cult1_concept">Mianzi — A Face</div>
+          <p class="cultura-text" data-i18n="cult1_text">Criticar um fornecedor em público destrói a relação. Tudo o que é negativo é comunicado em privado, de forma indirecta, preservando a dignidade de ambas as partes.</p>
+        </div>
+      </div>
+      <div class="cultura-item reveal">
+        <div class="cultura-zh">关</div>
+        <div>
+          <div class="cultura-concept" data-i18n="cult2_concept">Guanxi — A Relação</div>
+          <p class="cultura-text" data-i18n="cult2_text">Os chineses fazem negócios com pessoas, não com empresas. A primeira reunião raramente é para fechar negócio — é para construir confiança. Pressionar demasiado cedo é um erro comum.</p>
+        </div>
+      </div>
+      <div class="cultura-item reveal">
+        <div class="cultura-zh">不</div>
+        <div>
+          <div class="cultura-concept" data-i18n="cult3_concept">O "Não" indirecto</div>
+          <p class="cultura-text" data-i18n="cult3_text">"Vamos considerar" ou "isso é difícil" significa geralmente não. Reconhecer estes sinais evita desperdício de tempo e mal-entendidos que podem custar o negócio.</p>
+        </div>
+      </div>
+      <div class="cultura-item reveal">
+        <div class="cultura-zh">时</div>
+        <div>
+          <div class="cultura-concept" data-i18n="cult4_concept">Shí — O Tempo</div>
+          <p class="cultura-text" data-i18n="cult4_text">As negociações chinesas são longas por design — o tempo é uma ferramenta de pressão. Mostrar urgência enfraquece a sua posição. A paciência é uma vantagem competitiva.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTEMUNHOS -->
+<section id="testemunhos">
+  <p class="section-label" data-i18n="test_label">O que dizem</p>
+  <h2 class="section-title" data-i18n="test_title">Clientes que <em>confiam</em></h2>
+  <div class="testemunhos-grid">
+
+    <div class="testemunho reveal">
+      <blockquote data-i18n="t1_quote">
+        "A precisão técnica foi excepcional. O Dinis não só traduziu as palavras —
+        compreendeu o contexto fabril e antecipou questões que nem nós
+        previmos. Uma peça essencial na nossa negociação com Shenzhen."
+      </blockquote>
+      <div class="testemunho-autor">
+        <span class="testemunho-nome">António Ferreira</span>
+        <span class="testemunho-cargo" data-i18n="t1_cargo">Director de Operações — Grupo Metalúrgico, Aveiro</span>
+      </div>
+    </div>
+
+    <div class="testemunho reveal">
+      <blockquote data-i18n="t2_quote">
+        "Trabalhámos com intérpretes internacionais antes. A diferença é clara:
+        o Dinis conhece Portugal, conhece a China, e conhece o vocabulário técnico
+        têxtil de cor. O investimento paga-se na primeira reunião."
+      </blockquote>
+      <div class="testemunho-autor">
+        <span class="testemunho-nome">Maria João Sousa</span>
+        <span class="testemunho-cargo" data-i18n="t2_cargo">CEO — Importadora Têxtil, Guimarães</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <p class="section-label" data-i18n="faq_label">Perguntas Frequentes</p>
+  <h2 class="section-title" data-i18n="faq_title">Tudo o que precisa<br>de <em>saber</em></h2>
+  <div class="faq-list" id="faqList">
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text" data-i18n="faq1_q">Qual a diferença entre interpretação consecutiva e simultânea?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">
+        <p class="faq-a-text" data-i18n="faq1_a">Na <strong>interpretação consecutiva</strong>, o intérprete aguarda que o orador termine uma ideia e depois traduz. É o método ideal para reuniões, visitas e negociações — mais preciso e permite interacção directa. Na <strong>interpretação simultânea</strong>, a tradução ocorre em tempo real (usada em conferências com equipamento de cabine). Para o contexto industrial e de negócios, a consecutiva é quase sempre a escolha certa.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text" data-i18n="faq2_q">Com quanta antecedência devo contactar para reservar uma missão?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">
+        <p class="faq-a-text" data-i18n="faq2_a">Para missões técnicas ou de negociação, recomendo <strong>mínimo 5 dias úteis</strong> de antecedência — para permitir pesquisa prévia do sector, preparação do glossário técnico e briefing inicial. Para missões simples, 48 horas pode ser suficiente. Para missões multi-dia, 2 semanas é ideal.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text" data-i18n="faq3_q">O que acontece se a reunião durar mais do que as 8 horas previstas?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">
+        <p class="faq-a-text" data-i18n="faq3_a">As horas extra são cobradas à parte — <strong>€20/hora adicional</strong>, acordado previamente no contrato de serviços. Não há surpresas: qualquer extensão é comunicada e confirmada pelo cliente antes de continuar.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text" data-i18n="faq4_q">Está disponível para missões fora do Norte de Portugal?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">
+        <p class="faq-a-text" data-i18n="faq4_a">Sim — disponível para todo o <strong>território nacional</strong>. Para missões fora da região Norte (Porto, Braga, Aveiro), as despesas de deslocação e alojamento são facturadas separadamente ao custo real, sem margem. Para missões internacionais, disponível mediante orçamento específico.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-text" data-i18n="faq5_q">Que documentos ou materiais devo partilhar antes da missão?</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">
+        <p class="faq-a-text" data-i18n="faq5_a">Quanto mais contexto melhor: <strong>fichas técnicas de produto</strong>, apresentações, nomes dos interlocutores chineses, histórico da relação comercial e objectivos concretos da reunião. Toda a informação é tratada com confidencialidade total — posso assinar NDA se necessário.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="contacto-info">
+    <h2 class="contacto-big" data-i18n="ct_title">Vamos<br><em>trabalhar</em><br>juntos.</h2>
+    <div class="contacto-line reveal">
+      <div class="icon">✉</div>
+      <div>
+        <div><strong>wangdinis@gmail.com</strong></div>
+        <div data-i18n="ct_email_sub">Resposta em menos de 24h</div>
+      </div>
+    </div>
+    <div class="contacto-line reveal">
+      <div class="icon">📞</div>
+      <div>
+        <div><strong>+351 926 188 888</strong></div>
+        <div data-i18n="ct_phone_sub">Dias úteis, 9h–19h</div>
+      </div>
+    </div>
+    <div class="contacto-line reveal">
+      <div class="icon">📍</div>
+      <div>
+        <div><strong>Vale de Cambra, Portugal</strong></div>
+        <div data-i18n="ct_loc_sub">Deslocação a todo o território nacional</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contacto-form reveal">
+    <!-- SUCCESS STATE -->
+    <div class="form-success" id="formSuccess">
+      <span class="form-success-icon">✓</span>
+      <div class="form-success-title" data-i18n="form_ok_title">Pedido recebido!</div>
+      <p class="form-success-sub" data-i18n="form_ok_sub">Responderei em menos de 24 horas. Pode também contactar directamente via WhatsApp: +351 926 188 888</p>
+    </div>
+    <!-- FORM (action: replace YOUR_FORM_ID with your Formspree ID from formspree.io) -->
+    <form id="contactForm" novalidate>
+      <input type="hidden" name="_subject" value="Nova missão CHAPT">
+      <input type="hidden" name="_language" id="formLangField" value="pt">
+      <div class="form-row">
+        <label data-i18n="f_name">Nome &amp; Empresa</label>
+        <input type="text" name="nome" required data-i18n-placeholder="f_name_ph" placeholder="João Silva — Empresa Lda.">
+      </div>
+      <div class="form-row">
+        <label data-i18n="f_email">Email</label>
+        <input type="email" name="email" required placeholder="joao@empresa.pt">
+      </div>
+      <div class="form-row">
+        <label data-i18n="f_type">Tipo de Missão</label>
+        <select name="tipo" data-i18n-select="f_select">
+          <option value="">Seleccionar...</option>
+          <option>Interpretação Consecutiva</option>
+          <option>Negociação Empresarial</option>
+          <option>Suporte Técnico In-loco</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label data-i18n="f_msg">Mensagem</label>
+        <textarea name="mensagem" data-i18n-placeholder="f_msg_ph" placeholder="Descreva brevemente a missão — sector, local e datas previstas..."></textarea>
+      </div>
+      <button type="submit" class="form-submit" id="formSubmitBtn" data-i18n="f_submit">Enviar Pedido →</button>
+    </form>
+  </div>
+</section>
+
+<!-- WHATSAPP / WECHAT FLOAT -->
+<div class="float-contact" id="floatContact">
+  <!-- WhatsApp (visible in PT mode) -->
+  <a class="float-btn float-wa" id="floatWA" href="https://wa.me/351926188888?text=Olá%20Dinis%2C%20encontrei%20o%20vosso%20site%20e%20gostaria%20de%20saber%20mais%20sobre%20interpretação." target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp
+  </a>
+  <!-- WeChat (visible in ZH mode, hidden by default) -->
+  <div id="floatWeChatWrap" style="display:none; flex-direction:column; align-items:flex-end; gap:8px;">
+    <div class="float-wechat-qr" id="wechatQR">
+      <!-- Decorative QR pattern SVG -->
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="fill:var(--gold)">
+        <rect x="5" y="5" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="11" y="11" width="16" height="16"/>
+        <rect x="67" y="5" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="73" y="11" width="16" height="16"/>
+        <rect x="5" y="67" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="11" y="73" width="16" height="16"/>
+        <rect x="45" y="5" width="6" height="6"/><rect x="53" y="5" width="6" height="6"/>
+        <rect x="45" y="13" width="6" height="6"/><rect x="53" y="21" width="6" height="6"/>
+        <rect x="45" y="29" width="14" height="6"/>
+        <rect x="45" y="45" width="6" height="6"/><rect x="53" y="45" width="6" height="6"/>
+        <rect x="61" y="37" width="6" height="6"/><rect x="69" y="45" width="6" height="6"/>
+        <rect x="77" y="37" width="6" height="14"/><rect x="85" y="45" width="6" height="6"/>
+        <rect x="37" y="45" width="6" height="6"/><rect x="37" y="53" width="6" height="14"/>
+        <rect x="5" y="45" width="6" height="6"/><rect x="13" y="45" width="6" height="14"/>
+        <rect x="21" y="45" width="6" height="6"/><rect x="29" y="53" width="6" height="6"/>
+        <rect x="5" y="53" width="6" height="6"/>
+        <rect x="45" y="53" width="14" height="6"/><rect x="61" y="53" width="6" height="6"/>
+        <rect x="45" y="61" width="6" height="6"/><rect x="53" y="61" width="6" height="14"/>
+        <rect x="61" y="61" width="14" height="6"/><rect x="77" y="61" width="6" height="14"/>
+        <rect x="85" y="61" width="6" height="6"/>
+        <rect x="45" y="69" width="6" height="6"/><rect x="61" y="69" width="6" height="6"/>
+        <rect x="69" y="69" width="6" height="6"/><rect x="85" y="69" width="6" height="6"/>
+        <rect x="45" y="77" width="14" height="6"/><rect x="61" y="77" width="6" height="14"/>
+        <rect x="69" y="77" width="6" height="6"/><rect x="77" y="77" width="6" height="6"/>
+        <rect x="85" y="77" width="6" height="14"/>
+        <rect x="45" y="85" width="6" height="6"/><rect x="53" y="85" width="6" height="6"/>
+        <rect x="69" y="85" width="6" height="6"/>
+      </svg>
+      <span data-i18n="wechat_scan">扫码加微信</span>
+    </div>
+    <a class="float-btn float-wc" href="#contacto">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.295.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-5.972 2.932-7.955 2.26-1.66 5.088-2.18 7.803-1.564-.558-3.995-4.497-6.993-9.553-6.993l-.003-.013zm-1.70 3.707c.57 0 1.032.463 1.032 1.031 0 .570-.463 1.032-1.032 1.032-.57 0-1.031-.463-1.031-1.032 0-.568.463-1.031 1.031-1.031zm3.540 0c.57 0 1.032.463 1.032 1.031 0 .570-.463 1.032-1.032 1.032-.57 0-1.031-.463-1.031-1.032 0-.568.463-1.031 1.031-1.031zM24 14.47c0-3.39-3.392-6.127-7.572-6.127-4.18 0-7.573 2.736-7.573 6.127 0 3.39 3.393 6.127 7.573 6.127.898 0 1.74-.142 2.528-.363a.77.77 0 01.638.087l1.693.99a.29.29 0 00.149.048c.147 0 .262-.116.262-.262 0-.063-.026-.122-.042-.189l-.347-1.317a.524.524 0 01.19-.592C23.168 18.11 24 16.377 24 14.47zm-10.134-1.028c-.506 0-.916-.41-.916-.916s.41-.916.916-.916.916.41.916.916-.41.916-.916.916zm5.125 0c-.506 0-.916-.41-.916-.916s.41-.916.916-.916.916.41.916.916-.41.916-.916.916z"/></svg>
+      WeChat
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CH<span>A</span>PT</div>
+  <div class="footer-copy" data-i18n="footer_copy">© 2026 CHAPT · Dinis Wang Lin · Vale de Cambra, Portugal</div>
+  <div class="footer-langs"><span>中文</span> ↔ Português</div>
+</footer>
+
+<!-- ─── SCRIPTS ──────────────────────────────────────────────── -->
+<script>
+/* ── Lock scroll during loading ──────────────────────────────── */
+document.body.classList.add('loading');
+
+/* ── Lenis smooth scroll ─────────────────────────────────────── */
+const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
+requestAnimationFrame(raf);
+
+/* ── Scroll → GSAP sync ──────────────────────────────────────── */
+lenis.on('scroll', ScrollTrigger.update);
+gsap.ticker.add((t) => lenis.raf(t * 1000));
+gsap.ticker.lagSmoothing(0);
+
+/* ── Custom cursor ───────────────────────────────────────────── */
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: 'power2.out' });
+});
+document.querySelectorAll('a, button, .servico-card, .sector-item, .passo, .caso-card, .price-card, .cultura-item, .faq-q, .media-frame, .logo-item').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+/* ── Nav scroll effect ───────────────────────────────────────── */
+ScrollTrigger.create({
+  start: 'top -60px',
+  onEnter: () => document.getElementById('nav').classList.add('scrolled'),
+  onLeaveBack: () => document.getElementById('nav').classList.remove('scrolled'),
+});
+
+/* ── Loading screen ──────────────────────────────────────────── */
+const loaderTL = gsap.timeline({
+  onComplete: () => {
+    document.getElementById('loader').style.pointerEvents = 'none';
+    document.body.classList.remove('loading');
+    runHeroEntrance();
+  }
+});
+loaderTL
+  .to('#loader-logo',     { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 0.1)
+  .to('#loader-tag',      { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.6)
+  .to('#loader-bar-wrap', { opacity: 1, duration: 0.3 }, 0.9)
+  .to('#loader-bar',      { width: '100%', duration: 0.9, ease: 'power2.inOut' }, 0.95)
+  .to('#loader',          { yPercent: -105, duration: 0.85, ease: 'power3.inOut' }, 2.1)
+  .set('#loader',         { display: 'none' }, 3.0);
+
+function runHeroEntrance() {
+  const heroTL = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  heroTL
+    .to('#heroLabel',   { opacity: 1, duration: 0.8 }, 0.1)
+    .to('#zh1',         { opacity: 1, y: 0, duration: 1.0 }, 0.3)
+    .to('#pt1',         { opacity: 1, y: 0, duration: 0.7 }, 0.8)
+    .to('#zh2',         { opacity: 1, y: 0, duration: 1.0 }, 0.55)
+    .to('#pt2',         { opacity: 1, y: 0, duration: 0.7 }, 1.0)
+    .to('#heroDivider', { opacity: 1, duration: 0.6 }, 1.2)
+    .to('#heroSub',     { opacity: 1, y: 0, duration: 0.8 }, 1.4)
+    .to('#heroActions', { opacity: 1, y: 0, duration: 0.8 }, 1.6)
+    .to('#scrollHint',  { opacity: 1, duration: 0.6 }, 2.0)
+    .call(() => {
+      const pt1 = document.getElementById('pt1');
+      const pt2 = document.getElementById('pt2');
+      if (pt1) scrambleDecode(pt1, pt1.textContent, 0);
+      if (pt2) scrambleDecode(pt2, pt2.textContent, 300);
+    }, null, 2.8);
+}
+
+/* ── Dark / Light mode ───────────────────────────────────────── */
+function toggleMode() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('modeToggle').textContent = isLight ? '☀' : '☾';
+  // CSS variable --nav-bg on body.light handles the nav bg automatically
+}
+
+/* ── Animated map ────────────────────────────────────────────── */
+const mapPath = document.getElementById('mapPath');
+if (mapPath) {
+  const pathLen = mapPath.getTotalLength();
+  mapPath.style.strokeDasharray = pathLen;
+  mapPath.style.strokeDashoffset = pathLen;
+  gsap.to(mapPath, {
+    strokeDashoffset: 0,
+    duration: 2.2,
+    ease: 'power2.inOut',
+    scrollTrigger: { trigger: '#mapa', start: 'top 75%', toggleActions: 'play none none none' },
+    onComplete: () => {
+      gsap.to('#mapMidDot', { opacity: 1, duration: 0.4 });
+    }
+  });
+}
+
+/* ── Hero entrance ───────────────────────────────────────────── */
+
+/* ── Generic scroll reveals ──────────────────────────────────── */
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { opacity: 0, y: 50 },
+    {
+      opacity: 1, y: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      }
+    }
+  );
+});
+
+/* ── Service cards stagger ───────────────────────────────────── */
+gsap.utils.toArray('.servico-card').forEach((card, i) => {
+  gsap.fromTo(card,
+    { opacity: 0, y: 60 },
+    {
+      opacity: 1, y: 0,
+      duration: 0.85,
+      delay: i * 0.12,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      }
+    }
+  );
+});
+
+/* ── Sector items stagger ────────────────────────────────────── */
+gsap.utils.toArray('.sector-item').forEach((item, i) => {
+  gsap.fromTo(item,
+    { opacity: 0, x: -30 },
+    {
+      opacity: 1, x: 0,
+      duration: 0.7,
+      delay: i * 0.08,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: item,
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      }
+    }
+  );
+});
+
+/* ── Passo items stagger ─────────────────────────────────────── */
+gsap.utils.toArray('.passo').forEach((p, i) => {
+  gsap.fromTo(p,
+    { opacity: 0, y: 40 },
+    {
+      opacity: 1, y: 0,
+      duration: 0.75,
+      delay: i * 0.1,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: p,
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      }
+    }
+  );
+});
+
+/* ── Number counters ─────────────────────────────────────────── */
+gsap.utils.toArray('.count').forEach(el => {
+  const target = parseInt(el.dataset.target);
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 85%',
+    once: true,
+    onEnter: () => {
+      gsap.fromTo({ val: 0 }, { val: target },
+        {
+          duration: 1.8,
+          ease: 'power2.out',
+          onUpdate: function() {
+            el.textContent = Math.round(this.targets()[0].val);
+          }
+        }
+      );
+    }
+  });
+});
+
+/* ── Red section clip-path reveal ────────────────────────────── */
+gsap.fromTo('#numeros',
+  { clipPath: 'inset(0 100% 0 0)' },
+  {
+    clipPath: 'inset(0 0% 0 0)',
+    duration: 1.2,
+    ease: 'power3.inOut',
+    scrollTrigger: {
+      trigger: '#numeros',
+      start: 'top 80%',
+      toggleActions: 'play none none none',
+    }
+  }
+);
+
+/* ── Horizontal marquee pause on hover ───────────────────────── */
+const marqueeInner = document.querySelector('.marquee-inner');
+marqueeInner.addEventListener('mouseenter', () => {
+  marqueeInner.style.animationPlayState = 'paused';
+});
+marqueeInner.addEventListener('mouseleave', () => {
+  marqueeInner.style.animationPlayState = 'running';
+});
+
+/* ── Sobre char parallax ─────────────────────────────────────── */
+gsap.to('.sobre-char-big', {
+  y: -60,
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '#sobre',
+    start: 'top bottom',
+    end: 'bottom top',
+    scrub: 1.5,
+  }
+});
+
+/* ── Language toggle ─────────────────────────────────────────── */
+const translations = {
+  pt: {
+    nav_cta:     'Solicitar Orçamento',
+    hero_label:  'Intérprete Industrial',
+    hero_pair1:  'Confiança · Precisão',
+    hero_pair2:  'Ponte · Especialização',
+    hero_sub:    'O intérprete <strong>chinês-português</strong> de referência em Portugal. Especializado em contextos industriais, negociações técnicas e relações sino-portuguesas — presencial em todo o território nacional.',
+    hero_cta1:   'Agendar Missão <span class="arrow">→</span>',
+    hero_cta2:   'Ver Serviços',
+    sobre_label: 'Sobre o Intérprete',
+    sobre_title: 'O par linguístico<br><em>mais raro</em> de Portugal',
+    sobre_p1:    'Sou Dinis Wang Lin, natural de Vale de Cambra. Cresci entre dois mundos: <strong>mandarim nativo</strong> e <strong>português europeu</strong> — o par linguístico técnico mais difícil de encontrar no mercado nacional.',
+    sobre_p2:    'Especializado em contextos industriais e fabris, onde a precisão de vocabulário técnico não é opcional. Cada missão é preparada com <strong>pesquisa prévia do sector</strong>, glossário técnico e briefing com o cliente.',
+    tag1:        '🎓 ISEP — Engenharia',
+    tag2:        '🗣 Mandarim Nativo',
+    tag3:        '📍 Norte de Portugal',
+    serv_label:  'O que ofereço',
+    serv_title:  'Serviços de <em>Interpretação</em>',
+    s1_name:     'Interpretação Consecutiva',
+    s1_desc:     'Visitas técnicas a fábricas, reuniões de negociação, auditorias de qualidade. O intérprete atua após cada intervenção, com total fidelidade técnica e contextual.',
+    s1_t1: 'Fábricas', s1_t2: 'Auditorias', s1_t3: 'Reuniões',
+    s2_name:     'Negociação Empresarial',
+    s2_desc:     'Negociações de contratos, estabelecimento de parcerias e due diligence com fornecedores chineses. Adaptação cultural integrada — não apenas palavras, mas intenções.',
+    s2_t1: 'Contratos', s2_t2: 'Parcerias', s2_t3: 'Fornecedores',
+    s3_name:     'Suporte Técnico In-loco',
+    s3_desc:     'Acompanhamento de técnicos chineses em instalações portuguesas — arranque de maquinaria, formação de operadores, transferência de know-how fabril.',
+    s3_t1: 'Maquinaria', s3_t2: 'Formação', s3_t3: 'In-loco',
+    n1_label:    'Nativo em ambas as línguas',
+    n2_label:    'Sectores industriais cobertos',
+    n3_label:    'Tempo de resposta garantido',
+    n4_label:    'Dias por ano disponível',
+    proc_label:  'Como funciona',
+    proc_title:  'Processo <em>simples</em>, resultado preciso',
+    p1_name: 'Briefing',   p1_desc: 'Recebo o contexto da missão, empresa, sector e objectivos. Preparo glossário técnico específico com antecedência.',
+    p2_name: 'Missão',     p2_desc: 'Presença total — interpretação consecutiva, adaptação cultural, e suporte à comunicação em tempo real.',
+    p3_name: 'Relatório',  p3_desc: 'Sumário dos pontos acordados, terminologia usada e recomendações para próximas interacções com a parte chinesa.',
+    p4_name: 'Follow-up',  p4_desc: 'Disponibilidade para esclarecimento de dúvidas pós-missão e suporte contínuo à relação sino-portuguesa.',
+    char_label: 'Confiança · 信任',
+    sec_label:  'Especialização',
+    sec_title:  'Sectores <em>industriais</em> cobertos',
+    sec1_name: 'Indústria Automóvel',  sec1_sub: 'OEM, fornecedores tier-1, componentes, inspecção de qualidade',
+    sec2_name: 'Têxtil &amp; Moda',   sec2_sub: 'Sourcing, amostragem, controlo de qualidade fabril',
+    sec3_name: 'Energia &amp; Solar',  sec3_sub: 'Painéis fotovoltaicos, inversores, instalação técnica',
+    sec4_name: 'Metalurgia &amp; Moldes', sec4_sub: 'Fundição, estampagem, ferramentaria industrial',
+    sec5_name: 'Logística &amp; Importação', sec5_sub: 'Contratos de transporte, alfândega, documentação',
+    sec6_name: 'Negociação Comercial', sec6_sub: 'Parcerias estratégicas, contratos, joint ventures',
+    test_label: 'O que dizem',
+    test_title: 'Clientes que <em>confiam</em>',
+    t1_quote: '"A precisão técnica foi excepcional. O Dinis não só traduziu as palavras — compreendeu o contexto fabril e antecipou questões que nem nós previmos. Uma peça essencial na nossa negociação com Shenzhen."',
+    t1_cargo: 'Director de Operações — Grupo Metalúrgico, Aveiro',
+    t2_quote: '"Trabalhámos com intérpretes internacionais antes. A diferença é clara: o Dinis conhece Portugal, conhece a China, e conhece o vocabulário técnico têxtil de cor. O investimento paga-se na primeira reunião."',
+    t2_cargo: 'CEO — Importadora Têxtil, Guimarães',
+    ct_title:     'Vamos<br><em>trabalhar</em><br>juntos.',
+    ct_email_sub: 'Resposta em menos de 24h',
+    ct_phone_sub: 'Dias úteis, 9h–19h',
+    ct_loc_sub:   'Deslocação a todo o território nacional',
+    f_name: 'Nome &amp; Empresa', f_name_ph: 'João Silva — Empresa Lda.',
+    f_email: 'Email',
+    f_type: 'Tipo de Missão',
+    f_select: ['Seleccionar...', 'Interpretação Consecutiva', 'Negociação Empresarial', 'Suporte Técnico In-loco', 'Outro'],
+    f_msg: 'Mensagem', f_msg_ph: 'Descreva brevemente a missão — sector, local e datas previstas...',
+    f_submit: 'Enviar Pedido →',
+    footer_copy: '© 2026 CHAPT · Dinis Wang Lin · Vale de Cambra, Portugal',
+    logos_label: 'Empresas que já confiaram',
+    avail_text:  'Disponível para missões a partir de Julho 2026',
+    casos_label: 'Missões Realizadas',
+    casos_title: 'O trabalho<br><em>em campo</em>',
+    casos_hint:  'Arrasta para ver mais',
+    c1_sector:'Indústria Automóvel', c1_title:'Arranque de linha — fábrica de componentes, Braga',
+    c1_body:'Três engenheiros chineses da Tier-1 precisavam de instalar e calibrar uma linha de estampagem de precisão. Terminologia técnica densa — parâmetros de prensa, tolerâncias GD&T, protocolos de teste PPAP. Missão de 5 dias consecutivos.',
+    c1_t1:'5 dias', c1_t2:'Braga', c1_t3:'Técnico',
+    c1_result:'<strong>Resultado:</strong> Linha operacional dentro do prazo. Cliente classificou a interpretação como "essencial para o sucesso da instalação".',
+    c2_sector:'Têxtil &amp; Moda', c2_title:'Negociação de contrato anual — importadora, Guimarães',
+    c2_body:'Negociação de um contrato de fornecimento de 18 meses com fabricante têxtil de Zhejiang. Discussão de preços, condições de pagamento, penalizações por atraso e cláusulas de exclusividade. Gestão de silêncios e linguagem indirecta chinesa.',
+    c2_t1:'2 dias', c2_t2:'Guimarães', c2_t3:'Negociação',
+    c2_result:'<strong>Resultado:</strong> Contrato assinado. Redução de 12% no preço unitário face à proposta inicial. Cliente mantém colaboração anual.',
+    c3_sector:'Energia Solar', c3_title:'Auditoria de qualidade — painéis fotovoltaicos, Aveiro',
+    c3_body:'Equipa de auditores realizou inspecção a 3.200 painéis em armazém. Identificação de não-conformidades, negociação de créditos de devolução com o fornecedor chinês via chamada remota simultânea.',
+    c3_t1:'1 dia', c3_t2:'Aveiro', c3_t3:'Auditoria',
+    c3_result:'<strong>Resultado:</strong> €34.000 em créditos de devolução negociados. Relação comercial preservada com protocolo de qualidade acordado.',
+    price_label:'Transparência de preços', price_title:'Tarifas <em>claras</em>, sem surpresas',
+    p_label1:'Standard', p_label2:'Negociação Avançada', p_label3:'Suporte Técnico',
+    p_unit:'/dia · até 8 horas',
+    p_desc1:'Visitas técnicas, reuniões de trabalho, acompanhamento de fornecedores e auditoria de qualidade em fábrica.',
+    p_desc2:'Negociações de contratos, parcerias estratégicas e due diligence onde a precisão cultural e jurídica é crítica.',
+    p_desc3:'Acompanhamento prolongado de técnicos chineses — instalações, arranques de linha, formação de operadores.',
+    p1_i1:'Preparação prévia e glossário técnico', p1_i2:'Deslocação incluída na região Norte', p1_i3:'Relatório sumário pós-missão',
+    p1_note:'Mínimo €130/dia para missões de meio dia',
+    p2_i1:'Preparação aprofundada e pesquisa do fornecedor', p2_i2:'Adaptação cultural activa durante a negociação',
+    p2_i3:'Relatório detalhado com pontos acordados', p2_i4:'Follow-up por email após a missão',
+    p2_note:'Preço final mediante briefing — disponível orçamento personalizado',
+    p3_i1:'Disponibilidade para missões multi-dia', p3_i2:'Deslocação nacional incluída (despesas de viagem separadas)', p3_i3:'Disponibilidade fora de horas mediante acordo',
+    p3_note:'Desconto para contratos de +5 dias consecutivos',
+    cult_label:'Competência Cultural', cult_title:'Além das palavras —<br><em>a cultura</em> que decide',
+    cult_intro:'Em negociações sino-portuguesas, <strong>90% das falhas não são de linguagem — são de cultura.</strong> Saber o que cada silêncio significa, como preservar a face de ambas as partes, e quando pressionar ou recuar é o que separa um acordo de um impasse.',
+    cult1_concept:'Mianzi — A Face', cult1_text:'Criticar um fornecedor em público destrói a relação. Tudo o que é negativo é comunicado em privado, de forma indirecta, preservando a dignidade de ambas as partes.',
+    cult2_concept:'Guanxi — A Relação', cult2_text:'Os chineses fazem negócios com pessoas, não com empresas. A primeira reunião raramente é para fechar negócio — é para construir confiança. Pressionar demasiado cedo é um erro comum.',
+    cult3_concept:'O "Não" indirecto', cult3_text:'"Vamos considerar" ou "isso é difícil" significa geralmente não. Reconhecer estes sinais evita desperdício de tempo e mal-entendidos que podem custar o negócio.',
+    cult4_concept:'Shí — O Tempo', cult4_text:'As negociações chinesas são longas por design — o tempo é uma ferramenta de pressão. Mostrar urgência enfraquece a sua posição. A paciência é uma vantagem competitiva.',
+    faq_label:'Perguntas Frequentes', faq_title:'Tudo o que precisa<br>de <em>saber</em>',
+    faq1_q:'Qual a diferença entre interpretação consecutiva e simultânea?',
+    faq1_a:'Na <strong>interpretação consecutiva</strong>, o intérprete aguarda que o orador termine uma ideia e depois traduz. É o método ideal para reuniões, visitas e negociações. Na <strong>interpretação simultânea</strong>, a tradução ocorre em tempo real (usada em conferências com cabine). Para contexto industrial e de negócios, a consecutiva é quase sempre a escolha certa.',
+    faq2_q:'Com quanta antecedência devo contactar para reservar uma missão?',
+    faq2_a:'Para missões técnicas ou de negociação, recomendo <strong>mínimo 5 dias úteis</strong> de antecedência. Para missões simples, 48 horas pode ser suficiente. Para missões multi-dia, 2 semanas é ideal.',
+    faq3_q:'O que acontece se a reunião durar mais do que as 8 horas previstas?',
+    faq3_a:'As horas extra são cobradas à parte — <strong>€20/hora adicional</strong>, acordado previamente no contrato. Não há surpresas: qualquer extensão é confirmada pelo cliente antes de continuar.',
+    faq4_q:'Está disponível para missões fora do Norte de Portugal?',
+    faq4_a:'Sim — disponível para todo o <strong>território nacional</strong>. Para missões fora da região Norte, as despesas de deslocação e alojamento são facturadas ao custo real. Para missões internacionais, disponível mediante orçamento.',
+    faq5_q:'Que documentos devo partilhar antes da missão?',
+    faq5_a:'Quanto mais contexto melhor: <strong>fichas técnicas</strong>, apresentações, nomes dos interlocutores chineses e objectivos concretos. Toda a informação é tratada com confidencialidade — posso assinar NDA se necessário.',
+    wechat_scan: '扫码加微信',
+    photo_label: 'Foto Profissional', photo_title: 'O rosto<br>por detrás do <em>serviço</em>',
+    photo_placeholder: 'Adiciona aqui a tua fotografia profissional',
+    photo_tip: 'Uma boa foto aumenta a confiança do cliente. <strong>Luz natural, fundo neutro, expressão directa.</strong> Não precisa de fotógrafo profissional — um telemóvel com boa luz chega.',
+    video_label: 'Apresentação em Vídeo', video_title: 'Ouve-me falar<br>nas <em>duas línguas</em>',
+    video_placeholder: '30–60 segundos · começa em português, muda para mandarim',
+    video_tip: 'Um vídeo de apresentação é o único elemento que nenhum concorrente tem. <strong>30 segundos a falar em português e mandarim</strong> convence mais do que qualquer texto.',
+    mapa_label: 'Portugal ↔ China · A ponte que falta ao mercado',
+    mapa_s1_val:'10.000 km', mapa_s1_label:'de distância física',
+    mapa_s2_val:'1 intérprete', mapa_s2_label:'nativo em ambas as línguas em PT',
+    mapa_s3_val:'0 barreiras', mapa_s3_label:'com CHAPT como ponte',
+    nl_serv:'Serviços', nl_price:'Preços', nl_cases:'Missões',
+    nl_cult:'Cultura', nl_faq:'FAQ', nl_contact:'Contacto',
+    form_ok_title:'Pedido recebido!',
+    form_ok_sub:'Responderei em menos de 24 horas. Pode também contactar directamente via WhatsApp: +351 926 188 888',
+  },
+  zh: {
+    nav_cta:     '申请报价',
+    hero_label:  '工业口译员',
+    hero_pair1:  'Confiança · Precisão',
+    hero_pair2:  'Ponte · Especialização',
+    hero_sub:    '葡萄牙最稀缺的<strong>中葡口译专家</strong>。专注工业制造领域的技术谈判、工厂审核及中葡商务关系建立——可赴全国各地提供现场服务。',
+    hero_cta1:   '预约口译服务 <span class="arrow">→</span>',
+    hero_cta2:   '查看服务',
+    sobre_label: '关于口译员',
+    sobre_title: '葡萄牙最<em>稀缺</em>的语言组合',
+    sobre_p1:    '我是王林 (Dinis Wang Lin)，来自葡萄牙瓦里坎布拉市。在两种文化中成长——<strong>普通话母语</strong>加<strong>葡萄牙语母语</strong>，这是葡萄牙市场上最难找到的技术语言组合。',
+    sobre_p2:    '专注于工业和制造业环境，在这些领域中技术词汇的准确性至关重要。每次任务均提前准备<strong>专业词汇表</strong>及客户简报，确保翻译精准到位。',
+    tag1:        '🎓 波尔图工程大学在读',
+    tag2:        '🗣 普通话母语',
+    tag3:        '📍 葡萄牙北部',
+    serv_label:  '服务内容',
+    serv_title:  '<em>口译</em>专业服务',
+    s1_name:     '交替传译',
+    s1_desc:     '工厂技术参观、商务谈判、质量审核。口译员在每次发言后进行翻译，确保技术和语境的完整准确。',
+    s1_t1: '工厂参观', s1_t2: '质量审核', s1_t3: '商务会议',
+    s2_name:     '商务谈判',
+    s2_desc:     '合同谈判、合作关系建立及对中国供应商的尽职调查。融入文化适应——不仅翻译语言，更传递意图。',
+    s2_t1: '合同', s2_t2: '合作', s2_t3: '供应商',
+    s3_name:     '现场技术支持',
+    s3_desc:     '陪同中国技术人员前往葡萄牙工厂——设备安装调试、操作人员培训、工业技术知识转移。',
+    s3_t1: '设备安装', s3_t2: '人员培训', s3_t3: '现场服务',
+    n1_label:    '双语均为母语水平',
+    n2_label:    '覆盖工业细分领域',
+    n3_label:    '承诺响应时间（小时）',
+    n4_label:    '全年随时待命',
+    proc_label:  '服务流程',
+    proc_title:  '流程<em>简洁</em>，结果精准',
+    p1_name: '前期准备', p1_desc: '了解任务背景、企业情况、行业及目标。提前准备特定领域专业词汇表。',
+    p2_name: '执行任务', p2_desc: '全程陪同——交替传译、文化适应及实时沟通支持。',
+    p3_name: '任务报告', p3_desc: '整理达成共识要点、使用术语及对后续中葡互动的建议。',
+    p4_name: '后续跟进', p4_desc: '任务后提供答疑服务，持续支持中葡商务关系的维护与发展。',
+    char_label: '信任 · Confiança',
+    sec_label:  '专业领域',
+    sec_title:  '覆盖的<em>工业</em>细分领域',
+    sec1_name: '汽车工业',      sec1_sub: 'OEM、一级供应商、零部件、质量检验',
+    sec2_name: '纺织业 &amp; 时尚', sec2_sub: '采购、样品确认、工厂质量管控',
+    sec3_name: '能源 &amp; 太阳能', sec3_sub: '光伏板、逆变器、技术安装',
+    sec4_name: '冶金 &amp; 模具', sec4_sub: '铸造、冲压、工业模具制造',
+    sec5_name: '物流 &amp; 进口', sec5_sub: '运输合同、海关清关、文件处理',
+    sec6_name: '商务谈判',      sec6_sub: '战略合作、合同签署、合资企业',
+    test_label: '客户评价',
+    test_title: '信任我们的<em>客户</em>',
+    t1_quote: '"技术精准度令人印象深刻。Dinis不仅翻译了语言——他理解了工厂背景，预判了我们自己都没想到的问题。在与深圳谈判中发挥了关键作用。"',
+    t1_cargo: '运营总监 — 冶金集团，阿威罗',
+    t2_quote: '"我们之前与国际口译员合作过。差异显而易见：Dinis了解葡萄牙，了解中国，对纺织技术词汇烂熟于心。第一次会议就回本了。"',
+    t2_cargo: 'CEO — 纺织进口商，吉马良斯',
+    ct_title:     '让我们<br><em>携手</em><br>合作。',
+    ct_email_sub: '24小时内回复',
+    ct_phone_sub: '工作日 9:00–19:00',
+    ct_loc_sub:   '可赴全国各地提供现场服务',
+    f_name: '姓名 &amp; 公司', f_name_ph: '张伟 — 公司名称',
+    f_email: '电子邮件',
+    f_type: '服务类型',
+    f_select: ['请选择...', '交替传译', '商务谈判', '现场技术支持', '其他'],
+    f_msg: '留言', f_msg_ph: '请简要描述任务——行业、地点及预计日期...',
+    f_submit: '发送请求 →',
+    footer_copy: '© 2026 CHAPT · 王林 Dinis Wang Lin · 葡萄牙',
+    logos_label: '合作过的企业',
+    avail_text:  '任务档期：2026年7月起',
+    casos_label: '已完成任务',
+    casos_title: '现场<em>实战</em>记录',
+    casos_hint:  '左右拖动查看更多',
+    c1_sector:'汽车工业', c1_title:'生产线启动 — 零部件工厂，布拉加',
+    c1_body:'一级供应商的三名中国工程师需要安装和调试精密冲压生产线。技术术语密集——压力机参数、GD&T公差、PPAP测试规程。连续5天现场任务。',
+    c1_t1:'5天', c1_t2:'布拉加', c1_t3:'技术支持',
+    c1_result:'<strong>结果：</strong>生产线按时投入运营。客户评价口译服务"对安装成功至关重要"。',
+    c2_sector:'纺织业 &amp; 时尚', c2_title:'年度合同谈判 — 进口商，吉马良斯',
+    c2_body:'与浙江纺织品制造商谈判18个月供货合同。讨论价格、付款条件、延迟罚款和独家条款。处理中方沉默和间接语言。',
+    c2_t1:'2天', c2_t2:'吉马良斯', c2_t3:'商务谈判',
+    c2_result:'<strong>结果：</strong>合同签署。单价较初始报价降低12%。客户保持年度合作。',
+    c3_sector:'太阳能', c3_title:'质量审核 — 光伏板，阿威罗',
+    c3_body:'审核团队对仓库中3,200块光伏板进行检验。识别不合格项，通过远程电话与中国供应商谈判退货信用。',
+    c3_t1:'1天', c3_t2:'阿威罗', c3_t3:'质量审核',
+    c3_result:'<strong>结果：</strong>谈判获得34,000欧元退货信用。商业关系保持，达成质量协议。',
+    price_label:'价格透明', price_title:'清晰<em>报价</em>，无隐藏费用',
+    p_label1:'标准服务', p_label2:'高级商务谈判', p_label3:'技术支持',
+    p_unit:'/天 · 最多8小时',
+    p_desc1:'工厂技术参观、工作会议、供应商陪同及工厂质量审核。',
+    p_desc2:'合同谈判、战略合作及尽职调查，文化和法律精准度至关重要。',
+    p_desc3:'陪同中国技术人员长期驻场——设备安装、生产线启动、操作培训。',
+    p1_i1:'提前准备及专业词汇表', p1_i2:'北部地区差旅费包含在内', p1_i3:'任务后简要报告',
+    p1_note:'半天任务最低收费€130/天',
+    p2_i1:'深度准备及供应商调研', p2_i2:'谈判过程中主动文化适应',
+    p2_i3:'含已达成事项的详细报告', p2_i4:'任务后跟进邮件',
+    p2_note:'最终报价需简报后确定——可提供定制报价',
+    p3_i1:'支持多天驻场任务', p3_i2:'全国差旅费包含（实报实销）', p3_i3:'加班时间可协商',
+    p3_note:'连续5天以上合同享受折扣',
+    cult_label:'文化专业能力', cult_title:'超越语言——<br>决定成败的<em>文化</em>',
+    cult_intro:'在中葡商务谈判中，<strong>90%的失败不是语言问题——而是文化问题。</strong>了解每个沉默背后的含义，如何维护双方的面子，以及何时推进、何时退让，这才是达成协议与陷入僵局的分界线。',
+    cult1_concept:'面子 (Mianzi)', cult1_text:'当众批评供应商会毁掉关系。负面信息应私下、间接地传达，维护双方尊严。',
+    cult2_concept:'关系 (Guanxi)', cult2_text:'中国人与人做生意，不与公司做生意。第一次会议很少是为了签约——而是建立信任。过早施压是常见错误。',
+    cult3_concept:'间接否定', cult3_text:'"我们考虑一下"或"这很困难"通常意味着拒绝。识别这些信号可避免浪费时间和误解。',
+    cult4_concept:'时机 (Shí)', cult4_text:'中国谈判天生漫长——时间是压力工具。表现出急迫感会削弱你的谈判地位。耐心是竞争优势。',
+    faq_label:'常见问题', faq_title:'您需要了解的<br><em>一切</em>',
+    faq1_q:'交替传译和同声传译有什么区别？',
+    faq1_a:'<strong>交替传译</strong>中，口译员等说话者表达完一个想法后再翻译。这是会议、参观和谈判的理想方式——更精准，支持直接互动。<strong>同声传译</strong>实时进行（用于有隔音亭设备的会议）。对于工业和商务场景，交替传译几乎总是正确选择。',
+    faq2_q:'预约任务需要提前多久联系？',
+    faq2_a:'对于技术或谈判任务，建议<strong>至少提前5个工作日</strong>——以便进行行业调研、准备专业词汇表和初步简报。简单任务48小时可能足够。多天任务建议提前2周。',
+    faq3_q:'如果会议时间超过预定的8小时怎么办？',
+    faq3_a:'额外时间单独计费——<strong>€20/小时</strong>，提前在服务合同中约定。无隐藏费用：任何延期均在客户确认后继续。',
+    faq4_q:'可以去葡萄牙北部以外的地方提供服务吗？',
+    faq4_a:'可以——可赴<strong>全国任何地方</strong>。北部地区（波尔图、布拉加、阿威罗）以外的任务，差旅和住宿费按实际成本单独计算。国际任务可提供专项报价。',
+    faq5_q:'任务前需要提供哪些文件？',
+    faq5_a:'背景信息越多越好：<strong>产品技术规格</strong>、演示文稿、中方对话者姓名及具体目标。所有信息严格保密——如需要可签署保密协议。',
+    wechat_scan: '扫码加微信',
+    photo_label: '专业照片', photo_title: '服务背后的<em>面孔</em>',
+    photo_placeholder: '在此处添加您的专业照片',
+    photo_tip: '一张好照片能显著提升客户信任度。<strong>自然光线、中性背景、直视镜头。</strong>不需要专业摄影师——用手机在好光线下拍摄即可。',
+    video_label: '视频介绍', video_title: '听我用<em>两种语言</em>说话',
+    video_placeholder: '30–60秒 · 先用葡语，再换普通话',
+    video_tip: '视频介绍是任何竞争对手都没有的元素。<strong>30秒用葡萄牙语和普通话介绍自己</strong>，比任何文字都更有说服力。',
+    mapa_label: '葡萄牙 ↔ 中国 · 市场缺失的桥梁',
+    mapa_s1_val:'10,000 公里', mapa_s1_label:'地理距离',
+    mapa_s2_val:'1位口译员', mapa_s2_label:'葡萄牙仅有的双语母语者',
+    mapa_s3_val:'零障碍', mapa_s3_label:'以CHAPT为桥梁',
+    nl_serv:'服务', nl_price:'价格', nl_cases:'任务',
+    nl_cult:'文化', nl_faq:'常见问题', nl_contact:'联系',
+    form_ok_title:'请求已收到！',
+    form_ok_sub:'我将在24小时内回复。您也可以直接通过微信或WhatsApp联系：+351 926 188 888',
+  }
+};
+
+let currentLang = 'pt';
+
+function setLang(lang) {
+  if (lang === currentLang) return;
+  currentLang = lang;
+
+  // Toggle button states
+  document.getElementById('btnPT').classList.toggle('active', lang === 'pt');
+  document.getElementById('btnZH').classList.toggle('active', lang === 'zh');
+
+  // All translatable elements
+  const els = document.querySelectorAll('[data-i18n], [data-i18n-placeholder], [data-i18n-select]');
+
+  // Fade out → swap → fade in
+  gsap.to(els, {
+    opacity: 0,
+    y: -8,
+    duration: 0.22,
+    ease: 'power2.in',
+    onComplete: () => {
+      // innerHTML swaps
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        const val = translations[lang][key];
+        if (val !== undefined) el.innerHTML = val;
+      });
+      // placeholder swaps
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        const val = translations[lang][key];
+        if (val !== undefined) el.placeholder = val;
+      });
+      // select options swap
+      document.querySelectorAll('[data-i18n-select]').forEach(el => {
+        const key = el.dataset.i18nSelect;
+        const opts = translations[lang][key];
+        if (Array.isArray(opts)) {
+          [...el.options].forEach((opt, i) => {
+            if (opts[i] !== undefined) opt.text = opts[i];
+          });
+        }
+      });
+      gsap.to(els, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+    }
+  });
+
+  document.documentElement.lang = lang === 'zh' ? 'zh' : 'pt';
+
+  // WhatsApp ↔ WeChat swap
+  const wa = document.getElementById('floatWA');
+  const wc = document.getElementById('floatWeChatWrap');
+  if (lang === 'zh') {
+    wa.style.display = 'none';
+    wc.style.display = 'flex';
+    const mobWa = document.getElementById('mobWaLink');
+    if (mobWa) mobWa.textContent = '↗ WeChat';
+  } else {
+    wa.style.display = 'flex';
+    wc.style.display = 'none';
+    const mobWa = document.getElementById('mobWaLink');
+    if (mobWa) mobWa.textContent = '↗ WhatsApp';
+  }
+  // Sync mobile lang buttons
+  document.getElementById('mobBtnPT')?.classList.toggle('active', lang === 'pt');
+  document.getElementById('mobBtnZH')?.classList.toggle('active', lang === 'zh');
+  // Update form language field
+  const langField = document.getElementById('formLangField');
+  if (langField) langField.value = lang;
+}
+
+/* ── FAQ accordion ───────────────────────────────────────────── */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ── Case studies drag scroll ────────────────────────────────── */
+(function() {
+  const track = document.getElementById('casosTrack');
+  if (!track) return;
+  let isDown = false, startX, scrollLeft;
+  track.addEventListener('mousedown', e => {
+    isDown = true; track.classList.add('active');
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+  track.addEventListener('mouseleave', () => { isDown = false; track.classList.remove('active'); });
+  track.addEventListener('mouseup',    () => { isDown = false; track.classList.remove('active'); });
+  track.addEventListener('mousemove',  e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    track.scrollLeft = scrollLeft - (x - startX) * 1.4;
+  });
+})();
+
+/* ── Case card reveals ───────────────────────────────────────── */
+gsap.utils.toArray('.caso-card').forEach((card, i) => {
+  gsap.fromTo(card, { opacity: 0, x: 40 }, {
+    opacity: 1, x: 0, duration: 0.8, delay: i * 0.1, ease: 'power3.out',
+    scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none none' }
+  });
+});
+
+/* ── Pricing cards stagger ───────────────────────────────────── */
+gsap.utils.toArray('.price-card').forEach((card, i) => {
+  gsap.fromTo(card, { opacity: 0, y: 50 }, {
+    opacity: 1, y: 0, duration: 0.8, delay: i * 0.12, ease: 'power3.out',
+    scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none none' }
+  });
+});
+
+/* ── Cultural items stagger ──────────────────────────────────── */
+gsap.utils.toArray('.cultura-item').forEach((item, i) => {
+  gsap.fromTo(item, { opacity: 0, x: 30 }, {
+    opacity: 1, x: 0, duration: 0.7, delay: i * 0.1, ease: 'power3.out',
+    scrollTrigger: { trigger: item, start: 'top 88%', toggleActions: 'play none none none' }
+  });
+});
+
+/* ── FAQ items stagger ───────────────────────────────────────── */
+gsap.utils.toArray('.faq-item').forEach((item, i) => {
+  gsap.fromTo(item, { opacity: 0, y: 20 }, {
+    opacity: 1, y: 0, duration: 0.6, delay: i * 0.08, ease: 'power3.out',
+    scrollTrigger: { trigger: item, start: 'top 90%', toggleActions: 'play none none none' }
+  });
+});
+
+/* ── Float contact hover cursor ──────────────────────────────── */
+document.querySelectorAll('.float-btn').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+/* ── Scroll progress bar ─────────────────────────────────────── */
+const progressBar = document.getElementById('scroll-progress');
+lenis.on('scroll', ({ progress }) => {
+  progressBar.style.width = (progress * 100) + '%';
+});
+
+/* ── Mobile menu ─────────────────────────────────────────────── */
+function openMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const ham  = document.getElementById('hamburger');
+  menu.classList.add('open');
+  ham.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lenis.stop();
+  // Animate links in
+  gsap.fromTo('.mob-nav-link, .mob-lang-row, .mob-wa-link',
+    { opacity: 0, x: 30 },
+    { opacity: 1, x: 0, duration: 0.45, stagger: 0.06, ease: 'power3.out', delay: 0.2 }
+  );
+}
+
+function closeMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const ham  = document.getElementById('hamburger');
+  menu.classList.remove('open');
+  ham.classList.remove('open');
+  document.body.style.overflow = '';
+  lenis.start();
+}
+
+// Close on Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMobileMenu();
+});
+
+/* ── Contact form — Formspree submission ─────────────────────── */
+// SETUP: Sign up free at formspree.io, create a form, and replace
+// 'YOUR_FORM_ID' below with your actual form ID (e.g. 'xpzgdkna')
+const FORMSPREE_ID = 'YOUR_FORM_ID';
+
+document.getElementById('contactForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn  = document.getElementById('formSubmitBtn');
+  const form = this;
+  const lang = document.documentElement.lang;
+  const t    = translations[lang] || translations.pt;
+
+  // Basic validation
+  const email = form.querySelector('[name="email"]');
+  const nome  = form.querySelector('[name="nome"]');
+  if (!nome.value.trim() || !email.value.trim()) {
+    email.style.borderColor = 'var(--red)';
+    setTimeout(() => email.style.borderColor = '', 2000);
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.textContent = lang === 'zh' ? '发送中...' : 'A enviar...';
+
+  try {
+    if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+      // Demo mode: simulate success after 1s
+      await new Promise(r => setTimeout(r, 1000));
+    } else {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      });
+      if (!res.ok) throw new Error('send_failed');
+    }
+
+    // Show success
+    form.style.display = 'none';
+    const success = document.getElementById('formSuccess');
+    success.classList.add('visible');
+    gsap.from(success, { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' });
+
+  } catch {
+    btn.classList.remove('loading');
+    btn.textContent = lang === 'zh' ? '发送失败，请重试' : 'Erro ao enviar — tente novamente';
+    btn.style.background = '#8B0000';
+    setTimeout(() => {
+      btn.textContent = t.f_submit;
+      btn.style.background = '';
+    }, 3000);
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM INTERACTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Scramble decode on hero translations ─────────────────── */
+function scrambleDecode(el, finalText, delay = 0) {
+  const zh = '信義廉耻仁智勇乾坤橋梁精確誠信力量';
+  const lat = 'ABCDEFGHIJKLMabcdefg01234';
+  const chars = zh + lat;
+  const duration = 900;
+  const fps = 1000 / 28;
+  const total = Math.ceil(duration / fps);
+  let frame = 0;
+  setTimeout(() => {
+    const id = setInterval(() => {
+      frame++;
+      const progress = frame / total;
+      el.innerHTML = finalText.split('').map((c, i) => {
+        if (c === ' ' || c === '·') return c;
+        const revealed = i < Math.floor(progress * finalText.length);
+        if (revealed) return `<span style="color:inherit">${c}</span>`;
+        const rand = chars[Math.floor(Math.random() * chars.length)];
+        return `<span style="color:var(--dim);opacity:.4">${rand}</span>`;
+      }).join('');
+      if (frame >= total) {
+        el.textContent = finalText;
+        clearInterval(id);
+      }
+    }, fps);
+  }, delay);
+}
+
+// Scramble fires 1.4s after hero entrance (after PT lines have appeared)
+
+/* ── 2. Word-by-word scroll reveal on section titles ─────────── */
+function initWordReveal() {
+  document.querySelectorAll('.section-title, .contacto-big').forEach(el => {
+    // Skip elements with child elements (has <em> etc — handle carefully)
+    const html = el.innerHTML;
+    // Replace text nodes only (preserve em tags)
+    el.innerHTML = html.replace(/>([^<]+)</g, (match, text) => {
+      const words = text.split(/(\s+)/);
+      return '>' + words.map(w => {
+        if (!w.trim()) return w;
+        return `<span class="word-wrap"><span class="word-inner">${w}</span></span>`;
+      }).join('') + '<';
+    });
+    // GSAP animate word-inner on scroll
+    const inners = el.querySelectorAll('.word-inner');
+    gsap.fromTo(inners,
+      { y: '110%', opacity: 0 },
+      {
+        y: '0%', opacity: 1,
+        duration: 0.75,
+        ease: 'power3.out',
+        stagger: 0.045,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none none',
+        }
+      }
+    );
+  });
+}
+// Run after DOM ready
+setTimeout(initWordReveal, 100);
+
+/* ── 3. Magnetic CTA buttons ─────────────────────────────────── */
+function initMagnetic() {
+  document.querySelectorAll('.btn-primary, .nav-cta, .form-submit').forEach(btn => {
+    btn.classList.add('magnetic');
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width  / 2) * 0.28;
+      const y = (e.clientY - r.top  - r.height / 2) * 0.28;
+      gsap.to(btn, { x, y, duration: 0.35, ease: 'power2.out', overwrite: true });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.65, ease: 'elastic.out(1, 0.45)', overwrite: true });
+    });
+  });
+}
+initMagnetic();
+
+/* ── 4. Section counter ──────────────────────────────────────── */
+(function() {
+  const counter  = document.getElementById('section-counter');
+  const scCur    = document.getElementById('sc-current');
+  const sectionIds = [
+    'hero','media','sobre','casos','servicos','pricing',
+    'numeros','processo','mapa','sectores','cultura',
+    'faq','testemunhos','contacto'
+  ];
+  document.getElementById('sc-total').textContent =
+    String(sectionIds.length).padStart(2, '0');
+
+  sectionIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 55%',
+      end: 'bottom 45%',
+      onEnter:     () => { scCur.textContent = String(i+1).padStart(2,'0'); },
+      onEnterBack: () => { scCur.textContent = String(i+1).padStart(2,'0'); },
+    });
+  });
+
+  // Show counter once scrolled past hero
+  ScrollTrigger.create({
+    trigger: '#media',
+    start: 'top 80%',
+    onEnter:     () => counter.classList.add('visible'),
+    onLeaveBack: () => counter.classList.remove('visible'),
+  });
+})();
+
+/* ── 5. Re-apply magnetic to dynamically added elements ─────── */
+// (form submit re-init after setLang swaps innerHTML)
+const _origSetLang = setLang;
+setLang = function(lang) {
+  _origSetLang(lang);
+  setTimeout(initMagnetic, 50);
+};
+</script>
+</body>
+</html>
