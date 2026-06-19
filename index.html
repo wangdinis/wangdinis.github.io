@@ -2183,31 +2183,37 @@ window.addEventListener('load', () => ScrollTrigger.refresh());
       // Only animate if zone is near viewport
       if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
 
-      // ── Content fade out: p 0 → 0.30 ──
-      var contentAlpha = 1 - easeOut(rangeTo01(p, 0, 0.30));
+      // Mobile gets more reading time before content fades and portal appears
+      var mob = window.innerWidth < 768;
+
+      // ── Content fade out: desktop p 0→0.30 / mobile p 0→0.50 ──
+      var fadeEnd = mob ? 0.50 : 0.30;
+      var contentAlpha = 1 - easeOut(rangeTo01(p, 0, fadeEnd));
       z.elems.forEach(function(el) { el.style.opacity = contentAlpha; });
 
-      // ── Portal label fades as it zooms: p 0.55 → 0.72 ──
-      var lblAlpha = 1 - rangeTo01(p, 0.55, 0.72);
+      // ── Portal label fades as it zooms ──
+      var lblStart = mob ? 0.68 : 0.55;
+      var lblEnd   = mob ? 0.85 : 0.72;
+      var lblAlpha = 1 - rangeTo01(p, lblStart, lblEnd);
       z.portalContent.forEach(function(el) { el.style.opacity = lblAlpha; });
 
       // ── Portal scale & opacity ──
       var scale, portalAlpha;
+      var p1 = mob ? 0.38 : 0.2;   // portal hidden until here
+      var p2 = mob ? 0.65 : 0.5;   // portal fully settled here, then zooms
 
-      if (p < 0.2) {
-        // Hidden
+      if (p < p1) {
         scale = 0.15;
         portalAlpha = 0;
-      } else if (p < 0.5) {
-        // Appears and settles: p 0.2 → 0.5
-        var t = rangeTo01(p, 0.2, 0.5);
-        scale = 0.15 + easeOut(t) * 0.85;   // 0.15 → 1.0
+      } else if (p < p2) {
+        // Appears and settles
+        var t = rangeTo01(p, p1, p2);
+        scale = 0.15 + easeOut(t) * 0.85;
         portalAlpha = easeOut(t);
       } else {
-        // Zooms to fill screen: p 0.5 → 1.0
-        // Portal is 30vw wide; need ~3.4× to fill 100vw. Use 4× to safely overfill.
-        var t = rangeTo01(p, 0.5, 1);
-        scale = 1 + easeIn(t) * 3.8;        // 1 → 4.8
+        // Zooms to fill screen
+        var t = rangeTo01(p, p2, 1);
+        scale = 1 + easeIn(t) * 3.8;
         portalAlpha = 1;
       }
 
